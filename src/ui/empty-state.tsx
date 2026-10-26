@@ -1,0 +1,37 @@
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import type { ComponentProps } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { Text, useTheme } from 'react-native-paper';
+
+type Props = {
+  icon: ComponentProps<typeof MaterialCommunityIcons>['name'];
+  title: string;
+  body: string;
+};
+
+export function EmptyState({ icon, title, body }: Props) {
+  const theme = useTheme();
+  return (
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <MaterialCommunityIcons
+        name={icon}
+        size={56}
+        color={theme.colors.primary}
+        accessibilityElementsHidden
+        importantForAccessibility="no"
+      />
+      <Text variant="titleMedium" style={styles.title}>
+        {title}
+      </Text>
+      <Text variant="bodyMedium" style={[styles.body, { color: theme.colors.onSurfaceVariant }]}>
+        {body}
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 12 },
+  title: { textAlign: 'center' },
+  body: { textAlign: 'center', maxWidth: 320 },
+});

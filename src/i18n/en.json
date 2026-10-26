@@ -1,0 +1,37 @@
+{
+  "tabs": {
+    "home": "Home",
+    "history": "History",
+    "stats": "Stats",
+    "tools": "Tools",
+    "settings": "Settings"
+  },
+  "home": {
+    "emptyTitle": "No vehicles yet",
+    "emptyBody": "Add your bike, scooter, car or EV to start logging fill-ups and services."
+  },
+  "history": {
+    "emptyTitle": "No entries yet",
+    "emptyBody": "Your fill-ups and services will appear here."
+  },
+  "stats": {
+    "emptyTitle": "Not enough data yet",
+    "emptyBody": "Charts appear after a few full-tank fill-ups."
+  },
+  "tools": {
+    "emptyTitle": "Calculators",
+    "emptyBody": "Trip cost, mileage and fuel split calculators. No setup needed."
+  },
+  "settings": {
+    "appearance": "Appearance",
+    "theme": "Theme",
+    "themeSystem": "System",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "language": "Language"
+  },
+  "languages": {
+    "en": "English",
+    "hi": "हिन्दी"
+  }
+}

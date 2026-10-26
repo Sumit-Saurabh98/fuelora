@@ -1,0 +1,68 @@
+# ROADMAP.md
+
+Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android + iOS. Each phase ends with something demoable on a real phone.
+
+## Phase 0 — Set up (Week 1)
+- [x] Use Google's test ad unit IDs and a placeholder bundle ID (`com.fuelora.dev`) for dev builds (store setup is deferred to Phase 5 — KB §9)
+- [x] Expo project scaffold: TypeScript strict, Expo Router, Paper theme, i18n (en/hi), ESLint/Prettier, Jest, GitHub Actions CI (workflow ready; runs once the repo is pushed to GitHub)
+- [ ] EAS dev builds: Android on own phone, iOS on the Simulator (KB #15)
+- **Demo:** empty app with tabs, theme and language switch on the Android phone and the iOS Simulator
+
+## Phase 1 — Core data & mileage (Weeks 2–4)
+
+- [ ] Drizzle schema + migrations + composition root
+- [ ] `units`, `money`, `regions` domain + tests
+- [ ] `EfficiencyEngine` with all fixture cases (LLD §4.4)
+- [ ] Onboarding (language, region, first vehicle)
+- [ ] Vehicles: add/edit/archive/delete, switcher
+- [ ] Fill-up entry: any-two-of-three, amount-only, full/partial, missed flag, validation, plausibility warnings
+- [ ] Result card + dashboard (last/avg efficiency, month spend, cost per distance)
+- [ ] History list with edit/delete
+- **Demo:** log ₹200 partial fills on a bike and a full-tank car fill in gallons; correct numbers
+
+## Phase 2 — Services, reminders, notifications (Weeks 5–6)
+
+- [ ] Service log with presets per vehicle type
+- [ ] Reminders (date / distance / both, repeat, lead) + document presets + region names
+- [ ] Distance forecaster + predicted dates
+- [ ] `ReminderPlanner` + `NotificationScheduler` (60 budget, 09:00, overdue once), permission on first reminder
+- [ ] Weekly nudge (toggle)
+- [ ] First real-iPhone check (borrowed device, ad hoc dev build): notifications at 09:00 (KB #15)
+- **Demo:** set insurance date and oil change at +300 km; notification arrives; log service → reminder rolls forward
+
+## Phase 3 — Stats, calculators, backup (Weeks 7–8)
+
+- [ ] Stats screen: efficiency line, monthly spend bars, cost per distance, ranges
+- [ ] Calculators: trip cost, mileage, fuel split → "Track this vehicle"
+- [ ] Backup export (JSON + CSV), restore with safety backup, monthly nudge
+- [ ] Verify Android Auto Backup / iOS backup include the DB
+- **Demo:** export on phone A, restore on phone B, everything matches
+
+## Phase 4 — Ads, analytics, polish (Weeks 9–10)
+
+- [ ] UMP consent + ATT; `AdsManager` with caps (ADS.md §2); banner, interstitial, app open
+- [ ] Firebase Analytics allow-listed events; Sentry with scrubbing
+- [ ] Hindi review by a native speaker; empty states; dark mode; font scaling; 360dp layouts
+- [ ] Performance pass on a low-end Android (cold start, 1,500-entry history)
+- [ ] Maestro flows for key journeys
+- [ ] Real-iPhone check: consent + ATT prompt, ads, performance (KB #15)
+- **Demo:** full app with test ads, consent form (via VPN/EEA debug geography), no ads on forms
+
+## Phase 5 — Store & launch (Weeks 11–12)
+
+- [ ] Decide the deferred items (KB §9): support email, Firebase project ID, final package name / bundle ID, reserve "Fuelora" in App Store Connect
+- [ ] Firebase project (Hosting + Analytics); deploy `web/` with privacy, terms, support, app-ads.txt
+- [ ] AdMob account + apps + real units (ADS.md §9)
+- [ ] Store assets: icon, screenshots (EN + HI for Play; EN for App Store), feature graphic
+- [ ] Listings, data safety, privacy label, content rating (PLAY_STORE.md, APP_STORE.md)
+- [ ] app-ads.txt verified on `<project-id>.web.app`
+- [ ] Play closed testing — **new personal developer accounts must run a closed test with ≥ 12 testers for 14 days before production** (applies to personal accounts created after Nov 2023 — check yours); TestFlight beta
+- [ ] Production: Play staged rollout 10% → 100%; App Store release
+- [ ] Launch posts (Instagram reels, YouTube shorts, bike/car groups, Reddit r/india etc.)
+- **Demo:** live on both stores
+
+## After launch (v1.1 → v2)
+
+- Weeks 1–4: fix top review complaints; watch D1/D7 retention, entries/user/week, ARPDAU
+- v1.1 candidates (pick by data): widget, document wallet, rider mode, expenses, trip-meter entry, more languages (REQUIREMENTS §2.2)
+- Revisit KB proposals: remove-ads purchase (P-1), mediation (P-5)

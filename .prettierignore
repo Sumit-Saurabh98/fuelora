@@ -1,0 +1,8 @@
+node_modules
+.expo
+dist
+pnpm-lock.yaml
+src/db/migrations
+ios
+android
+docs
