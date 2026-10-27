@@ -76,7 +76,9 @@ Why: zero hosting cost, no account friction, privacy as a selling point, and one
 - **Restore:** `expo-document-picker` → parse + validate + migrate older `schemaVersion` → summary → safety export to app cache → replace all in one transaction → if active reminders and no notification permission on this device, ask (FR-24) → `NotificationScheduler.sync()`.
 - **Open from other apps:** the `.fuelora` file type is registered (iOS document type / UTI, Android intent filter for `VIEW`) so tapping a backup in WhatsApp, email, Drive or Files opens Fuelora on the restore summary (FR-23). Same restore path as the picker.
 - **Cross-platform:** the backup holds only canonical values, so Android → iOS and back is the same restore (FR-22). OS backups (Auto Backup / iCloud) don't cross platforms; the file is the only way to switch.
-- Monthly in-app nudge if the last export is older than 30 days and there are ≥ 5 entries.
+- In-app backup nudge if the last export is older than 30 days and there are ≥ 5 entries, or if ≥ 20 entries were created since the last export (count rows with `created_at > last_export_at`, no extra state); at most one nudge per 7 days (FR-27).
+- Settings shows "Last backup: N days ago" from MMKV `last_export_at` (FR-26).
+- **Uninstall protection (Android only):** a config plugin sets `android:hasFragileUserData="true"` so Android 10+ offers "Keep app data" when uninstalling; a reinstall with the same package name and signing key reuses it (FR-25). Apps get no uninstall event on either OS, so a "back up before uninstalling" alert is impossible; FR-26/27 cover the risk instead.
 
 ### 4.5 Ads and consent
 

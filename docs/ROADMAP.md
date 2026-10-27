@@ -39,6 +39,9 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
 - [ ] `.fuelora` backup file type: "Open in Fuelora" from WhatsApp/email/Drive/Files on both platforms (FR-23)
 - [ ] After restore: notification permission prompt + reschedule when reminders exist (FR-24)
 - [ ] Cross-platform restore tested both ways: Android → iOS and iOS → Android (FR-22)
+- [ ] Android "Keep app data" on uninstall via a small config plugin; test uninstall-keep-reinstall (FR-25)
+- [ ] Backup status row in Settings: "Last backup: N days ago" with warning color (FR-26)
+- [ ] Nudge after 20 new entries since last export, max one nudge per 7 days (FR-27)
 - **Demo:** export on the Android phone, send via WhatsApp, tap the file on the iPhone (Simulator), restore — everything matches, reminders notify
 
 ## Phase 4 — Ads, analytics, polish (Weeks 9–10)

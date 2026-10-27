@@ -112,6 +112,9 @@ Ads only (AdMob). No subscriptions, no paywall, no locked core features. Details
 - FR-22 Backups move across platforms (Android ↔ iOS) with no loss: the file holds only canonical values (metres, base units, minor units + currency, ISO dates), never platform-specific data.
 - FR-23 The backup file uses its own `.fuelora` extension (JSON inside) registered with the OS, so tapping it in WhatsApp, email, Drive or Files offers "Open in Fuelora" and goes straight to the restore summary (FR-17). The picker also accepts `.json`.
 - FR-24 After a restore that contains active reminders, ask for notification permission if not granted on this device, then reschedule; if denied, show that reminders won't notify.
+- FR-25 Android: the uninstall dialog offers "Keep app data" (`android:hasFragileUserData="true"`, Android 10+), so a reinstall finds the data intact. No equivalent exists on iOS.
+- FR-26 Settings shows backup status: "Last backup: N days ago" (or "Never backed up"), highlighted in the warning color when older than 30 days or never done while entries exist; tapping it opens Export.
+- FR-27 Backup nudge also fires when ≥ 20 entries (fill-ups + services) were added since the last export, in addition to the monthly rule; at most one backup nudge per 7 days so it never nags.
 
 ### 4.6 Calculators
 
