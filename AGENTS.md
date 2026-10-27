@@ -46,7 +46,8 @@ pnpm start                     # expo start (dev client)
 pnpm android / pnpm ios        # run on device/emulator
 pnpm test                      # jest (jest-expo)
 pnpm test -- efficiency        # one test file/pattern
-pnpm lint && pnpm typecheck
+pnpm lint && pnpm typecheck    # typecheck regenerates expo-router route types first
+pnpm routes:types              # regenerate route types only (normally done by expo start)
 pnpm db:generate               # drizzle-kit generate after a schema change
 eas build --profile development --platform android   # dev build (ads need it)
 firebase deploy --only hosting # publish web/ (privacy, app-ads.txt)
@@ -110,3 +111,4 @@ firebase deploy --only hosting # publish web/ (privacy, app-ads.txt)
 - Don't add in-app purchases (KB #8).
 - Don't place ads anywhere not listed in `docs/ADS.md`.
 - Don't make mileage-boosting or fuel-saving claims in app copy or store text.
+- Don't use `Intl` `formatToParts` or `resolvedOptions`: Hermes on iOS lacks them (KB #23). Read values from `format()` output; lint enforces this. Tests run on Node's full ICU, so check new `Intl` usage on the iOS Simulator.

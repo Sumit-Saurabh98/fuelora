@@ -37,6 +37,12 @@ module.exports = defineConfig([
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
+      // Hermes on iOS crashes on these (seen on device 2026-10-28); use Intl format() output.
+      'no-restricted-properties': [
+        'error',
+        { property: 'formatToParts', message: 'Not available in Hermes on iOS; parse format().' },
+        { property: 'resolvedOptions', message: 'Unreliable in Hermes on iOS; parse format().' },
+      ],
       // Invisible NBSPs in source are a trap (Intl output uses them); write \u00a0 instead.
       'no-irregular-whitespace': [
         'error',

@@ -11,7 +11,7 @@ import {
 import type { SettingsRepository } from '@/repositories/settings.repository';
 
 // Key names match LLD §2 so they line up with the backup format.
-const KEYS = {
+export const SETTING_KEYS = {
   theme: 'theme',
   language: 'language',
   region: 'region',
@@ -45,9 +45,9 @@ export class SettingsService {
 
   async getPreferences(): Promise<Preferences> {
     const all = await this.settings.getAll();
-    const theme = all.get(KEYS.theme);
-    const language = all.get(KEYS.language);
-    const region = all.get(KEYS.region);
+    const theme = all.get(SETTING_KEYS.theme);
+    const language = all.get(SETTING_KEYS.language);
+    const region = all.get(SETTING_KEYS.region);
     // Unknown stored values (e.g. from a newer app's backup) fall back instead of breaking startup.
     const unitOverrides: Record<string, unknown> = {};
     for (const key of UNIT_PREFERENCES) {
@@ -63,16 +63,16 @@ export class SettingsService {
   }
 
   setThemeMode(mode: ThemeMode): Promise<void> {
-    return this.save(KEYS.theme, mode);
+    return this.save(SETTING_KEYS.theme, mode);
   }
 
   setLanguage(language: Language): Promise<void> {
-    return this.save(KEYS.language, language);
+    return this.save(SETTING_KEYS.language, language);
   }
 
   /** Saves the region and drops unit overrides so the new region's defaults apply. */
   async changeRegion(region: Region): Promise<void> {
-    await this.save(KEYS.region, region);
+    await this.save(SETTING_KEYS.region, region);
     await this.clearUnitOverrides();
   }
 
@@ -86,19 +86,19 @@ export class SettingsService {
 
   /** The vehicle that opens by default (FR-4); null when none chosen yet. */
   async getCurrentVehicleId(): Promise<string | null> {
-    return (await this.settings.getAll()).get(KEYS.currentVehicleId) ?? null;
+    return (await this.settings.getAll()).get(SETTING_KEYS.currentVehicleId) ?? null;
   }
 
   setCurrentVehicleId(id: string): Promise<void> {
-    return this.save(KEYS.currentVehicleId, id);
+    return this.save(SETTING_KEYS.currentVehicleId, id);
   }
 
   async isOnboardingDone(): Promise<boolean> {
-    return (await this.settings.getAll()).get(KEYS.onboardingDone) === 'true';
+    return (await this.settings.getAll()).get(SETTING_KEYS.onboardingDone) === 'true';
   }
 
   markOnboardingDone(): Promise<void> {
-    return this.save(KEYS.onboardingDone, 'true');
+    return this.save(SETTING_KEYS.onboardingDone, 'true');
   }
 
   private save(key: string, value: string): Promise<void> {

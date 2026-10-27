@@ -1,4 +1,9 @@
-import { validateNewVehicle, type NewVehicleInput } from '../vehicle';
+import {
+  pickCurrentVehicle,
+  validateNewVehicle,
+  type NewVehicleInput,
+  type Vehicle,
+} from '../vehicle';
 
 const YEAR = 2026;
 const base: NewVehicleInput = {
@@ -98,5 +103,24 @@ describe('validateNewVehicle', () => {
     ['40-character name', { name: 'n'.repeat(40) }],
   ] as const)('accepts %s', (_label, change) => {
     expect(validateNewVehicle({ ...base, ...change }, YEAR).ok).toBe(true);
+  });
+});
+
+describe('pickCurrentVehicle (FR-4)', () => {
+  const v = (id: string, isArchived = false) => ({ id, isArchived }) as Vehicle;
+
+  it('returns the saved vehicle while it is active', () => {
+    expect(pickCurrentVehicle([v('a'), v('b')], 'b')?.id).toBe('b');
+  });
+
+  it('falls back to the first active vehicle', () => {
+    expect(pickCurrentVehicle([v('a', true), v('b'), v('c')], 'a')?.id).toBe('b');
+    expect(pickCurrentVehicle([v('a'), v('b')], 'gone')?.id).toBe('a');
+    expect(pickCurrentVehicle([v('a')], null)?.id).toBe('a');
+  });
+
+  it('is null without active vehicles', () => {
+    expect(pickCurrentVehicle([], 'a')).toBeNull();
+    expect(pickCurrentVehicle([v('a', true)], 'a')).toBeNull();
   });
 });

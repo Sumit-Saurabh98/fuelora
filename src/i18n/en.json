@@ -8,7 +8,8 @@
   },
   "home": {
     "emptyTitle": "No vehicles yet",
-    "emptyBody": "Add your bike, scooter, car or EV to start logging fill-ups and services."
+    "emptyBody": "Add your bike, scooter, car or EV to start logging fill-ups and services.",
+    "odometer": "Odometer"
   },
   "history": {
     "emptyTitle": "No entries yet",
@@ -122,6 +123,50 @@
     "regionSubtitle": "We picked this from your phone. It sets your currency, units and document names.",
     "regionLater": "You can change any unit later in Settings.",
     "back": "Back",
-    "stepOf": "Step {{step}} of {{total}}"
+    "stepOf": "Step {{step}} of {{total}}",
+    "vehicleTitle": "Add your vehicle",
+    "vehicleSubtitle": "Just the basics. You can add more vehicles later.",
+    "save": "Save",
+    "skip": "Skip for now"
+  },
+  "vehicleForm": {
+    "typeLabel": "Vehicle type",
+    "types": {
+      "bike": "Bike",
+      "scooter": "Scooter",
+      "car": "Car",
+      "other": "Other"
+    },
+    "fuelLabel": "Fuel",
+    "fuels": {
+      "diesel": "Diesel",
+      "cng": "CNG",
+      "lpg": "LPG",
+      "electric": "Electric"
+    },
+    "name": "Name",
+    "defaultName": {
+      "bike": "My bike",
+      "scooter": "My scooter",
+      "car": "My car",
+      "other": "My vehicle"
+    },
+    "odometer": "Current odometer",
+    "odometerHelp": "The reading on your vehicle right now. Enter 0 if it's new.",
+    "moreDetails": "More details (optional)",
+    "make": "Make",
+    "model": "Model",
+    "year": "Year",
+    "plate": "Number plate",
+    "tank": "Tank size",
+    "battery": "Battery size",
+    "errors": {
+      "required": "Required",
+      "too_long": "Too long",
+      "out_of_range": "Check this value",
+      "invalid": "Choose an option",
+      "not_a_number": "Enter a number",
+      "saveFailed": "Couldn't save. Please try again."
+    }
   }
 }

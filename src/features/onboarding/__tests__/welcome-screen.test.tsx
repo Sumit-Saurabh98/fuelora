@@ -58,9 +58,10 @@ describe('WelcomeScreen', () => {
     expect((await mockSettings.getPreferences()).language).toBe('hi');
   });
 
-  it('shows step 1 of 3', async () => {
+  it('shows step 1 of 3 with no back arrow (nothing to go back to)', async () => {
     await renderWelcome();
     expect(screen.getByLabelText('Step 1 of 3')).toBeTruthy();
+    expect(screen.queryByLabelText('Back')).toBeNull();
   });
 
   it('Continue goes to the region step without finishing onboarding', async () => {

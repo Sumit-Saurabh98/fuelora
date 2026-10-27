@@ -170,12 +170,14 @@ describe('EfficiencyEngine — segments', () => {
     expect(segment!.costs.map((c) => [c.currency, c.amountMinor])).toEqual([['INR', 83_575]]);
   });
 
-  it('handles 1,500 fill-ups in one pass (NFR-4)', () => {
-    const fills = Array.from({ length: 1500 }, (_, i) => fill(10000 + i * 100, 2.5));
+  it('stays linear: 15,000 fill-ups (10× NFR-4) in well under a second', () => {
+    // Ten times the 10-year volume so a quadratic regression (~10^8 steps) blows the budget,
+    // while the generous limit keeps the test stable on a busy CI machine.
+    const fills = Array.from({ length: 15_000 }, (_, i) => fill(10000 + i * 100, 2.5));
     const started = performance.now();
     const segments = engine.segments(fills);
-    expect(segments).toHaveLength(1499);
-    expect(performance.now() - started).toBeLessThan(200);
+    expect(segments).toHaveLength(14_999);
+    expect(performance.now() - started).toBeLessThan(1000);
   });
 });
 

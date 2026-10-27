@@ -21,7 +21,8 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
   - [x] 4.1 Vehicle data layer: VehicleRepository (Drizzle + in-memory), VehicleService (create, list, current vehicle), validation + error codes
   - [x] 4.2 Onboarding shell: first launch opens onboarding until done; welcome + language screen ("no login, data stays on this phone"); dev-only "Reset app data" in Settings
   - [x] 4.3 Region screen: pre-selected from the phone, units preview, change if needed; shared onboarding frame (step dots, Back/Continue)
-  - [ ] 4.4 First vehicle screen: type, fuel, name, current odometer (+ optional details); saves, sets current vehicle, Home shows it
+  - [x] 4.4 First vehicle screen: type, fuel, name, current odometer (+ optional details); saves, sets current vehicle, Home shows it; Skip for now. Onboarding layout: back arrow top-left, one full-width action, Skip under Save. iOS Intl crash fixed + guarded
+  - [ ] 4.5 Home "Add your first vehicle" button + add-vehicle screen (for users who skipped)
 - [ ] Vehicles: add/edit/archive/delete, switcher
 - [ ] Fill-up entry: any-two-of-three, amount-only, full/partial, missed flag, validation, plausibility warnings
 - [ ] Result card + dashboard (last/avg efficiency, month spend, cost per distance)

@@ -17,9 +17,10 @@ export function currencyDigits(currency: string): number {
   if (cached !== undefined) return cached;
   let digits = 2;
   try {
-    digits =
-      new Intl.NumberFormat('en', { style: 'currency', currency }).resolvedOptions()
-        .maximumFractionDigits ?? 2;
+    // Count the decimals Intl prints for 1 unit ("$1.00" → 2, "¥1" → 0, "KWD 1.000" → 3). Only
+    // format() is used: Hermes on iOS lacks parts of Intl, and a silent fallback would be wrong.
+    const sample = new Intl.NumberFormat('en', { style: 'currency', currency }).format(1);
+    digits = /\.(\d+)/.exec(sample)?.[1]?.length ?? 0;
   } catch {
     // Unknown to this device's Intl data: 2 is right for the vast majority of currencies.
   }

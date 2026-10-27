@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { List, RadioButton, Text, useTheme } from 'react-native-paper';
@@ -9,7 +9,6 @@ import { isRegion, REGIONS } from '@/domain/regions';
 import { useUnitPreferences } from '../../settings/hooks/use-unit-preferences';
 import { usePreferences } from '../../settings/preferences.store';
 import { buildUnitsPreview } from '../../settings/units-preview';
-import { useOnboarding } from '../onboarding.store';
 import { ChoiceCard } from './choice-card';
 import { OnboardingFrame } from './onboarding-frame';
 
@@ -17,24 +16,12 @@ export function RegionStep() {
   const { t } = useTranslation();
   const theme = useTheme();
   const setRegion = usePreferences((s) => s.setRegion);
-  const complete = useOnboarding((s) => s.complete);
   const { region, units, locale, deviceCurrency } = useUnitPreferences();
-  const [saving, setSaving] = useState(false);
 
   const { sample, emissionNameKey } = useMemo(
     () => buildUnitsPreview({ region, units, locale }),
     [region, units, locale],
   );
-
-  const onContinue = async () => {
-    setSaving(true);
-    try {
-      // 4.4 replaces this with the first-vehicle step.
-      await complete();
-    } finally {
-      setSaving(false);
-    }
-  };
 
   const rows: { icon: string; title: string; value: string }[] = [
     { icon: 'cash', title: t('settings.currency'), value: units.currency },
@@ -57,8 +44,11 @@ export function RegionStep() {
       step={2}
       title={t('onboarding.regionTitle')}
       subtitle={t('onboarding.regionSubtitle')}
-      primary={{ label: t('onboarding.continue'), onPress: onContinue, loading: saving }}
-      secondary={{ label: t('onboarding.back'), onPress: () => router.back() }}
+      primary={{
+        label: t('onboarding.continue'),
+        onPress: () => router.push('/onboarding/vehicle'),
+      }}
+      onBack={() => router.back()}
     >
       <RadioButton.Group
         value={region}

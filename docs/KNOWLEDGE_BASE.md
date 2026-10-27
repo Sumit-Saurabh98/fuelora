@@ -117,6 +117,8 @@ Document presets: `insurance`, `emission_test`, `registration`, `licence`, `cust
 | 19 | 2026-10 | Uninstall protection: Android "Keep app data" (`hasFragileUserData`), "Last backup: N days ago" in Settings, nudge after 20 new entries (max one nudge / 7 days) (FR-25–27) | Neither OS lets an app warn before uninstall; these reduce lost-data cases without nagging |
 | 20 | 2026-10 | Plausibility ranges missing from LLD §4.2: CNG bike/scooter 40–120 km/kg, electric bike 10–80 km/kWh, "other" 4–120 km/L / 10–120 km/kg / 3–80 km/kWh, LPG = liquid ranges | CNG motorcycles (e.g. Bajaj Freedom 125) are advertised around 100 km/kg, so 10–40 would wrongly warn; wide ranges for "other" avoid false warnings |
 | 21 | 2026-10 | Onboarding state in SQLite `settings` (`onboarding_done` OR ≥ 1 vehicle), not MMKV; vehicle step has "Skip for now"; form shows type, fuel, name, odometer with optional details collapsed | Stays correct after an interrupted save or a restore; no extra native package for one flag (MMKV comes in Phase 4 for ad counters); skip keeps calculators usable without setup (F-12); essentials keep onboarding under 60 s (F-01) |
+| 22 | 2026-10 | Onboarding screens: back arrow top-left (none on step 1), step dots centred, one full-width primary action at the bottom, optional text action (Skip) under it | Side-by-side Back/Continue/Save crowded 360dp screens; one obvious thumb-reachable action is the common modern pattern |
+| 23 | 2026-10 | Never use `Intl` `formatToParts` / `resolvedOptions`; derive separators and currency digits from `format()` output (lint-enforced, iOS-simulating test) | Hermes on iOS lacks them: the vehicle step crashed on the iPhone while all tests passed on Node |
 
 ## 7. Analytics events (allow-list)
 

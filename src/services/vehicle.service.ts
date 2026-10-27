@@ -1,7 +1,12 @@
 import type { Clock } from '@/domain/clock';
 import { AppError } from '@/domain/errors';
 import type { IdGenerator } from '@/domain/id-generator';
-import { validateNewVehicle, type NewVehicleInput, type Vehicle } from '@/domain/vehicle';
+import {
+  pickCurrentVehicle,
+  validateNewVehicle,
+  type NewVehicleInput,
+  type Vehicle,
+} from '@/domain/vehicle';
 import type { VehicleRepository } from '@/repositories/vehicle.repository';
 
 import type { SettingsService } from './settings.service';
@@ -56,10 +61,7 @@ export class VehicleService {
    */
   async getCurrent(): Promise<Vehicle | null> {
     const id = await this.settings.getCurrentVehicleId();
-    const saved = id ? await this.vehicles.getById(id) : null;
-    if (saved && !saved.isArchived) return saved;
-    const [first] = await this.vehicles.list();
-    return first ?? null;
+    return pickCurrentVehicle(await this.vehicles.list(), id);
   }
 
   async setCurrent(id: string): Promise<void> {

@@ -1,8 +1,5 @@
-import { useTranslation } from 'react-i18next';
+import { HomeScreen } from '@/features/home/components/home-screen';
 
-import { EmptyState } from '@/ui/empty-state';
-
-export default function HomeScreen() {
-  const { t } = useTranslation();
-  return <EmptyState icon="car-outline" title={t('home.emptyTitle')} body={t('home.emptyBody')} />;
+export default function HomeRoute() {
+  return <HomeScreen />;
 }

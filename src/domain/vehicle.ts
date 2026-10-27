@@ -133,3 +133,15 @@ export function validateNewVehicle(input: NewVehicleInput, currentYear: number):
     },
   };
 }
+
+/**
+ * The vehicle that opens by default (FR-4): the saved one if it is still active, otherwise the
+ * first active vehicle in switcher order; null when there are none.
+ */
+export function pickCurrentVehicle(
+  vehicles: readonly Vehicle[],
+  currentId: string | null,
+): Vehicle | null {
+  const active = vehicles.filter((v) => !v.isArchived);
+  return active.find((v) => v.id === currentId) ?? active[0] ?? null;
+}

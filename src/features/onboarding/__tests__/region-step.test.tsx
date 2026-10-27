@@ -73,19 +73,19 @@ describe('RegionStep', () => {
     expect((await mockSettings.getPreferences()).region).toBe('GB');
   });
 
-  it('Back returns to the welcome step', async () => {
+  it('the back arrow returns to the welcome step', async () => {
     await renderScreen(<RegionStep />);
-    await fireEvent.press(screen.getByText('Back'));
+    await fireEvent.press(screen.getByLabelText('Back'));
     expect(router.back).toHaveBeenCalled();
   });
 
-  it('Continue finishes onboarding (until the vehicle step arrives in 4.4)', async () => {
+  it('Continue goes to the vehicle step without finishing onboarding', async () => {
     await renderScreen(<RegionStep />);
 
     await fireEvent.press(screen.getByText('Continue'));
 
-    expect(await mockSettings.isOnboardingDone()).toBe(true);
-    expect(useOnboarding.getState().onboarded).toBe(true);
+    expect(router.push).toHaveBeenCalledWith('/onboarding/vehicle');
+    expect(useOnboarding.getState().onboarded).toBe(false);
   });
 
   it('works in Hindi', async () => {
