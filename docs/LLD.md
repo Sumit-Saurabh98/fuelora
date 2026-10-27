@@ -146,24 +146,32 @@ Bike 15–120 km/L, scooter 20–100 km/L, car 4–40 km/L, CNG car 10–40 km/k
 ### 4.3 API
 
 ```ts
+type EfficiencyFillUp = { id; odometerM; quantityBase; totalMinor; currency; isFull; missedPrevious; localDate };
 interface Segment {
-  startId: string;
-  endId: string;
+  startId: string; // full fill-up the segment starts after (exclusive)
+  endId: string; // full fill-up that closes it (inclusive)
+  endDate: string; // localDate of the closing fill-up — segments belong to the period they close in
   distanceM: number;
   quantityBase: number;
-  costMinor: number;
+  costs: Money[]; // per currency (one entry unless the user changed currency mid-segment)
   valid: boolean;
   reason?: 'missed_fill';
 }
 class EfficiencyEngine {
-  segments(fillUps: FillUp[]): Segment[]; // fillUps already sorted
-  summary(
-    segments: Segment[],
-    range?: DateRange,
-  ): { avgEff?: Efficiency; costPerDistance?: Money; distanceM: number; quantityBase: number };
-  plausibility(segment: Segment, vehicle: Vehicle): 'ok' | 'too_high' | 'too_low';
+  segments(fillUps: EfficiencyFillUp[]): Segment[]; // sorts by odometer itself (fixture #7)
+  summary(segments, range?: { from?: string; to?: string }): {
+    distanceM; quantityBase; validSegments; costs: { cost: Money; distanceM }[];
+  };
+  value(totals: { distanceM; quantityBase }, format: EfficiencyFormat): number | null; // LLD §3 formulas
+  costPerDistance(cost: { cost: Money; distanceM }, unit: 'km' | 'mi'): Money | null;
 }
+quantityFromTotal(total: Money, unitPrice, unit): number | null; // amount-only (src/domain/fill-up.ts)
 ```
+
+- `range` filters valid segments by `endDate` (inclusive); average = Σ distance ÷ Σ quantity of those segments.
+- Cost per distance is per currency and never adds currencies (KB §3); a segment that mixes currencies counts for efficiency but is left out of cost per distance.
+- `value` returns null when distance or quantity is 0, so the UI shows "—" instead of a number.
+- Plausibility (§4.2) is added in sub-step 3.2.
 
 ### 4.4 Required fixture cases (`src/domain/__tests__/efficiency.test.ts`)
 

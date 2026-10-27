@@ -15,6 +15,8 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
 - [x] Settings → Region: India / US / UK / Other with live units preview, saved (2.4)
 - [x] Settings → Units: override currency, distance, volume, mileage formats; reset to region defaults (2.5, F-14)
 - [ ] `EfficiencyEngine` with all fixture cases (LLD §4.4)
+  - [x] 3.1 Engine: full-to-full segments, range-aware summary, all formats (km/L, L/100 km, mpg US/UK, km/kg, km/kWh, mi/kWh, kWh/100 km), cost per km/mi as Money per currency, amount-only quantity; all 11 fixtures
+  - [ ] 3.2 Plausibility warnings (LLD §4.2) + tank-capacity warning — in progress (ranges decided, KB #20)
 - [ ] Onboarding (language, region, first vehicle)
 - [ ] Vehicles: add/edit/archive/delete, switcher
 - [ ] Fill-up entry: any-two-of-three, amount-only, full/partial, missed flag, validation, plausibility warnings
