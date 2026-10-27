@@ -115,6 +115,7 @@ Document presets: `insurance`, `emission_test`, `registration`, `licence`, `cust
 | 17 | 2026-10 | Poppins 600/700 for display, headline and title text; system font for body; app icon = lime fuel drop with efficiency gauge on ink (`store/icon/`) | Poppins covers Latin + Devanagari so Hindi headings match; only 2 weights bundled (~310 KB); icon readable at 48 px and in Android themed mode |
 | 18 | 2026-10 | Phone switching (incl. Android → iPhone) is done with the backup file; it gets a `.fuelora` extension registered with the OS, and restore asks for notification permission when reminders exist (FR-22–24) | People change phones often; OS backups don't cross platforms and iOS doesn't restore app data on reinstall; tapping the file in WhatsApp must just work for non-technical users |
 | 19 | 2026-10 | Uninstall protection: Android "Keep app data" (`hasFragileUserData`), "Last backup: N days ago" in Settings, nudge after 20 new entries (max one nudge / 7 days) (FR-25–27) | Neither OS lets an app warn before uninstall; these reduce lost-data cases without nagging |
+| 20 | 2026-10 | Plausibility ranges missing from LLD §4.2: CNG bike/scooter 40–120 km/kg, electric bike 10–80 km/kWh, "other" 4–120 km/L / 10–120 km/kg / 3–80 km/kWh, LPG = liquid ranges | CNG motorcycles (e.g. Bajaj Freedom 125) are advertised around 100 km/kg, so 10–40 would wrongly warn; wide ranges for "other" avoid false warnings |
 
 ## 7. Analytics events (allow-list)
 

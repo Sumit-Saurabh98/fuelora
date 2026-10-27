@@ -143,6 +143,8 @@ Rounding happens only for display (1 decimal for efficiency; currency's minor di
 
 Bike 15–120 km/L, scooter 20–100 km/L, car 4–40 km/L, CNG car 10–40 km/kg, electric scooter 10–80 km/kWh, electric car 3–12 km/kWh. Also warn if a single fill-up quantity exceeds `tank_capacity_base` × 1.1.
 
+Added 2026-10 (KB #20): CNG bike/scooter 40–120 km/kg; electric bike 10–80 km/kWh; type "other" 4–120 km/L, 10–120 km/kg, 3–80 km/kWh; LPG and diesel use the liquid ranges of their vehicle type. Bounds are inclusive; invalid or empty segments are never flagged.
+
 ### 4.3 API
 
 ```ts
@@ -171,7 +173,7 @@ quantityFromTotal(total: Money, unitPrice, unit): number | null; // amount-only 
 - `range` filters valid segments by `endDate` (inclusive); average = Σ distance ÷ Σ quantity of those segments.
 - Cost per distance is per currency and never adds currencies (KB §3); a segment that mixes currencies counts for efficiency but is left out of cost per distance.
 - `value` returns null when distance or quantity is 0, so the UI shows "—" instead of a number.
-- Plausibility (§4.2) is added in sub-step 3.2.
+- `plausibility(segment, { type, fuelType }) → 'ok' | 'too_high' | 'too_low'` and `exceedsTank(quantityBase, tankCapacityBase)` implement §4.2.
 
 ### 4.4 Required fixture cases (`src/domain/__tests__/efficiency.test.ts`)
 

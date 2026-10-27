@@ -279,3 +279,71 @@ describe('EfficiencyEngine — formats (LLD §3)', () => {
     expect(quantityFromTotal(Money.fromMajor(43.25, 'USD'), 3.459, 'gal_us')).toBe(47_331); // 12.5036 gal
   });
 });
+
+describe('EfficiencyEngine — plausibility (LLD §4.2, KB #20)', () => {
+  // A segment at exactly `ratio` km per L / kg / kWh.
+  const at = (ratio: number) => ({
+    distanceM: Math.round(ratio * 10_000),
+    quantityBase: 10_000,
+    valid: true,
+  });
+
+  it.each([
+    // [type, fuel, min, max]
+    ['bike', 'petrol', 15, 120],
+    ['scooter', 'petrol', 20, 100],
+    ['car', 'petrol', 4, 40],
+    ['car', 'diesel', 4, 40],
+    ['car', 'lpg', 4, 40], // LPG uses the liquid ranges
+    ['other', 'petrol', 4, 120],
+    ['car', 'cng', 10, 40],
+    ['bike', 'cng', 40, 120],
+    ['scooter', 'cng', 40, 120],
+    ['other', 'cng', 10, 120],
+    ['scooter', 'electric', 10, 80],
+    ['bike', 'electric', 10, 80],
+    ['car', 'electric', 3, 12],
+    ['other', 'electric', 3, 80],
+  ] as const)('%s on %s: ok within %i–%i, warns outside', (type, fuelType, min, max) => {
+    const vehicle = { type, fuelType };
+    expect(engine.plausibility(at(min), vehicle)).toBe('ok');
+    expect(engine.plausibility(at(max), vehicle)).toBe('ok');
+    expect(engine.plausibility(at(min * 0.9), vehicle)).toBe('too_low');
+    expect(engine.plausibility(at(max * 1.1), vehicle)).toBe('too_high');
+  });
+
+  it('a CNG motorcycle at ~100 km/kg is believable', () => {
+    expect(engine.plausibility(at(100), { type: 'bike', fuelType: 'cng' })).toBe('ok');
+  });
+
+  it('judges real segments: a 40 km/L scooter is ok, a typo of 4 L instead of 0.4 L is not', () => {
+    const scooter = { type: 'scooter', fuelType: 'petrol' } as const;
+    const [normal] = engine.segments([fill(10000, 2), fill(10080, 2)]);
+    const [typo] = engine.segments([fill(10000, 2), fill(10008, 4)]);
+    expect(engine.plausibility(normal!, scooter)).toBe('ok');
+    expect(engine.plausibility(typo!, scooter)).toBe('too_low');
+  });
+
+  it('has nothing to judge for invalid or empty segments', () => {
+    const car = { type: 'car', fuelType: 'petrol' } as const;
+    expect(engine.plausibility({ ...at(500), valid: false }, car)).toBe('ok');
+    expect(engine.plausibility({ distanceM: 0, quantityBase: 5000, valid: true }, car)).toBe('ok');
+  });
+});
+
+describe('EfficiencyEngine — tank capacity (LLD §4.2)', () => {
+  const tank = quantityToBase(12, 'L'); // 12 L tank
+
+  it('warns only above 110% of the tank', () => {
+    expect(engine.exceedsTank(quantityToBase(12, 'L'), tank)).toBe(false);
+    expect(engine.exceedsTank(quantityToBase(13.2, 'L'), tank)).toBe(false); // exactly 110%
+    expect(engine.exceedsTank(quantityToBase(13.3, 'L'), tank)).toBe(true);
+    expect(engine.exceedsTank(quantityToBase(45, 'L'), tank)).toBe(true); // 45 typed for 4.5
+  });
+
+  it('never warns when the tank size is unknown', () => {
+    expect(engine.exceedsTank(quantityToBase(200, 'L'), null)).toBe(false);
+    expect(engine.exceedsTank(quantityToBase(200, 'L'), undefined)).toBe(false);
+    expect(engine.exceedsTank(quantityToBase(200, 'L'), 0)).toBe(false);
+  });
+});

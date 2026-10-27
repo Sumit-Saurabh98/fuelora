@@ -5,6 +5,7 @@ import type {
 } from './efficiency-formats';
 import { Money, sumByCurrency } from './money';
 import { baseTo, metresTo, type DistanceUnit } from './units';
+import type { FuelType, VehicleType } from './vehicle';
 
 // The only place that computes efficiency or cost per distance (AGENTS.md rule 5, LLD §4).
 // Screens and services ask this engine; they never divide distance by fuel themselves.
@@ -51,6 +52,46 @@ export type EfficiencySummary = {
 };
 
 export type EfficiencyFormat = LiquidEfficiencyFormat | CngEfficiencyFormat | EvEfficiencyFormat;
+
+export type Plausibility = 'ok' | 'too_high' | 'too_low';
+
+type Range = { min: number; max: number };
+type EnergyKind = 'liquid' | 'cng' | 'electric';
+
+// Plausible km per L / kg / kWh (LLD §4.2, KB #20). Only a "check this entry?" warning, never a
+// block (FR-8). Because quantities are in base units, distanceM / quantityBase is exactly km/L,
+// km/kg or km/kWh, so ranges compare against that ratio directly.
+const PLAUSIBLE: Record<EnergyKind, Record<VehicleType, Range>> = {
+  liquid: {
+    bike: { min: 15, max: 120 },
+    scooter: { min: 20, max: 100 },
+    car: { min: 4, max: 40 },
+    other: { min: 4, max: 120 },
+  },
+  cng: {
+    // CNG motorcycles (e.g. Bajaj Freedom 125) are advertised around 100 km/kg.
+    bike: { min: 40, max: 120 },
+    scooter: { min: 40, max: 120 },
+    car: { min: 10, max: 40 },
+    other: { min: 10, max: 120 },
+  },
+  electric: {
+    bike: { min: 10, max: 80 },
+    scooter: { min: 10, max: 80 },
+    car: { min: 3, max: 12 },
+    other: { min: 3, max: 80 },
+  },
+};
+
+function energyKind(fuel: FuelType): EnergyKind {
+  if (fuel === 'cng') return 'cng';
+  if (fuel === 'electric') return 'electric';
+  return 'liquid'; // petrol, diesel, LPG
+}
+
+// A single fill above the tank's capacity is likely a typo (e.g. 45 instead of 4.5); 10% slack
+// covers filler neck and pump tolerance (LLD §4.2).
+const TANK_TOLERANCE = 1.1;
 
 export class EfficiencyEngine {
   /**
@@ -147,6 +188,30 @@ export class EfficiencyEngine {
       case 'mi_per_kwh':
         return metresTo(m, 'mi') / baseTo(q, 'kWh');
     }
+  }
+
+  /**
+   * Whether a valid segment's km/L (km/kg, km/kWh) is believable for the vehicle. Invalid or
+   * empty segments have no number to judge, so they are 'ok'.
+   */
+  plausibility(
+    segment: Pick<Segment, 'distanceM' | 'quantityBase' | 'valid'>,
+    vehicle: { type: VehicleType; fuelType: FuelType },
+  ): Plausibility {
+    if (!segment.valid || segment.distanceM <= 0 || segment.quantityBase <= 0) return 'ok';
+    const ratio = segment.distanceM / segment.quantityBase;
+    const range = PLAUSIBLE[energyKind(vehicle.fuelType)][vehicle.type];
+    if (ratio > range.max) return 'too_high';
+    if (ratio < range.min) return 'too_low';
+    return 'ok';
+  }
+
+  /** True when one fill-up is more than 110% of the tank (only if the tank size is known). */
+  exceedsTank(quantityBase: number, tankCapacityBase: number | null | undefined): boolean {
+    if (tankCapacityBase === null || tankCapacityBase === undefined || tankCapacityBase <= 0) {
+      return false;
+    }
+    return quantityBase > tankCapacityBase * TANK_TOLERANCE;
   }
 
   /** Cost per km or mi, rounded to the currency's minor unit. Null without distance. */
