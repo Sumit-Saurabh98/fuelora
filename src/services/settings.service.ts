@@ -16,6 +16,7 @@ const KEYS = {
   language: 'language',
   region: 'region',
   currentVehicleId: 'current_vehicle_id',
+  onboardingDone: 'onboarding_done',
 } as const;
 
 const UNIT_KEYS: Record<UnitPreference, string> = {
@@ -90,6 +91,14 @@ export class SettingsService {
 
   setCurrentVehicleId(id: string): Promise<void> {
     return this.save(KEYS.currentVehicleId, id);
+  }
+
+  async isOnboardingDone(): Promise<boolean> {
+    return (await this.settings.getAll()).get(KEYS.onboardingDone) === 'true';
+  }
+
+  markOnboardingDone(): Promise<void> {
+    return this.save(KEYS.onboardingDone, 'true');
   }
 
   private save(key: string, value: string): Promise<void> {

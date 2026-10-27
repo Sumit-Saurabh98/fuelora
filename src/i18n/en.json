@@ -45,7 +45,11 @@
     "efficiencyEv": "EV mileage shown as",
     "regionDefault": "region default",
     "currencyNote": "Applies to new entries. Old entries keep their currency.",
-    "resetUnits": "Reset to region defaults"
+    "resetUnits": "Reset to region defaults",
+    "developer": "Developer",
+    "devReset": "Reset app data",
+    "devResetDescription": "Dev builds only. Deletes all vehicles, fill-ups and settings, then restarts like a fresh install.",
+    "devResetConfirm": "Delete everything and restart?"
   },
   "languages": {
     "en": "English",
@@ -106,6 +110,13 @@
     "kwh_per_100km": "kWh/100 km"
   },
   "common": {
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "delete": "Delete"
+  },
+  "onboarding": {
+    "tagline": "Real mileage, fuel cost and service reminders.",
+    "privacy": "No login. Your data stays on this phone.",
+    "chooseLanguage": "Choose your language",
+    "continue": "Continue"
   }
 }

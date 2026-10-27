@@ -19,7 +19,7 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
   - [x] 3.2 Plausibility warnings (LLD §4.2) + tank-capacity warning, ranges per KB #20
 - [ ] Onboarding (language, region, first vehicle) — Step 4 (decisions: KB #21)
   - [x] 4.1 Vehicle data layer: VehicleRepository (Drizzle + in-memory), VehicleService (create, list, current vehicle), validation + error codes
-  - [ ] 4.2 Onboarding shell: first launch opens onboarding until done; welcome + language screen ("no login, data stays on this phone")
+  - [x] 4.2 Onboarding shell: first launch opens onboarding until done; welcome + language screen ("no login, data stays on this phone"); dev-only "Reset app data" in Settings
   - [ ] 4.3 Region screen: pre-selected from the phone, units preview, change if needed
   - [ ] 4.4 First vehicle screen: type, fuel, name, current odometer (+ optional details); saves, sets current vehicle, Home shows it
 - [ ] Vehicles: add/edit/archive/delete, switcher

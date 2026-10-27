@@ -5,6 +5,7 @@ import { getContainer } from '@/container';
 import { runMigrations } from '@/db/run-migrations';
 import { FONT_ASSETS } from '@/ui/fonts';
 
+import { hydrateOnboarding } from '../onboarding/onboarding.store';
 import { hydratePreferences } from '../settings/preferences.store';
 
 export type StartupState = 'loading' | 'ready' | 'error';
@@ -17,6 +18,8 @@ async function prepareData(): Promise<void> {
     // Defaults are fine if preferences can't be read; the database itself is usable.
     console.warn('Could not load preferences', error);
   }
+  // Unlike preferences, this must succeed: guessing could hide onboarding from a new user.
+  await hydrateOnboarding(getContainer().onboardingService);
 }
 
 export function useAppStartup(): StartupState {
