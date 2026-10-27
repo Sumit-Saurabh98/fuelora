@@ -32,11 +32,15 @@
     "about": "ऐप के बारे में",
     "version": "वर्ज़न",
     "database": "डेटाबेस",
-    "databaseReady": "तैयार · SQLite {{version}} · {{mode}}",
+    "databaseReady": "तैयार · SQLite {{version}} · {{mode}} · स्कीमा v{{schema}}",
     "databaseError": "डेटाबेस नहीं खुल सका"
   },
   "languages": {
     "en": "English",
     "hi": "हिन्दी"
+  },
+  "startup": {
+    "errorTitle": "आपका डेटा नहीं खुल सका",
+    "errorBody": "कृपया ऐप को पूरी तरह बंद करके फिर से खोलें।"
   }
 }

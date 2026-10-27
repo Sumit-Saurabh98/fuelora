@@ -22,6 +22,7 @@ export function AboutSettings() {
             ? t('settings.databaseReady', {
                 version: database.info.sqliteVersion,
                 mode: database.info.journalMode.toUpperCase(),
+                schema: database.info.schemaVersion,
               })
             : t('settings.databaseError')
         }

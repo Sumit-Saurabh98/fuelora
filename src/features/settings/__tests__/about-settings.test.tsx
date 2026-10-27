@@ -22,11 +22,11 @@ describe('AboutSettings', () => {
       appVersion: '0.1.0',
       database: {
         ok: true,
-        info: { sqliteVersion: '3.49.1', journalMode: 'wal', foreignKeys: true },
+        info: { sqliteVersion: '3.49.1', journalMode: 'wal', foreignKeys: true, schemaVersion: 1 },
       },
     });
     expect(screen.getByText('0.1.0')).toBeTruthy();
-    expect(screen.getByText('Ready · SQLite 3.49.1 · WAL')).toBeTruthy();
+    expect(screen.getByText('Ready · SQLite 3.49.1 · WAL · schema v1')).toBeTruthy();
   });
 
   it('shows an error when the database cannot open', async () => {

@@ -32,11 +32,15 @@
     "about": "About",
     "version": "Version",
     "database": "Database",
-    "databaseReady": "Ready · SQLite {{version}} · {{mode}}",
+    "databaseReady": "Ready · SQLite {{version}} · {{mode}} · schema v{{schema}}",
     "databaseError": "Could not open the database"
   },
   "languages": {
     "en": "English",
     "hi": "हिन्दी"
+  },
+  "startup": {
+    "errorTitle": "Couldn't open your data",
+    "errorBody": "Please close the app completely and open it again."
   }
 }

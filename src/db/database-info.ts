@@ -7,7 +7,20 @@ export type DatabaseInfo = {
   sqliteVersion: string;
   journalMode: string;
   foreignKeys: boolean;
+  schemaVersion: number;
 };
+
+// Drizzle records one row per applied migration, so the count is the schema version.
+function countAppliedMigrations(sqlite: SqlReader): number {
+  try {
+    return (
+      sqlite.getFirstSync<{ n: number }>('SELECT count(*) AS n FROM __drizzle_migrations')?.n ?? 0
+    );
+  } catch {
+    // Table doesn't exist until the first migration runs.
+    return 0;
+  }
+}
 
 export function readDatabaseInfo(sqlite: SqlReader): DatabaseInfo {
   const version = sqlite.getFirstSync<{ v: string }>('SELECT sqlite_version() AS v');
@@ -17,5 +30,6 @@ export function readDatabaseInfo(sqlite: SqlReader): DatabaseInfo {
     sqliteVersion: version?.v ?? 'unknown',
     journalMode: journal?.journal_mode ?? 'unknown',
     foreignKeys: fk?.foreign_keys === 1,
+    schemaVersion: countAppliedMigrations(sqlite),
   };
 }
