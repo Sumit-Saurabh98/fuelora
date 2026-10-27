@@ -117,6 +117,11 @@
     "tagline": "Real mileage, fuel cost and service reminders.",
     "privacy": "No login. Your data stays on this phone.",
     "chooseLanguage": "Choose your language",
-    "continue": "Continue"
+    "continue": "Continue",
+    "regionTitle": "Where do you drive?",
+    "regionSubtitle": "We picked this from your phone. It sets your currency, units and document names.",
+    "regionLater": "You can change any unit later in Settings.",
+    "back": "Back",
+    "stepOf": "Step {{step}} of {{total}}"
   }
 }

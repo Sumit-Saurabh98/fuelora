@@ -22,6 +22,18 @@ module.exports = defineConfig([
     ignores: ['dist/*', '.expo/*', 'node_modules/*', 'web/*', 'store/**', 'src/db/migrations/*'],
   },
   {
+    // Node build scripts (CommonJS).
+    files: ['scripts/**/*.js'],
+    languageOptions: {
+      globals: {
+        __dirname: 'readonly',
+        require: 'readonly',
+        process: 'readonly',
+        module: 'writable',
+      },
+    },
+  },
+  {
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',

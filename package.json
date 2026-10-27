@@ -8,11 +8,12 @@
     "android": "expo start --dev-client --android",
     "ios": "expo start --dev-client --ios",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "node scripts/typed-routes.js && tsc --noEmit",
     "test": "jest",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "routes:types": "node scripts/typed-routes.js"
   },
   "jest": {
     "preset": "jest-expo",

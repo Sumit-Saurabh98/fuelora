@@ -1,6 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
-import { PaperProvider } from 'react-native-paper';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { fireEvent, screen } from '@testing-library/react-native';
+import { router } from 'expo-router';
 
 import { FixedClock } from '@/domain/clock';
 import type { IdGenerator } from '@/domain/id-generator';
@@ -13,12 +12,14 @@ import { VehicleService } from '@/services/vehicle.service';
 import { preferenceWritesSettled, usePreferences } from '../../settings/preferences.store';
 import { WelcomeScreen } from '../components/welcome-screen';
 import { hydrateOnboarding, useOnboarding } from '../onboarding.store';
+import { renderScreen } from '@/testing/render-screen';
 
 const clock = new FixedClock(new Date('2026-10-28T10:00:00.000Z'));
 const ids: IdGenerator = { next: () => 'v1' };
 const mockSettings = new SettingsService(new InMemorySettingsRepository(), clock);
 const mockVehicles = new VehicleService(new InMemoryVehicleRepository(), mockSettings, clock, ids);
 const mockOnboarding = new OnboardingService(mockSettings, mockVehicles);
+jest.mock('expo-router', () => ({ router: { push: jest.fn(), back: jest.fn() } }));
 jest.mock('@/container', () => ({
   getContainer: () => ({
     settingsService: mockSettings,
@@ -27,20 +28,7 @@ jest.mock('@/container', () => ({
   }),
 }));
 
-function renderWelcome() {
-  return render(
-    <SafeAreaProvider
-      initialMetrics={{
-        frame: { x: 0, y: 0, width: 360, height: 640 },
-        insets: { top: 0, left: 0, right: 0, bottom: 0 },
-      }}
-    >
-      <PaperProvider>
-        <WelcomeScreen />
-      </PaperProvider>
-    </SafeAreaProvider>,
-  );
-}
+const renderWelcome = () => renderScreen(<WelcomeScreen />);
 
 describe('WelcomeScreen', () => {
   beforeEach(async () => {
@@ -70,12 +58,18 @@ describe('WelcomeScreen', () => {
     expect((await mockSettings.getPreferences()).language).toBe('hi');
   });
 
-  it('Continue saves the onboarding flag before switching to the app', async () => {
+  it('shows step 1 of 3', async () => {
+    await renderWelcome();
+    expect(screen.getByLabelText('Step 1 of 3')).toBeTruthy();
+  });
+
+  it('Continue goes to the region step without finishing onboarding', async () => {
     await renderWelcome();
 
     await fireEvent.press(screen.getByText('Continue'));
 
-    expect(await mockSettings.isOnboardingDone()).toBe(true);
-    expect(useOnboarding.getState().onboarded).toBe(true);
+    expect(router.push).toHaveBeenCalledWith('/onboarding/region');
+    expect(useOnboarding.getState().onboarded).toBe(false);
+    expect(await mockSettings.isOnboardingDone()).toBe(false);
   });
 });
