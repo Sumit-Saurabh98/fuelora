@@ -20,9 +20,15 @@ export function readMigrationSql(tag: string): string {
   return readFileSync(path.join(MIGRATIONS_DIR, `${tag}.sql`), 'utf8');
 }
 
-/** Applies migrations [0, count) — omit count to apply all. */
-export function applyMigrations(db: DatabaseSync, count?: number): void {
-  for (const tag of migrationTags().slice(0, count)) {
+/**
+ * Applies migrations [from, to) by index; defaults apply all. Applying `{ to: n }` then
+ * `{ from: n }` simulates a device that had version n and then installs an app update.
+ */
+export function applyMigrations(
+  db: DatabaseSync,
+  { from = 0, to }: { from?: number; to?: number } = {},
+): void {
+  for (const tag of migrationTags().slice(from, to)) {
     for (const statement of readMigrationSql(tag).split('--> statement-breakpoint')) {
       if (statement.trim()) db.exec(statement);
     }
