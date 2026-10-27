@@ -1,8 +1,18 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { PaperProvider } from 'react-native-paper';
 
+import { FixedClock } from '@/domain/clock';
+import { InMemorySettingsRepository } from '@/repositories/in-memory-settings.repository';
+import { SettingsService } from '@/services/settings.service';
+
 import { AppearanceSettings } from '../components/appearance-settings';
 import { usePreferences } from '../preferences.store';
+
+const mockService = new SettingsService(
+  new InMemorySettingsRepository(),
+  new FixedClock(new Date('2026-10-27T10:00:00.000Z')),
+);
+jest.mock('@/container', () => ({ getContainer: () => ({ settingsService: mockService }) }));
 
 function renderSettings() {
   return render(

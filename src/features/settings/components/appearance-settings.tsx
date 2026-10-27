@@ -2,15 +2,9 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { List, RadioButton, SegmentedButtons, Text } from 'react-native-paper';
 
-import { isLanguage, SUPPORTED_LANGUAGES } from '@/i18n/i18n';
+import { isLanguage, isThemeMode, LANGUAGES, THEME_MODES } from '@/domain/preferences';
 
-import { usePreferences, type ThemeMode } from '../preferences.store';
-
-const THEME_MODES: readonly ThemeMode[] = ['system', 'light', 'dark'];
-
-function isThemeMode(value: string): value is ThemeMode {
-  return THEME_MODES.some((m) => m === value);
-}
+import { usePreferences } from '../preferences.store';
 
 const themeLabelKey = {
   system: 'settings.themeSystem',
@@ -45,7 +39,7 @@ export function AppearanceSettings() {
             if (isLanguage(v)) setLanguage(v);
           }}
         >
-          {SUPPORTED_LANGUAGES.map((l) => (
+          {LANGUAGES.map((l) => (
             <RadioButton.Item key={l} value={l} label={t(`languages.${l}`)} />
           ))}
         </RadioButton.Group>

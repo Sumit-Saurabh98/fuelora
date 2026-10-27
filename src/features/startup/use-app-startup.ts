@@ -1,10 +1,23 @@
 import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
 
+import { getContainer } from '@/container';
 import { runMigrations } from '@/db/run-migrations';
 import { FONT_ASSETS } from '@/ui/fonts';
 
+import { hydratePreferences } from '../settings/preferences.store';
+
 export type StartupState = 'loading' | 'ready' | 'error';
+
+async function prepareData(): Promise<void> {
+  await runMigrations();
+  try {
+    await hydratePreferences(getContainer().settingsService);
+  } catch (error: unknown) {
+    // Defaults are fine if preferences can't be read; the database itself is usable.
+    console.warn('Could not load preferences', error);
+  }
+}
 
 export function useAppStartup(): StartupState {
   const [fontsLoaded, fontError] = useFonts(FONT_ASSETS);
@@ -12,7 +25,7 @@ export function useAppStartup(): StartupState {
 
   useEffect(() => {
     let cancelled = false;
-    runMigrations().then(
+    prepareData().then(
       () => !cancelled && setDb('ready'),
       () => !cancelled && setDb('error'),
     );
