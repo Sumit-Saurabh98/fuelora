@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { List, RadioButton, SegmentedButtons, Text, useTheme } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { List, RadioButton, SegmentedButtons, Text } from 'react-native-paper';
 
 import { isLanguage, SUPPORTED_LANGUAGES } from '@/i18n/i18n';
 
@@ -20,11 +20,10 @@ const themeLabelKey = {
 
 export function AppearanceSettings() {
   const { t } = useTranslation();
-  const theme = useTheme();
   const { themeMode, language, setThemeMode, setLanguage } = usePreferences();
 
   return (
-    <ScrollView style={{ backgroundColor: theme.colors.background }}>
+    <>
       <List.Section title={t('settings.appearance')}>
         <View style={styles.row}>
           <Text variant="bodyLarge" style={styles.label}>
@@ -51,7 +50,7 @@ export function AppearanceSettings() {
           ))}
         </RadioButton.Group>
       </List.Section>
-    </ScrollView>
+    </>
   );
 }
 

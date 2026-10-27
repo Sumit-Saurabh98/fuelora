@@ -28,7 +28,12 @@
     "themeSystem": "सिस्टम",
     "themeLight": "लाइट",
     "themeDark": "डार्क",
-    "language": "भाषा"
+    "language": "भाषा",
+    "about": "ऐप के बारे में",
+    "version": "वर्ज़न",
+    "database": "डेटाबेस",
+    "databaseReady": "तैयार · SQLite {{version}} · {{mode}}",
+    "databaseError": "डेटाबेस नहीं खुल सका"
   },
   "languages": {
     "en": "English",

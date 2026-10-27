@@ -1,5 +1,5 @@
-import { AppearanceSettings } from '@/features/settings/components/appearance-settings';
+import { SettingsScreen } from '@/features/settings/components/settings-screen';
 
-export default function SettingsScreen() {
-  return <AppearanceSettings />;
+export default function SettingsRoute() {
+  return <SettingsScreen />;
 }

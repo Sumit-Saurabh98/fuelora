@@ -28,7 +28,12 @@
     "themeSystem": "System",
     "themeLight": "Light",
     "themeDark": "Dark",
-    "language": "Language"
+    "language": "Language",
+    "about": "About",
+    "version": "Version",
+    "database": "Database",
+    "databaseReady": "Ready · SQLite {{version}} · {{mode}}",
+    "databaseError": "Could not open the database"
   },
   "languages": {
     "en": "English",
