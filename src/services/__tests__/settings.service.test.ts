@@ -17,17 +17,18 @@ describe('SettingsService', () => {
       themeMode: 'system',
       language: null,
       region: null,
+      unitOverrides: {},
     });
   });
 
-  it('saves theme and language with the clock time', async () => {
+  it('saves theme, language and region with the clock time', async () => {
     const { repo, service } = setup();
 
     await service.setThemeMode('dark');
     await service.setLanguage('hi');
-    await service.setRegion('GB');
+    await service.changeRegion('GB');
 
-    expect(await service.getPreferences()).toEqual({
+    expect(await service.getPreferences()).toMatchObject({
       themeMode: 'dark',
       language: 'hi',
       region: 'GB',
@@ -35,16 +36,75 @@ describe('SettingsService', () => {
     expect(repo.rows.get('theme')).toEqual({ value: 'dark', updatedAt: NOW.toISOString() });
   });
 
+  it('stores unit overrides under the LLD §2 keys', async () => {
+    const { repo, service } = setup();
+
+    await service.setUnit('distanceUnit', 'mi');
+    await service.setUnit('volumeUnit', 'gal_uk');
+    await service.setUnit('efficiencyLiquid', 'l_per_100km');
+    await service.setUnit('efficiencyEv', 'kwh_per_100km');
+    await service.setUnit('currency', 'EUR');
+
+    expect([...repo.rows.keys()].sort()).toEqual([
+      'currency',
+      'distance_unit',
+      'efficiency_format_ev',
+      'efficiency_format_liquid',
+      'volume_unit',
+    ]);
+    expect((await service.getPreferences()).unitOverrides).toEqual({
+      currency: 'EUR',
+      distanceUnit: 'mi',
+      volumeUnit: 'gal_uk',
+      efficiencyLiquid: 'l_per_100km',
+      efficiencyEv: 'kwh_per_100km',
+    });
+  });
+
+  it('changing region clears unit overrides but keeps theme and language', async () => {
+    const { service } = setup();
+    await service.setThemeMode('dark');
+    await service.setUnit('distanceUnit', 'mi');
+    await service.setUnit('currency', 'EUR');
+
+    await service.changeRegion('IN');
+
+    expect(await service.getPreferences()).toEqual({
+      themeMode: 'dark',
+      language: null,
+      region: 'IN',
+      unitOverrides: {},
+    });
+  });
+
+  it('can clear unit overrides on their own', async () => {
+    const { service } = setup();
+    await service.changeRegion('US');
+    await service.setUnit('volumeUnit', 'L');
+
+    await service.clearUnitOverrides();
+
+    expect(await service.getPreferences()).toMatchObject({ region: 'US', unitOverrides: {} });
+  });
+
   it('ignores unknown stored values instead of failing', async () => {
     const { repo, service } = setup();
-    await repo.set('theme', 'neon', NOW.toISOString());
-    await repo.set('language', 'xx', NOW.toISOString());
-    await repo.set('region', 'FR', NOW.toISOString());
+    for (const [key, value] of [
+      ['theme', 'neon'],
+      ['language', 'xx'],
+      ['region', 'FR'],
+      ['distance_unit', 'furlong'],
+      ['currency', 'rupees'],
+      ['efficiency_format_liquid', 'km_per_kg'], // CNG format is not a liquid format
+    ]) {
+      await repo.set(key!, value!, NOW.toISOString());
+    }
 
     expect(await service.getPreferences()).toEqual({
       themeMode: 'system',
       language: null,
       region: null,
+      unitOverrides: {},
     });
   });
 });

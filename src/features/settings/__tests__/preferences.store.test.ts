@@ -3,7 +3,7 @@ import { i18n } from '@/i18n/i18n';
 import { InMemorySettingsRepository } from '@/repositories/in-memory-settings.repository';
 import { SettingsService } from '@/services/settings.service';
 
-import { hydratePreferences, usePreferences } from '../preferences.store';
+import { hydratePreferences, preferenceWritesSettled, usePreferences } from '../preferences.store';
 
 const mockService = new SettingsService(
   new InMemorySettingsRepository(),
@@ -12,6 +12,19 @@ const mockService = new SettingsService(
 jest.mock('@/container', () => ({ getContainer: () => ({ settingsService: mockService }) }));
 
 describe('preferences store', () => {
+  it('saves a unit override, and a region change resets overrides', async () => {
+    usePreferences.getState().setRegion('IN');
+    usePreferences.getState().setUnit('distanceUnit', 'mi');
+    await preferenceWritesSettled();
+    expect(usePreferences.getState().unitOverrides).toEqual({ distanceUnit: 'mi' });
+    expect((await mockService.getPreferences()).unitOverrides).toEqual({ distanceUnit: 'mi' });
+
+    usePreferences.getState().setRegion('US');
+    await preferenceWritesSettled();
+    expect(usePreferences.getState().unitOverrides).toEqual({});
+    expect((await mockService.getPreferences()).unitOverrides).toEqual({});
+  });
+
   afterEach(() => {
     usePreferences.getState().setLanguage('en');
     usePreferences.getState().setThemeMode('system');
@@ -20,7 +33,7 @@ describe('preferences store', () => {
   it('persists changes through SettingsService', async () => {
     usePreferences.getState().setThemeMode('dark');
     usePreferences.getState().setLanguage('hi');
-    await Promise.resolve();
+    await preferenceWritesSettled();
 
     expect(await mockService.getPreferences()).toMatchObject({ themeMode: 'dark', language: 'hi' });
   });
@@ -28,7 +41,8 @@ describe('preferences store', () => {
   it('restores saved preferences on startup (survives an app restart)', async () => {
     await mockService.setThemeMode('light');
     await mockService.setLanguage('hi');
-    await mockService.setRegion('GB');
+    await mockService.changeRegion('GB');
+    await mockService.setUnit('volumeUnit', 'gal_uk');
     usePreferences.setState({ themeMode: 'system', language: 'en', region: 'IN' });
 
     await hydratePreferences(mockService);
@@ -37,6 +51,7 @@ describe('preferences store', () => {
       themeMode: 'light',
       language: 'hi',
       region: 'GB',
+      unitOverrides: { volumeUnit: 'gal_uk' },
     });
     expect(i18n.language).toBe('hi');
   });

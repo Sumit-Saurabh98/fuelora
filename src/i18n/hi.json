@@ -35,13 +35,17 @@
     "databaseReady": "तैयार · SQLite {{version}} · {{mode}} · स्कीमा v{{schema}}",
     "databaseError": "डेटाबेस नहीं खुल सका",
     "region": "क्षेत्र",
-    "regionDefaults": "इस क्षेत्र की इकाइयाँ",
     "currency": "मुद्रा",
     "distanceUnit": "दूरी",
     "volumeUnit": "ईंधन की मात्रा",
     "efficiency": "माइलेज इस रूप में",
     "emissionName": "प्रदूषण प्रमाणपत्र",
-    "example": "उदाहरण"
+    "example": "उदाहरण",
+    "units": "इकाइयाँ",
+    "efficiencyEv": "EV माइलेज इस रूप में",
+    "regionDefault": "क्षेत्र का डिफ़ॉल्ट",
+    "currencyNote": "नई एंट्री पर लागू। पुरानी एंट्री अपनी मुद्रा में रहेंगी।",
+    "resetUnits": "क्षेत्र के डिफ़ॉल्ट पर लौटें"
   },
   "languages": {
     "en": "English",
@@ -100,5 +104,8 @@
     "km_per_kwh": "किमी/kWh",
     "mi_per_kwh": "मील/kWh",
     "kwh_per_100km": "kWh/100 किमी"
+  },
+  "common": {
+    "cancel": "रद्द करें"
   }
 }

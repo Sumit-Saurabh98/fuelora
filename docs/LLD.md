@@ -121,6 +121,8 @@ Rounding happens only for display (1 decimal for efficiency; currency's minor di
 
 **Region defaults** (`src/domain/regions.ts`): `IN` → INR, km, L, km/L, names PUC / RC / insurance; `US` → USD, mi, US gal, mpg US, names emissions/smog check, registration; `GB` → GBP, mi, L entry with mpg UK display, MOT, road tax; default → locale currency, km, L, L/100km, "emission test". Unknown regions fall back to default. EV display defaults: IN km/kWh, US and GB mi/kWh, default kWh/100km. CNG uses km/kg everywhere. Name strings live in `en.json`/`hi.json` under `regionNames.*`; `regions.ts` picks the key.
 
+**User overrides** (Settings → Units, F-14): currency, distance unit, volume unit and the liquid/EV efficiency formats can each be changed; only changed fields are stored (`currency`, `distance_unit`, `volume_unit`, `efficiency_format_liquid`, `efficiency_format_ev`), the rest follow the region (`resolveUnits` in `src/domain/unit-preferences.ts`). Changing the region clears all unit overrides. Preference writes are queued so they apply in the order the user made them.
+
 ## 4. Efficiency engine (`src/domain/efficiency.ts`)
 
 ### 4.1 Rules

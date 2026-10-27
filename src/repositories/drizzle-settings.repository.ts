@@ -1,3 +1,4 @@
+import { inArray } from 'drizzle-orm';
 import type { BaseSQLiteDatabase } from 'drizzle-orm/sqlite-core';
 
 import { settings } from '@/db/schema';
@@ -20,5 +21,10 @@ export class DrizzleSettingsRepository implements SettingsRepository {
       .insert(settings)
       .values({ key, value, updatedAt })
       .onConflictDoUpdate({ target: settings.key, set: { value, updatedAt } });
+  }
+
+  async remove(keys: readonly string[]): Promise<void> {
+    if (keys.length === 0) return;
+    await this.db.delete(settings).where(inArray(settings.key, [...keys]));
   }
 }

@@ -25,6 +25,11 @@ module.exports = defineConfig([
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
+      // Invisible NBSPs in source are a trap (Intl output uses them); write \u00a0 instead.
+      'no-irregular-whitespace': [
+        'error',
+        { skipStrings: false, skipTemplates: false, skipRegExps: false, skipComments: false },
+      ],
     },
   },
   {

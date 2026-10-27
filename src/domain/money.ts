@@ -5,6 +5,10 @@ import { baseTo, type QuantityUnit } from './units';
 // arithmetic only here, display via Intl.NumberFormat.
 
 const CURRENCY_CODE = /^[A-Z]{3}$/;
+
+export function isCurrencyCode(value: string): boolean {
+  return CURRENCY_CODE.test(value);
+}
 const digitsCache = new Map<string, number>();
 
 /** Minor-unit digits for a currency from Intl: INR 2, USD 2, JPY 0, KWD 3. */

@@ -10,4 +10,8 @@ export class InMemorySettingsRepository implements SettingsRepository {
   async set(key: string, value: string, updatedAt: string): Promise<void> {
     this.rows.set(key, { value, updatedAt });
   }
+
+  async remove(keys: readonly string[]): Promise<void> {
+    for (const key of keys) this.rows.delete(key);
+  }
 }

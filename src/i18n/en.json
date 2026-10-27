@@ -35,13 +35,17 @@
     "databaseReady": "Ready · SQLite {{version}} · {{mode}} · schema v{{schema}}",
     "databaseError": "Could not open the database",
     "region": "Region",
-    "regionDefaults": "Units for this region",
     "currency": "Currency",
     "distanceUnit": "Distance",
     "volumeUnit": "Fuel volume",
     "efficiency": "Mileage shown as",
     "emissionName": "Emission certificate",
-    "example": "Example"
+    "example": "Example",
+    "units": "Units",
+    "efficiencyEv": "EV mileage shown as",
+    "regionDefault": "region default",
+    "currencyNote": "Applies to new entries. Old entries keep their currency.",
+    "resetUnits": "Reset to region defaults"
   },
   "languages": {
     "en": "English",
@@ -100,5 +104,8 @@
     "km_per_kwh": "km/kWh",
     "mi_per_kwh": "mi/kWh",
     "kwh_per_100km": "kWh/100 km"
+  },
+  "common": {
+    "cancel": "Cancel"
   }
 }
