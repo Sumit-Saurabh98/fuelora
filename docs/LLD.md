@@ -93,7 +93,9 @@ create table settings (                           -- travels with backups
 );
 ```
 
-Device-only state (MMKV, not backed up): `onboarding_done`, `ads.*` counters, `last_export_at`, `scheduled_notification_ids`, `nudge.*`.
+Device-only state (MMKV, not backed up): `ads.*` counters, `last_export_at`, `scheduled_notification_ids`, `nudge.*`.
+
+Onboarding (KB #21): `onboarding_done` lives in the `settings` table, and the app counts onboarding as done when that flag is set **or** at least one vehicle exists — so an interrupted save or a restored backup without the flag never shows onboarding again. `current_vehicle_id` falls back to the first active vehicle when the saved one is missing or archived.
 
 ## 3. Units (`src/domain/units.ts`)
 

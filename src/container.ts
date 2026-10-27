@@ -3,7 +3,9 @@ import { getDatabase } from '@/db/client';
 import type { Clock } from '@/domain/clock';
 import { UuidV7Generator, type IdGenerator, type RandomSource } from '@/domain/id-generator';
 import { DrizzleSettingsRepository } from '@/repositories/drizzle-settings.repository';
+import { DrizzleVehicleRepository } from '@/repositories/drizzle-vehicle.repository';
 import { SettingsService } from '@/services/settings.service';
+import { VehicleService } from '@/services/vehicle.service';
 
 const systemClock: Clock = { now: () => new Date() };
 
@@ -25,6 +27,7 @@ export type Container = {
   clock: Clock;
   idGenerator: IdGenerator;
   settingsService: SettingsService;
+  vehicleService: VehicleService;
 };
 
 let container: Container | null = null;
@@ -33,10 +36,18 @@ let container: Container | null = null;
 export function getContainer(): Container {
   if (container) return container;
   const { db } = getDatabase();
+  const idGenerator = new UuidV7Generator(systemClock, randomSource);
+  const settingsService = new SettingsService(new DrizzleSettingsRepository(db), systemClock);
   container = {
     clock: systemClock,
-    idGenerator: new UuidV7Generator(systemClock, randomSource),
-    settingsService: new SettingsService(new DrizzleSettingsRepository(db), systemClock),
+    idGenerator,
+    settingsService,
+    vehicleService: new VehicleService(
+      new DrizzleVehicleRepository(db),
+      settingsService,
+      systemClock,
+      idGenerator,
+    ),
   };
   return container;
 }

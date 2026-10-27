@@ -11,7 +11,12 @@ import {
 import type { SettingsRepository } from '@/repositories/settings.repository';
 
 // Key names match LLD §2 so they line up with the backup format.
-const KEYS = { theme: 'theme', language: 'language', region: 'region' } as const;
+const KEYS = {
+  theme: 'theme',
+  language: 'language',
+  region: 'region',
+  currentVehicleId: 'current_vehicle_id',
+} as const;
 
 const UNIT_KEYS: Record<UnitPreference, string> = {
   currency: 'currency',
@@ -76,6 +81,15 @@ export class SettingsService {
 
   clearUnitOverrides(): Promise<void> {
     return this.settings.remove(UNIT_PREFERENCES.map((k) => UNIT_KEYS[k]));
+  }
+
+  /** The vehicle that opens by default (FR-4); null when none chosen yet. */
+  async getCurrentVehicleId(): Promise<string | null> {
+    return (await this.settings.getAll()).get(KEYS.currentVehicleId) ?? null;
+  }
+
+  setCurrentVehicleId(id: string): Promise<void> {
+    return this.save(KEYS.currentVehicleId, id);
   }
 
   private save(key: string, value: string): Promise<void> {

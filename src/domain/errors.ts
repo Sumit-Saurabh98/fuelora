@@ -5,6 +5,8 @@ export const ERROR_CODES = [
   'INVALID_AMOUNT',
   'INVALID_CURRENCY',
   'CURRENCY_MISMATCH',
+  'INVALID_VEHICLE',
+  'VEHICLE_NOT_FOUND',
 ] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];
 
