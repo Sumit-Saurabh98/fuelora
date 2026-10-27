@@ -1,6 +1,11 @@
 // Codes are stable identifiers: screens map them to i18n messages, so never rename one.
 // Add codes here as features need them.
-export const ERROR_CODES = ['MIGRATION_FAILED'] as const;
+export const ERROR_CODES = [
+  'MIGRATION_FAILED',
+  'INVALID_AMOUNT',
+  'INVALID_CURRENCY',
+  'CURRENCY_MISMATCH',
+] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];
 
 export class AppError extends Error {
