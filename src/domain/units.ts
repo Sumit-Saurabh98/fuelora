@@ -61,7 +61,7 @@ const DIGITS = /^\d+$/;
  * the form asks again instead of guessing — a misread odometer corrupts every later mileage.
  */
 export function parseDecimalInput(input: string, separators: NumberSeparators): number | null {
-  const text = input.replace(/[\s  ]/g, '');
+  const text = input.replace(/[\s\u00a0\u202f]/g, '');
   if (text === '' || !/^[\d.,]+$/.test(text)) return null;
 
   const seps = [...text].filter((c) => c === '.' || c === ',');

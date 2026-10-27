@@ -2,7 +2,7 @@ import { AppError } from '../errors';
 import { currencyDigits, Money, sumByCurrency, unitPrice } from '../money';
 
 // Some locales use non-breaking spaces in currency output; compare on plain spaces.
-const plain = (s: string) => s.replace(/[  ]/g, ' ');
+const plain = (s: string) => s.replace(/[\u00a0\u202f]/g, ' ');
 
 describe('currencyDigits', () => {
   it.each([

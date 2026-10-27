@@ -12,8 +12,12 @@ function setup() {
 }
 
 describe('SettingsService', () => {
-  it('defaults to system theme and no chosen language', async () => {
-    expect(await setup().service.getAppearance()).toEqual({ themeMode: 'system', language: null });
+  it('defaults to system theme and nothing chosen', async () => {
+    expect(await setup().service.getPreferences()).toEqual({
+      themeMode: 'system',
+      language: null,
+      region: null,
+    });
   });
 
   it('saves theme and language with the clock time', async () => {
@@ -21,8 +25,13 @@ describe('SettingsService', () => {
 
     await service.setThemeMode('dark');
     await service.setLanguage('hi');
+    await service.setRegion('GB');
 
-    expect(await service.getAppearance()).toEqual({ themeMode: 'dark', language: 'hi' });
+    expect(await service.getPreferences()).toEqual({
+      themeMode: 'dark',
+      language: 'hi',
+      region: 'GB',
+    });
     expect(repo.rows.get('theme')).toEqual({ value: 'dark', updatedAt: NOW.toISOString() });
   });
 
@@ -30,7 +39,12 @@ describe('SettingsService', () => {
     const { repo, service } = setup();
     await repo.set('theme', 'neon', NOW.toISOString());
     await repo.set('language', 'xx', NOW.toISOString());
+    await repo.set('region', 'FR', NOW.toISOString());
 
-    expect(await service.getAppearance()).toEqual({ themeMode: 'system', language: null });
+    expect(await service.getPreferences()).toEqual({
+      themeMode: 'system',
+      language: null,
+      region: null,
+    });
   });
 });

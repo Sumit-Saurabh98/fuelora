@@ -22,17 +22,22 @@ describe('preferences store', () => {
     usePreferences.getState().setLanguage('hi');
     await Promise.resolve();
 
-    expect(await mockService.getAppearance()).toEqual({ themeMode: 'dark', language: 'hi' });
+    expect(await mockService.getPreferences()).toMatchObject({ themeMode: 'dark', language: 'hi' });
   });
 
   it('restores saved preferences on startup (survives an app restart)', async () => {
     await mockService.setThemeMode('light');
     await mockService.setLanguage('hi');
-    usePreferences.setState({ themeMode: 'system', language: 'en' });
+    await mockService.setRegion('GB');
+    usePreferences.setState({ themeMode: 'system', language: 'en', region: 'IN' });
 
     await hydratePreferences(mockService);
 
-    expect(usePreferences.getState()).toMatchObject({ themeMode: 'light', language: 'hi' });
+    expect(usePreferences.getState()).toMatchObject({
+      themeMode: 'light',
+      language: 'hi',
+      region: 'GB',
+    });
     expect(i18n.language).toBe('hi');
   });
 });

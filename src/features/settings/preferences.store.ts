@@ -2,7 +2,8 @@ import { create } from 'zustand';
 
 import { getContainer } from '@/container';
 import type { Language, ThemeMode } from '@/domain/preferences';
-import { deviceLanguage, i18n } from '@/i18n/i18n';
+import { regionFromCountry, type Region } from '@/domain/regions';
+import { deviceLanguage, deviceLocale, i18n } from '@/i18n/i18n';
 import type { SettingsService } from '@/services/settings.service';
 
 export type { ThemeMode };
@@ -10,9 +11,15 @@ export type { ThemeMode };
 type PreferencesState = {
   themeMode: ThemeMode;
   language: Language;
+  region: Region;
   setThemeMode: (mode: ThemeMode) => void;
   setLanguage: (language: Language) => void;
+  setRegion: (region: Region) => void;
 };
+
+function deviceRegion(): Region {
+  return regionFromCountry(deviceLocale().regionCode);
+}
 
 // The UI updates immediately; the write to SQLite happens in the background. A failed write
 // only loses the preference, never user data, so it is logged rather than surfaced.
@@ -23,6 +30,7 @@ function persist(write: Promise<void>): void {
 export const usePreferences = create<PreferencesState>()((set) => ({
   themeMode: 'system',
   language: deviceLanguage(),
+  region: deviceRegion(),
   setThemeMode: (themeMode) => {
     set({ themeMode });
     persist(getContainer().settingsService.setThemeMode(themeMode));
@@ -32,12 +40,20 @@ export const usePreferences = create<PreferencesState>()((set) => ({
     set({ language });
     persist(getContainer().settingsService.setLanguage(language));
   },
+  setRegion: (region) => {
+    set({ region });
+    persist(getContainer().settingsService.setRegion(region));
+  },
 }));
 
 /** Loads saved preferences into the store; called once at startup, before the splash hides. */
 export async function hydratePreferences(service: SettingsService): Promise<void> {
-  const saved = await service.getAppearance();
+  const saved = await service.getPreferences();
   const language = saved.language ?? deviceLanguage();
   await i18n.changeLanguage(language);
-  usePreferences.setState({ themeMode: saved.themeMode, language });
+  usePreferences.setState({
+    themeMode: saved.themeMode,
+    language,
+    region: saved.region ?? deviceRegion(),
+  });
 }

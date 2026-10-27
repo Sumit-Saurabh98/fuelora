@@ -33,7 +33,15 @@
     "version": "Version",
     "database": "Database",
     "databaseReady": "Ready · SQLite {{version}} · {{mode}} · schema v{{schema}}",
-    "databaseError": "Could not open the database"
+    "databaseError": "Could not open the database",
+    "region": "Region",
+    "regionDefaults": "Units for this region",
+    "currency": "Currency",
+    "distanceUnit": "Distance",
+    "volumeUnit": "Fuel volume",
+    "efficiency": "Mileage shown as",
+    "emissionName": "Emission certificate",
+    "example": "Example"
   },
   "languages": {
     "en": "English",
@@ -67,5 +75,30 @@
       "petrol": "Petrol",
       "gasoline": "Gas / Gasoline"
     }
+  },
+  "regions": {
+    "IN": "India",
+    "US": "United States",
+    "GB": "United Kingdom",
+    "OTHER": "Other ({{currency}})"
+  },
+  "units": {
+    "km": "km",
+    "mi": "mi",
+    "L": "L",
+    "gal_us": "US gal",
+    "gal_uk": "UK gal",
+    "kg": "kg",
+    "kWh": "kWh"
+  },
+  "efficiencyFormats": {
+    "km_per_l": "km/L",
+    "l_per_100km": "L/100 km",
+    "mpg_us": "mpg (US)",
+    "mpg_uk": "mpg (UK)",
+    "km_per_kg": "km/kg",
+    "km_per_kwh": "km/kWh",
+    "mi_per_kwh": "mi/kWh",
+    "kwh_per_100km": "kWh/100 km"
   }
 }

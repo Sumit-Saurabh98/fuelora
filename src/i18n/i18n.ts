@@ -9,6 +9,21 @@ import hi from './hi.json';
 
 export { isLanguage, LANGUAGES as SUPPORTED_LANGUAGES, type Language };
 
+export type DeviceLocale = {
+  languageTag: string;
+  regionCode: string | null;
+  currencyCode: string | null;
+};
+
+export function deviceLocale(): DeviceLocale {
+  const locale = getLocales()[0];
+  return {
+    languageTag: locale?.languageTag ?? 'en',
+    regionCode: locale?.regionCode ?? null,
+    currencyCode: locale?.currencyCode ?? null,
+  };
+}
+
 export function deviceLanguage(): Language {
   const code = getLocales()[0]?.languageCode;
   return isLanguage(code) ? code : 'en';

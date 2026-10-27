@@ -33,7 +33,15 @@
     "version": "वर्ज़न",
     "database": "डेटाबेस",
     "databaseReady": "तैयार · SQLite {{version}} · {{mode}} · स्कीमा v{{schema}}",
-    "databaseError": "डेटाबेस नहीं खुल सका"
+    "databaseError": "डेटाबेस नहीं खुल सका",
+    "region": "क्षेत्र",
+    "regionDefaults": "इस क्षेत्र की इकाइयाँ",
+    "currency": "मुद्रा",
+    "distanceUnit": "दूरी",
+    "volumeUnit": "ईंधन की मात्रा",
+    "efficiency": "माइलेज इस रूप में",
+    "emissionName": "प्रदूषण प्रमाणपत्र",
+    "example": "उदाहरण"
   },
   "languages": {
     "en": "English",
@@ -67,5 +75,30 @@
       "petrol": "पेट्रोल",
       "gasoline": "गैस / गैसोलीन"
     }
+  },
+  "regions": {
+    "IN": "भारत",
+    "US": "अमेरिका",
+    "GB": "यूनाइटेड किंगडम",
+    "OTHER": "अन्य ({{currency}})"
+  },
+  "units": {
+    "km": "किमी",
+    "mi": "मील",
+    "L": "लीटर",
+    "gal_us": "US गैलन",
+    "gal_uk": "UK गैलन",
+    "kg": "किग्रा",
+    "kWh": "kWh"
+  },
+  "efficiencyFormats": {
+    "km_per_l": "किमी/लीटर",
+    "l_per_100km": "लीटर/100 किमी",
+    "mpg_us": "mpg (US)",
+    "mpg_uk": "mpg (UK)",
+    "km_per_kg": "किमी/किग्रा",
+    "km_per_kwh": "किमी/kWh",
+    "mi_per_kwh": "मील/kWh",
+    "kwh_per_100km": "kWh/100 किमी"
   }
 }
