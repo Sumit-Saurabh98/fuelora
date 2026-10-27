@@ -73,7 +73,9 @@ Why: zero hosting cost, no account friction, privacy as a selling point, and one
 
 - **OS backup (automatic, free):** Android Auto Backup includes the app's database directory (≤ 25 MB quota); iOS device backups include the app's Documents directory where expo-sqlite stores the DB. Not guaranteed (user may disable), hence manual backup too.
 - **Manual export:** `BackupService.export()` → JSON (LLD §7) written with `expo-file-system` → `expo-sharing` share sheet (Drive, Files, WhatsApp, email).
-- **Restore:** `expo-document-picker` → parse + validate + migrate older `schemaVersion` → summary → safety export to app cache → replace all in one transaction → `NotificationScheduler.sync()`.
+- **Restore:** `expo-document-picker` → parse + validate + migrate older `schemaVersion` → summary → safety export to app cache → replace all in one transaction → if active reminders and no notification permission on this device, ask (FR-24) → `NotificationScheduler.sync()`.
+- **Open from other apps:** the `.fuelora` file type is registered (iOS document type / UTI, Android intent filter for `VIEW`) so tapping a backup in WhatsApp, email, Drive or Files opens Fuelora on the restore summary (FR-23). Same restore path as the picker.
+- **Cross-platform:** the backup holds only canonical values, so Android → iOS and back is the same restore (FR-22). OS backups (Auto Backup / iCloud) don't cross platforms; the file is the only way to switch.
 - Monthly in-app nudge if the last export is older than 30 days and there are ≥ 5 entries.
 
 ### 4.5 Ads and consent

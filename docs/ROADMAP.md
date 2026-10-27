@@ -36,7 +36,10 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
 - [ ] Calculators: trip cost, mileage, fuel split → "Track this vehicle"
 - [ ] Backup export (JSON + CSV), restore with safety backup, monthly nudge
 - [ ] Verify Android Auto Backup / iOS backup include the DB
-- **Demo:** export on phone A, restore on phone B, everything matches
+- [ ] `.fuelora` backup file type: "Open in Fuelora" from WhatsApp/email/Drive/Files on both platforms (FR-23)
+- [ ] After restore: notification permission prompt + reschedule when reminders exist (FR-24)
+- [ ] Cross-platform restore tested both ways: Android → iOS and iOS → Android (FR-22)
+- **Demo:** export on the Android phone, send via WhatsApp, tap the file on the iPhone (Simulator), restore — everything matches, reminders notify
 
 ## Phase 4 — Ads, analytics, polish (Weeks 9–10)
 

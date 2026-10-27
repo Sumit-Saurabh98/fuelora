@@ -244,7 +244,7 @@ Tabs: **Home · History · Reminders · More** (More = stats, calculators, backu
 ```
 
 - Rows use the same camelCase fields as the Drizzle types (canonical units).
-- File name `fuelora-backup-YYYY-MM-DD.json`.
+- File name `fuelora-backup-YYYY-MM-DD.fuelora` (JSON content; MIME `application/json`). Registered as a document type so other apps offer "Open in Fuelora" (FR-23). Import also accepts `.json`.
 - Import: validate with Zod → migrate `schemaVersion` n → current step by step (`backup-migrations.ts`) → replace all in one transaction.
 - CSV export: one file per vehicle with display units and a header row; not importable in MVP.
 

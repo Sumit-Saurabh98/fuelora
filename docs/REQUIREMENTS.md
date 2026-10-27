@@ -109,6 +109,9 @@ Ads only (AdMob). No subscriptions, no paywall, no locked core features. Details
 - FR-16 Export JSON contains all vehicles, entries, services, reminders and settings with `schemaVersion`.
 - FR-17 Restore validates the file, shows a summary (vehicles, entries, date range), creates a safety backup, then replaces all data.
 - FR-18 CSV export per vehicle (fill-ups, services) for spreadsheets.
+- FR-22 Backups move across platforms (Android ↔ iOS) with no loss: the file holds only canonical values (metres, base units, minor units + currency, ISO dates), never platform-specific data.
+- FR-23 The backup file uses its own `.fuelora` extension (JSON inside) registered with the OS, so tapping it in WhatsApp, email, Drive or Files offers "Open in Fuelora" and goes straight to the restore summary (FR-17). The picker also accepts `.json`.
+- FR-24 After a restore that contains active reminders, ask for notification permission if not granted on this device, then reschedule; if denied, show that reminders won't notify.
 
 ### 4.6 Calculators
 
