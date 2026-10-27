@@ -111,6 +111,8 @@ Document presets: `insurance`, `emission_test`, `registration`, `licence`, `cust
 | 13  | 2026-10 | Android + iOS launch together                                                            | Both developer accounts already exist; iOS users have higher ad value                                              |
 | 14  | 2026-10 | Calculators usable without setup                                                         | High-volume store searches; top of the funnel                                                                      |
 | 15 | 2026-10 | iOS tested on the Xcode Simulator day to day; real iPhone (borrowed, ad hoc dev build via `eas device:create`) at end of Phase 2 and Phase 4; TestFlight in Phase 5 | Founder has only an Android phone; Simulator covers UI, DB, local notifications and test ads; ATT, real notification timing and performance need a device |
+| 16 | 2026-10 | Bold, dark-first brand: ink `#0E0E14`, electric lime `#C8F542`, violet `#9D7BFF`/`#5B2EE6`, hot pink `#FF5C93`/`#C2185B`; roundness 6 (`src/ui/theme.ts`) | Founder wants a modern Gen-Z look, not subtle like CoachingDesk; all text pairs ≥ 4.5:1 (NFR-6); lime never as text on white |
+| 17 | 2026-10 | Poppins 600/700 for display, headline and title text; system font for body; app icon = lime fuel drop with efficiency gauge on ink (`store/icon/`) | Poppins covers Latin + Devanagari so Hindi headings match; only 2 weights bundled (~310 KB); icon readable at 48 px and in Android themed mode |
 
 ## 7. Analytics events (allow-list)
 

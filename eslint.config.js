@@ -19,7 +19,7 @@ module.exports = defineConfig([
   expoConfig,
   prettierConfig,
   {
-    ignores: ['dist/*', '.expo/*', 'node_modules/*', 'web/*', 'src/db/migrations/*'],
+    ignores: ['dist/*', '.expo/*', 'node_modules/*', 'web/*', 'store/**', 'src/db/migrations/*'],
   },
   {
     files: ['**/*.ts', '**/*.tsx'],

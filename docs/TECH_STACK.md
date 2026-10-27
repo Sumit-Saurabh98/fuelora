@@ -14,6 +14,7 @@ Principle: **one TypeScript codebase, everything on the device, ₹0 running cos
 | UI state            | Zustand (only for transient UI state, e.g. entry sheet)                                                 | Small, simple                                                                     |
 | Small key-value     | react-native-mmkv                                                                                       | Ad caps, flags, nudge timestamps                                                  |
 | UI kit              | **React Native Paper** (Material 3) + custom theme                                                      | Same as CoachingDesk; accessible; light/dark                                      |
+| Fonts | Poppins 600/700 via `@expo-google-fonts/poppins` subpath imports (display/headline/title); system font for body | Bold modern look; Latin + Devanagari in one family (KB #17) |
 | Charts              | react-native-gifted-charts (+ react-native-svg)                                                         | Line/bar charts, decent on low-end devices                                        |
 | Forms & validation  | react-hook-form + Zod                                                                                   | Numeric inputs with live derived values; Zod also validates backup files          |
 | i18n                | i18next + react-i18next + expo-localization                                                             | EN + HI at launch; locale → region defaults                                       |

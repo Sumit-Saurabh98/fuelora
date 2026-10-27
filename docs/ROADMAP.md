@@ -5,7 +5,7 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
 ## Phase 0 — Set up (Week 1)
 - [x] Use Google's test ad unit IDs and a placeholder bundle ID (`com.fuelora.dev`) for dev builds (store setup is deferred to Phase 5 — KB §9)
 - [x] Expo project scaffold: TypeScript strict, Expo Router, Paper theme, i18n (en/hi), ESLint/Prettier, Jest, GitHub Actions CI (workflow ready; runs once the repo is pushed to GitHub)
-- [ ] EAS dev builds: Android on own phone, iOS on the Simulator (KB #15)
+- [x] EAS dev builds: Android on own phone, iOS on the Simulator (KB #15)
 - **Demo:** empty app with tabs, theme and language switch on the Android phone and the iOS Simulator
 
 ## Phase 1 — Core data & mileage (Weeks 2–4)

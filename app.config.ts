@@ -33,6 +33,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: variant === 'production' ? 'Fuelora' : `Fuelora (${variant})`,
   slug: 'fuelora',
+  owner: 'iamrealsubh',
   version: '0.1.0',
   orientation: 'portrait',
   icon: './assets/images/icon.png',
@@ -48,7 +49,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     package: APP_ID,
     adaptiveIcon: {
-      backgroundColor: '#E6F4FE',
+      backgroundColor: '#0E0E14',
       foregroundImage: './assets/images/android-icon-foreground.png',
       backgroundImage: './assets/images/android-icon-background.png',
       monochromeImage: './assets/images/android-icon-monochrome.png',
@@ -60,9 +61,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-splash-screen',
       {
-        backgroundColor: '#208AEF',
+        backgroundColor: '#0E0E14',
         image: './assets/images/splash-icon.png',
-        imageWidth: 76,
+        imageWidth: 200,
       },
     ],
   ],
@@ -72,5 +73,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   extra: {
     variant,
     admob: TEST_ADMOB,
+    eas: {
+      projectId: '73b296ca-5cb2-4e0e-8515-1ecc97188899',
+    },
   },
 });
