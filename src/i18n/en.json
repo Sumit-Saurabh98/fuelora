@@ -42,5 +42,30 @@
   "startup": {
     "errorTitle": "Couldn't open your data",
     "errorBody": "Please close the app completely and open it again."
+  },
+  "regionNames": {
+    "emission": {
+      "puc": "PUC",
+      "mot": "MOT",
+      "smog": "Emissions / smog check",
+      "emissionTest": "Emission test"
+    },
+    "registration": {
+      "rcRenewal": "RC renewal",
+      "roadTax": "Road tax (VED)",
+      "registrationRenewal": "Registration renewal",
+      "registration": "Registration"
+    },
+    "insurance": {
+      "insurance": "Insurance"
+    },
+    "licence": {
+      "drivingLicence": "Driving licence",
+      "driversLicense": "Driver's license"
+    },
+    "fuel": {
+      "petrol": "Petrol",
+      "gasoline": "Gas / Gasoline"
+    }
   }
 }

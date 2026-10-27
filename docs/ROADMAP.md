@@ -11,7 +11,7 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
 ## Phase 1 — Core data & mileage (Weeks 2–4)
 
 - [x] Drizzle schema + migrations + composition root (1.1–1.5: settings, vehicles, fill_ups; theme/language saved; Clock, UUID v7, AppError)
-- [ ] `units`, `money`, `regions` domain + tests
+- [x] `units`, `money`, `regions` domain + tests (2.1–2.3)
 - [ ] `EfficiencyEngine` with all fixture cases (LLD §4.4)
 - [ ] Onboarding (language, region, first vehicle)
 - [ ] Vehicles: add/edit/archive/delete, switcher

@@ -119,7 +119,7 @@ Efficiency formats:
 
 Rounding happens only for display (1 decimal for efficiency; currency's minor digits for money). Input parsing accepts both `.` and `,` decimal separators per locale.
 
-**Region defaults** (`src/domain/regions.ts`): `IN` → INR, km, L, km/L, names PUC / RC / insurance; `US` → USD, mi, US gal, mpg US, names emissions/smog check, registration; `GB` → GBP, mi, L entry with mpg UK display, MOT, road tax; default → locale currency, km, L, L/100km, "emission test". Unknown regions fall back to default.
+**Region defaults** (`src/domain/regions.ts`): `IN` → INR, km, L, km/L, names PUC / RC / insurance; `US` → USD, mi, US gal, mpg US, names emissions/smog check, registration; `GB` → GBP, mi, L entry with mpg UK display, MOT, road tax; default → locale currency, km, L, L/100km, "emission test". Unknown regions fall back to default. EV display defaults: IN km/kWh, US and GB mi/kWh, default kWh/100km. CNG uses km/kg everywhere. Name strings live in `en.json`/`hi.json` under `regionNames.*`; `regions.ts` picks the key.
 
 ## 4. Efficiency engine (`src/domain/efficiency.ts`)
 

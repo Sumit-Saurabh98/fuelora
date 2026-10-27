@@ -42,5 +42,30 @@
   "startup": {
     "errorTitle": "आपका डेटा नहीं खुल सका",
     "errorBody": "कृपया ऐप को पूरी तरह बंद करके फिर से खोलें।"
+  },
+  "regionNames": {
+    "emission": {
+      "puc": "PUC",
+      "mot": "MOT",
+      "smog": "उत्सर्जन / स्मॉग जाँच",
+      "emissionTest": "उत्सर्जन जाँच"
+    },
+    "registration": {
+      "rcRenewal": "RC नवीनीकरण",
+      "roadTax": "रोड टैक्स (VED)",
+      "registrationRenewal": "रजिस्ट्रेशन नवीनीकरण",
+      "registration": "रजिस्ट्रेशन"
+    },
+    "insurance": {
+      "insurance": "बीमा"
+    },
+    "licence": {
+      "drivingLicence": "ड्राइविंग लाइसेंस",
+      "driversLicense": "ड्राइविंग लाइसेंस"
+    },
+    "fuel": {
+      "petrol": "पेट्रोल",
+      "gasoline": "गैस / गैसोलीन"
+    }
   }
 }
