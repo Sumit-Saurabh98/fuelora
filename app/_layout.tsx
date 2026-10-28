@@ -13,6 +13,10 @@ import { useResolvedColorScheme } from '@/ui/use-color-scheme';
 
 void SplashScreen.preventAutoHideAsync();
 
+// Pushed screens show a header. Minimal back button: the tabs group has no title, so iOS would
+// otherwise show "(tabs)" next to the arrow.
+const withHeader = { headerShown: true, headerBackButtonDisplayMode: 'minimal' } as const;
+
 export default function RootLayout() {
   const scheme = useResolvedColorScheme();
   const theme = useMemo(() => paperTheme(scheme), [scheme]);
@@ -36,11 +40,8 @@ export default function RootLayout() {
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Protected guard={onboarded}>
               <Stack.Screen name="(tabs)" />
-              {/* Minimal back button: the tabs group has no title, so iOS would show "(tabs)". */}
-              <Stack.Screen
-                name="vehicles/new"
-                options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
-              />
+              <Stack.Screen name="vehicles/index" options={withHeader} />
+              <Stack.Screen name="vehicles/new" options={withHeader} />
             </Stack.Protected>
             <Stack.Protected guard={!onboarded}>
               <Stack.Screen name="onboarding" />

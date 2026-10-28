@@ -5,19 +5,12 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { Card, Text, useTheme } from 'react-native-paper';
 
 import { metresTo } from '@/domain/units';
-import type { VehicleType } from '@/domain/vehicle';
 import { EmptyState } from '@/ui/empty-state';
 import { formatNumber } from '@/ui/format';
 
 import { useUnitPreferences } from '../../settings/hooks/use-unit-preferences';
 import { useCurrentVehicle } from '../../vehicles/hooks/use-current-vehicle';
-
-const TYPE_ICONS: Record<VehicleType, keyof typeof MaterialCommunityIcons.glyphMap> = {
-  bike: 'motorbike',
-  scooter: 'moped',
-  car: 'car',
-  other: 'truck-outline',
-};
+import { VEHICLE_TYPE_ICONS, vehicleDetails } from '../../vehicles/vehicle-display';
 
 export function HomeScreen() {
   const { t } = useTranslation();
@@ -37,7 +30,7 @@ export function HomeScreen() {
   }
 
   const odometer = `${formatNumber(metresTo(vehicle.initialOdometerM, units.distanceUnit), locale, 0)} ${t(`units.${units.distanceUnit}`)}`;
-  const details = [vehicle.make, vehicle.model, vehicle.year].filter(Boolean).join(' · ');
+  const details = vehicleDetails(vehicle);
 
   return (
     <ScrollView
@@ -47,7 +40,7 @@ export function HomeScreen() {
       <Card mode="contained" style={{ backgroundColor: theme.colors.primaryContainer }}>
         <Card.Content style={styles.card}>
           <MaterialCommunityIcons
-            name={TYPE_ICONS[vehicle.type]}
+            name={VEHICLE_TYPE_ICONS[vehicle.type]}
             size={40}
             color={theme.colors.onPrimaryContainer}
           />

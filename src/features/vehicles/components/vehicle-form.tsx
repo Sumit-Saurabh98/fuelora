@@ -5,18 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Chip, HelperText, List, Text, TextInput, useTheme } from 'react-native-paper';
 
-import { regionNameKey } from '@/domain/regions';
-import { FUEL_TYPES, VEHICLE_TYPES, VEHICLE_LIMITS, type VehicleType } from '@/domain/vehicle';
+import { FUEL_TYPES, VEHICLE_TYPES, VEHICLE_LIMITS } from '@/domain/vehicle';
 
 import { useUnitPreferences } from '../../settings/hooks/use-unit-preferences';
+import { fuelLabelKey, VEHICLE_TYPE_ICONS } from '../vehicle-display';
 import { tankUnitFor, type VehicleFormField, type VehicleFormValues } from '../vehicle-form-values';
-
-const TYPE_ICONS: Record<VehicleType, keyof typeof MaterialCommunityIcons.glyphMap> = {
-  bike: 'motorbike',
-  scooter: 'moped',
-  car: 'car',
-  other: 'truck-outline',
-};
 
 type Props = { form: UseFormReturn<VehicleFormValues> };
 
@@ -101,7 +94,7 @@ export function VehicleForm({ form }: Props) {
                   ]}
                 >
                   <MaterialCommunityIcons
-                    name={TYPE_ICONS[type]}
+                    name={VEHICLE_TYPE_ICONS[type]}
                     size={28}
                     color={selected ? theme.colors.onPrimaryContainer : theme.colors.onSurface}
                   />
@@ -135,9 +128,7 @@ export function VehicleForm({ form }: Props) {
                 accessibilityRole="radio"
                 accessibilityState={{ selected: value === fuel }}
               >
-                {fuel === 'petrol'
-                  ? t(regionNameKey(region, 'fuel'))
-                  : t(`vehicleForm.fuels.${fuel}`)}
+                {t(fuelLabelKey(fuel, region))}
               </Chip>
             ))}
           </View>

@@ -51,7 +51,10 @@
     "developer": "Developer",
     "devReset": "Reset app data",
     "devResetDescription": "Dev builds only. Deletes all vehicles, fill-ups and settings, then restarts like a fresh install.",
-    "devResetConfirm": "Delete everything and restart?"
+    "devResetConfirm": "Delete everything and restart?",
+    "vehicles": "Vehicles",
+    "manageVehicles": "Manage vehicles",
+    "vehicleCount": "Vehicles saved: {{count}}"
   },
   "languages": {
     "en": "English",
@@ -173,5 +176,12 @@
   "addVehicle": {
     "title": "Add vehicle",
     "save": "Save"
+  },
+  "vehicles": {
+    "title": "Vehicles",
+    "current": "Current",
+    "archived": "Archived",
+    "noActive": "No active vehicles. Add one, or restore an archived one.",
+    "add": "Add vehicle"
   }
 }

@@ -26,7 +26,7 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
   - [x] 4.5 Home "Add your first vehicle" button + add-vehicle screen (for users who skipped) — device check pending
 - [ ] Vehicles: add/edit/archive/delete, switcher — Step 5
   - [x] 5.1 Data layer: update, archive/unarchive, delete with cascade; current vehicle moves to the next active one
-  - [ ] 5.2 Vehicles screen (active + archived) from Settings, "Add vehicle"
+  - [x] 5.2 Vehicles screen (active + archived, current badge) from Settings → Vehicles, "Add vehicle"
   - [ ] 5.3 Edit vehicle screen
   - [ ] 5.4 Archive/unarchive + delete with typed-name confirmation
   - [ ] 5.5 Vehicle switcher on top of Home
