@@ -36,7 +36,25 @@
   "stats": {
     "emptyTitle": "Not enough data yet",
     "emptyBody": "Charts appear after a few full-tank fill-ups.",
-    "perDistance": "{{cost}} per {{unit}}"
+    "perDistance": "{{cost}} per {{unit}}",
+    "range": "Time range",
+    "ranges": {
+      "3m": "3M",
+      "6m": "6M",
+      "1y": "1Y",
+      "all": "All"
+    },
+    "average": "Average",
+    "best": "Best",
+    "worst": "Worst",
+    "spend": "Fuel spend",
+    "distance": "Distance measured",
+    "mileageOverTime": "Mileage per tank",
+    "monthlySpend": "Fuel spend per month",
+    "needTwo": "Mileage shows here after two full tanks in this range.",
+    "noSpend": "No fill-ups in this range.",
+    "lineSummary": "Mileage from {{from}} to {{to}}, average {{average}}, tanks measured: {{count}}.",
+    "barSummary": "Fuel spend {{total}} over {{months}} months."
   },
   "tools": {
     "emptyTitle": "Calculators",

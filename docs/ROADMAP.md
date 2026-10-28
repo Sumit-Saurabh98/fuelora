@@ -73,9 +73,9 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
 
 ## Phase 3 — Stats, calculators, backup (Weeks 7–8)
 
-- [ ] Stats screen: efficiency line, monthly spend bars, cost per distance, ranges — Step 14
+- [x] Stats screen: efficiency line, monthly spend bars, cost per distance, ranges — Step 14 (device check pending, new dev build needed)
   - [x] 14.1 Domain: per-segment efficiency points, monthly spend (gaps included), average / best / worst, cost per distance and totals for 3M / 6M / 1Y / All
-  - [ ] 14.2 Stats screen with charts (react-native-gifted-charts + react-native-svg, new dev build)
+  - [x] 14.2 Stats screen (More → Stats): 3M / 6M / 1Y / All, average / best / worst / cost per distance / spend / distance tiles, mileage line, monthly spend bars, text summaries for screen readers
 - [ ] Calculators: trip cost, mileage, fuel split → "Track this vehicle"
 - [ ] Backup export (JSON + CSV), restore with safety backup, monthly nudge
 - [ ] Verify Android Auto Backup / iOS backup include the DB

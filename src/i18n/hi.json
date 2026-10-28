@@ -35,8 +35,26 @@
   },
   "stats": {
     "emptyTitle": "अभी पर्याप्त डेटा नहीं",
-    "emptyBody": "कुछ फ़ुल टैंक भराव के बाद चार्ट दिखेंगे।",
-    "perDistance": "{{cost}} प्रति {{unit}}"
+    "emptyBody": "कुछ फ़ुल टंकी के बाद चार्ट दिखेंगे।",
+    "perDistance": "{{cost}} प्रति {{unit}}",
+    "range": "समय सीमा",
+    "ranges": {
+      "3m": "3M",
+      "6m": "6M",
+      "1y": "1Y",
+      "all": "सब"
+    },
+    "average": "औसत",
+    "best": "सबसे अच्छा",
+    "worst": "सबसे कम",
+    "spend": "फ़्यूल खर्च",
+    "distance": "मापी गई दूरी",
+    "mileageOverTime": "हर टंकी का माइलेज",
+    "monthlySpend": "हर महीने फ़्यूल खर्च",
+    "needTwo": "इस अवधि में दो फ़ुल टंकी के बाद माइलेज यहाँ दिखेगा।",
+    "noSpend": "इस अवधि में कोई फ़्यूल नहीं।",
+    "lineSummary": "{{from}} से {{to}} तक माइलेज, औसत {{average}}, मापी गई टंकियाँ: {{count}}।",
+    "barSummary": "{{months}} महीनों में फ़्यूल खर्च {{total}}।"
   },
   "tools": {
     "emptyTitle": "कैलकुलेटर",
