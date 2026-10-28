@@ -441,5 +441,27 @@
     "overdue": "Overdue since {{date}}.",
     "nudgeTitle": "Filled up this week?",
     "nudgeBody": "Log it in Fuelora to keep your mileage right."
+  },
+  "calculators": {
+    "which": "Calculator",
+    "trip": "Trip cost",
+    "mileage": "Mileage",
+    "split": "Split cost",
+    "kinds": {
+      "liquid": "Petrol / diesel",
+      "cng": "CNG",
+      "electric": "Electric"
+    },
+    "distance": "Distance",
+    "yourMileage": "Your mileage",
+    "people": "People sharing",
+    "totalCost": "Total cost",
+    "fuelNeeded": "{{quantity}} needed",
+    "tripTotal": "Costs {{total}}",
+    "each": "{{share}} each",
+    "eachRange": "{{low}}–{{high}} each",
+    "fillIn": "Fill in the fields to see the result. Nothing is saved.",
+    "trackHint": "Track your real mileage and costs over time.",
+    "track": "Track this vehicle"
   }
 }

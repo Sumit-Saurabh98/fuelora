@@ -441,5 +441,27 @@
     "overdue": "{{date}} से बाकी है।",
     "nudgeTitle": "इस हफ़्ते फ़्यूल भरवाया?",
     "nudgeBody": "माइलेज सही रखने के लिए इसे Fuelora में लिखें।"
+  },
+  "calculators": {
+    "which": "कैलकुलेटर",
+    "trip": "यात्रा खर्च",
+    "mileage": "माइलेज",
+    "split": "खर्च बाँटें",
+    "kinds": {
+      "liquid": "पेट्रोल / डीज़ल",
+      "cng": "CNG",
+      "electric": "इलेक्ट्रिक"
+    },
+    "distance": "दूरी",
+    "yourMileage": "आपका माइलेज",
+    "people": "कितने लोग बाँटेंगे",
+    "totalCost": "कुल खर्च",
+    "fuelNeeded": "{{quantity}} चाहिए",
+    "tripTotal": "खर्च {{total}}",
+    "each": "हर व्यक्ति {{share}}",
+    "eachRange": "हर व्यक्ति {{low}}–{{high}}",
+    "fillIn": "नतीजा देखने के लिए खाने भरें। कुछ भी सेव नहीं होता।",
+    "trackHint": "समय के साथ असली माइलेज और खर्च ट्रैक करें।",
+    "track": "यह वाहन ट्रैक करें"
   }
 }

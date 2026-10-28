@@ -76,9 +76,9 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
 - [x] Stats screen: efficiency line, monthly spend bars, cost per distance, ranges — Step 14 (device check pending, new dev build needed)
   - [x] 14.1 Domain: per-segment efficiency points, monthly spend (gaps included), average / best / worst, cost per distance and totals for 3M / 6M / 1Y / All
   - [x] 14.2 Stats screen (More → Stats): 3M / 6M / 1Y / All, average / best / worst / cost per distance / spend / distance tiles, mileage line, monthly spend bars, text summaries for screen readers
-- [ ] Calculators: trip cost, mileage, fuel split → "Track this vehicle" — Step 15
+- [x] Calculators: trip cost, mileage, fuel split → "Track this vehicle" — Step 15 (device check pending)
   - [x] 15.1 Domain: EfficiencyEngine.quantityFor (inverse of value), trip cost with exact per-person shares, mileage in every format, even split
-  - [ ] 15.2 Calculators screen (More → Calculators) ending in "Track this vehicle"
+  - [x] 15.2 Calculators screen (More → Calculators): trip cost / mileage / split cost, petrol-diesel / CNG / electric, live results, nothing saved, "Track this vehicle" opens add vehicle
 - [ ] Backup export (JSON + CSV), restore with safety backup, monthly nudge
 - [ ] Verify Android Auto Backup / iOS backup include the DB
 - [ ] `.fuelora` backup file type: "Open in Fuelora" from WhatsApp/email/Drive/Files on both platforms (FR-23)
