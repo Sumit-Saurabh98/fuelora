@@ -114,6 +114,7 @@ export function getContainer(): Container {
       serviceLogService,
       new NotificationScheduler(notificationGateway),
       systemClock,
+      settingsService,
     ),
     notificationGateway,
     onboardingService: new OnboardingService(settingsService, vehicleService),

@@ -44,6 +44,7 @@ async function setup() {
     services,
     new NotificationScheduler(gateway),
     clock,
+    settings,
   );
   const activa = await vehicles.create({
     name: 'My Activa',
@@ -51,13 +52,18 @@ async function setup() {
     fuelType: 'petrol',
     initialOdometerM: 12_000_000,
   });
-  return { sync, gateway, reminders, vehicles, fillUps, activa };
+  // The nudge has its own tests below; keep it out of the reminder ones.
+  await settings.setWeeklyNudge(false);
+  return { sync, gateway, reminders, vehicles, fillUps, settings, activa };
 }
 
-const texts: NotificationTexts = ({ kind, reminder, vehicleName, dueDate }) => ({
-  title: `${reminder.typeKey}${vehicleName ? ` · ${vehicleName}` : ''}`,
-  body: `${kind} ${dueDate}`,
-});
+const texts: NotificationTexts = (input) =>
+  input.kind === 'nudge'
+    ? { title: 'nudge', body: 'log' }
+    : {
+        title: `${input.reminder.typeKey}${input.vehicleName ? ` · ${input.vehicleName}` : ''}`,
+        body: `${input.kind} ${input.dueDate}`,
+      };
 const scheduled = (g: InMemoryNotificationGateway) =>
   [...g.scheduled.values()].sort((a, b) => a.fireAt - b.fireAt).map((n) => [n.title, n.body]);
 
@@ -152,5 +158,40 @@ describe('ReminderNotificationService', () => {
     await reminders.markDone(r.id);
     await sync.sync(texts);
     expect(gateway.scheduled.size).toBe(0);
+  });
+
+  describe('weekly nudge (KB §3)', () => {
+    it('on by default: next Sunday 10:00 after a quiet week', async () => {
+      const { sync, gateway, settings } = await setup();
+      await settings.setWeeklyNudge(true);
+      await sync.sync(texts);
+      const [n] = [...gateway.scheduled.values()];
+      expect(n).toMatchObject({ key: 'weekly_nudge', title: 'nudge' });
+      expect(new Date(n!.fireAt).toString()).toBe(new Date(2026, 10, 1, 10).toString());
+    });
+
+    it('a fill-up on Tuesday moves it a week out; turning it off cancels it', async () => {
+      const { sync, gateway, settings, fillUps, activa } = await setup();
+      await settings.setWeeklyNudge(true);
+      await fillUps.add({
+        vehicleId: activa.id,
+        filledAt: new Date(2026, 9, 27, 9),
+        odometerM: 12_300_000,
+        quantityBase: 5000,
+        totalMinor: 50_000,
+        currency: 'INR',
+        isFull: true,
+        missedPrevious: false,
+        entryMode: 'qty_total',
+      });
+      await sync.sync(texts);
+      expect(new Date([...gateway.scheduled.values()][0]!.fireAt).toString()).toBe(
+        new Date(2026, 10, 8, 10).toString(),
+      );
+
+      await settings.setWeeklyNudge(false);
+      await sync.sync(texts);
+      expect(gateway.scheduled.size).toBe(0);
+    });
   });
 });

@@ -415,6 +415,8 @@
     "channel": "Reminders",
     "lead": "Due {{date}}. Tap to see your reminders.",
     "due": "Due today.",
-    "overdue": "Overdue since {{date}}."
+    "overdue": "Overdue since {{date}}.",
+    "nudgeTitle": "Filled up this week?",
+    "nudgeBody": "Log it in Fuelora to keep your mileage right."
   }
 }

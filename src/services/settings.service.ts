@@ -17,6 +17,7 @@ export const SETTING_KEYS = {
   region: 'region',
   currentVehicleId: 'current_vehicle_id',
   onboardingDone: 'onboarding_done',
+  weeklyNudge: 'notify_weekly_nudge',
 } as const;
 
 const UNIT_KEYS: Record<UnitPreference, string> = {
@@ -99,6 +100,15 @@ export class SettingsService {
 
   markOnboardingDone(): Promise<void> {
     return this.save(SETTING_KEYS.onboardingDone, 'true');
+  }
+
+  /** Weekly "log your fill-up" nudge (F-11): on unless turned off. */
+  async isWeeklyNudgeOn(): Promise<boolean> {
+    return (await this.settings.getAll()).get(SETTING_KEYS.weeklyNudge) !== 'false';
+  }
+
+  setWeeklyNudge(on: boolean): Promise<void> {
+    return this.save(SETTING_KEYS.weeklyNudge, on ? 'true' : 'false');
   }
 
   private save(key: string, value: string): Promise<void> {

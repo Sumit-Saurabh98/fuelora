@@ -65,7 +65,9 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
 - [x] `ReminderPlanner` + `NotificationScheduler` (60 budget, 09:00, overdue once), permission on first reminder — Step 12 (device check pending, new dev build needed)
   - [x] 12.1 ReminderPlanner (pure): 09:00 on the lead day, the due day and 3 days overdue; only future ones; soonest 60
   - [x] 12.2 NotificationScheduler (expo-notifications, new dev build): diff-based sync on start / foreground / data and settings changes, permission on the first reminder, "notifications are off" banner, tap opens Reminders
-- [ ] Weekly nudge (toggle)
+- [ ] Weekly nudge (toggle) — Step 13
+  - [x] 13.1 Nudge planned with reminder notifications: first Sunday 10:00 at least 7 days after the last fill-up or service (moves out with every entry), on by default, shared 60 budget
+  - [ ] 13.2 Settings → Notifications: weekly nudge switch
 - [ ] First real-iPhone check (borrowed device, ad hoc dev build): notifications at 09:00 (KB #15)
 - **Demo:** set insurance date and oil change at +300 km; notification arrives; log service → reminder rolls forward
 

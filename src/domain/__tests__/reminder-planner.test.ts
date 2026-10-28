@@ -1,4 +1,9 @@
-import { atNotifyHour, NOTIFICATION_BUDGET, planNotifications } from '../reminder-planner';
+import {
+  atNotifyHour,
+  NOTIFICATION_BUDGET,
+  planNotifications,
+  planWeeklyNudge,
+} from '../reminder-planner';
 
 const NOW = new Date(2026, 9, 28, 12, 0); // 28 Oct, 12:00 local
 const item = (id: string, effectiveDate: string | null, leadDays = 7) => ({
@@ -52,5 +57,38 @@ describe('planNotifications (LLD §5.4, FR-15)', () => {
     expect([at.getFullYear(), at.getMonth(), at.getDate(), at.getHours(), at.getMinutes()]).toEqual(
       [2026, 10, 20, 9, 0],
     );
+  });
+});
+
+describe('planWeeklyNudge (KB §3)', () => {
+  // 28 Oct 2026 is a Wednesday.
+  const nudge = (lastEntryDate: string | null, now = NOW) =>
+    planWeeklyNudge({ enabled: true, hasVehicle: true, lastEntryDate, now })?.toString();
+
+  it('the next Sunday 10:00 when nothing was logged for a week', () => {
+    expect(nudge('2026-10-10')).toBe(new Date(2026, 10, 1, 10).toString());
+    expect(nudge(null)).toBe(new Date(2026, 10, 1, 10).toString());
+  });
+
+  it('a recent entry pushes it to the first Sunday a week after it', () => {
+    // Logged Tue 27 Oct: Sun 1 Nov is only 5 days later, so Sun 8 Nov.
+    expect(nudge('2026-10-27')).toBe(new Date(2026, 10, 8, 10).toString());
+    // Logged Sun 25 Oct: Sun 1 Nov is exactly 7 days later.
+    expect(nudge('2026-10-25')).toBe(new Date(2026, 10, 1, 10).toString());
+  });
+
+  it('on a Sunday after 10:00 it is next week', () => {
+    expect(nudge('2026-10-01', new Date(2026, 10, 1, 11))).toBe(
+      new Date(2026, 10, 8, 10).toString(),
+    );
+  });
+
+  it('off, or nothing to log for', () => {
+    expect(
+      planWeeklyNudge({ enabled: false, hasVehicle: true, lastEntryDate: null, now: NOW }),
+    ).toBeNull();
+    expect(
+      planWeeklyNudge({ enabled: true, hasVehicle: false, lastEntryDate: null, now: NOW }),
+    ).toBeNull();
   });
 });

@@ -107,4 +107,12 @@ describe('SettingsService', () => {
       unitOverrides: {},
     });
   });
+
+  it('weekly nudge is on until turned off, stored under notify_weekly_nudge (F-11)', async () => {
+    const { repo, service } = setup();
+    expect(await service.isWeeklyNudgeOn()).toBe(true);
+    await service.setWeeklyNudge(false);
+    expect(await service.isWeeklyNudgeOn()).toBe(false);
+    expect((await repo.getAll()).get('notify_weekly_nudge')).toBe('false');
+  });
 });

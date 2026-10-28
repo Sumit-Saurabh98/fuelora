@@ -11,8 +11,8 @@ import { useUnitPreferences } from '../../settings/hooks/use-unit-preferences';
 import { onNotificationSyncRequest, requestNotificationSync } from '../notification-sync-requests';
 import { notificationTexts } from '../notification-texts';
 
-// Tables whose changes can move a reminder or its forecast (AGENTS.md rule 8).
-const WATCHED = new Set(['reminders', 'fill_ups', 'services', 'vehicles']);
+// Tables whose changes can move a reminder, its forecast or the nudge (AGENTS.md rule 8).
+const WATCHED = new Set(['reminders', 'fill_ups', 'services', 'vehicles', 'settings']);
 const DEBOUNCE_MS = 1000;
 
 /**

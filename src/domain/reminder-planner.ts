@@ -1,4 +1,4 @@
-import { addDays } from './dates';
+import { addDays, daysBetween } from './dates';
 import { leadDate, type Reminder } from './reminder';
 
 // LLD §5.4 / FR-15: which local notifications should exist right now. Pure: the
@@ -11,6 +11,9 @@ export const NOTIFY_HOUR = 9;
 export const OVERDUE_AFTER_DAYS = 3;
 
 export type NotificationKind = 'lead' | 'due' | 'overdue';
+
+/** KB §3: Sunday 10:00, only after a week with nothing logged. */
+export const NUDGE = { key: 'weekly_nudge', weekday: 0, hour: 10, quietDays: 7 } as const;
 
 export type DesiredNotification = {
   /** Stable per reminder and kind, so re-planning doesn't duplicate. */
@@ -66,4 +69,32 @@ export function planNotifications(
   return planned
     .sort((a, b) => a.fireAt.getTime() - b.fireAt.getTime() || a.key.localeCompare(b.key))
     .slice(0, NOTIFICATION_BUDGET);
+}
+
+/**
+ * The next weekly nudge (KB §3, F-11): the first Sunday 10:00 after `now` that is at least 7 days
+ * after the last fill-up or service. Re-planned after every entry, so logging pushes it out.
+ * Null when turned off or with no vehicle to log for. `lastEntryDate` is YYYY-MM-DD or null.
+ */
+export function planWeeklyNudge(options: {
+  enabled: boolean;
+  hasVehicle: boolean;
+  lastEntryDate: string | null;
+  now: Date;
+}): Date | null {
+  if (!options.enabled || !options.hasVehicle) return null;
+  const { now } = options;
+  const candidate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), NUDGE.hour, 0, 0, 0);
+  // Step to the next Sunday 10:00 that is still ahead.
+  while (candidate.getDay() !== NUDGE.weekday || candidate.getTime() <= now.getTime()) {
+    candidate.setDate(candidate.getDate() + 1);
+  }
+  if (options.lastEntryDate) {
+    const day = () =>
+      `${candidate.getFullYear()}-${String(candidate.getMonth() + 1).padStart(2, '0')}-${String(candidate.getDate()).padStart(2, '0')}`;
+    while (daysBetween(options.lastEntryDate, day()) < NUDGE.quietDays) {
+      candidate.setDate(candidate.getDate() + 7);
+    }
+  }
+  return candidate;
 }

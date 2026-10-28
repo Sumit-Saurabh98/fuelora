@@ -14,7 +14,11 @@ export function notificationTexts(ctx: {
   locale: string;
   region: Region;
 }): NotificationTexts {
-  return ({ kind, reminder, vehicleName, dueDate }) => {
+  return (input) => {
+    if (input.kind === 'nudge') {
+      return { title: ctx.t('notifications.nudgeTitle'), body: ctx.t('notifications.nudgeBody') };
+    }
+    const { kind, reminder, vehicleName, dueDate } = input;
     const name = reminderName(reminder, ctx);
     const date = formatDay(dueDate, ctx.locale);
     return {
