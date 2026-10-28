@@ -36,10 +36,10 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
   - [x] 6.3 Fill-up entry screen (Home "Add fill-up" / "Add charge"): native date/time pickers, any two of three with live third value, full/missed toggles, station/note, pre-filled price + station, odometer order messages — needs a new dev build (native picker)
   - [x] 6.4 Amount-only mode: "Amount only" / "Fuel + amount" switch, two-wheelers default to amount only when a last price exists (KB #25)
   - [x] 6.5 Plausibility + tank warnings: "Does this look right?" with Check again / Save anyway (FR-8)
-- [ ] Result card + dashboard (last/avg efficiency, month spend, cost per distance) — Step 7
+- [x] Result card + dashboard (last/avg efficiency, month spend, cost per distance) — Step 7 (device check pending)
   - [x] 7.1 Domain: result for a saved fill-up (segment / baseline / partial / missed) and vehicle stats (last, distance-weighted average, cost per distance, month spend + distance), all through EfficiencyEngine
   - [x] 7.2 Result card after saving: this tank's mileage, distance on fuel, cost per km/mi; or baseline / partial / missed explanation (FR-10)
-  - [ ] 7.3 Home dashboard
+  - [x] 7.3 Home dashboard: last + average mileage, cost per km/mi, this month's spend and distance; current odometer on the vehicle card
 - [ ] History list with edit/delete
 - **Demo:** log ₹200 partial fills on a bike and a full-tank car fill in gallons; correct numbers
 

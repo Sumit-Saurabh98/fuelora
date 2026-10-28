@@ -67,15 +67,13 @@ async function show(fillUps: FillUp[], id: string, vehicle: Vehicle = scooter) {
 
 describe('FillUpResultScreen (FR-10)', () => {
   beforeEach(() => {
-    jest
-      .spyOn(Localization, 'getLocales')
-      .mockReturnValue([
-        {
-          languageTag: 'en-IN',
-          regionCode: 'IN',
-          currencyCode: 'INR',
-        } as unknown as Localization.Locale,
-      ]);
+    jest.spyOn(Localization, 'getLocales').mockReturnValue([
+      {
+        languageTag: 'en-IN',
+        regionCode: 'IN',
+        currencyCode: 'INR',
+      } as unknown as Localization.Locale,
+    ]);
     usePreferences.setState({ region: 'IN', language: 'en', unitOverrides: {} });
   });
 
@@ -110,15 +108,13 @@ describe('FillUpResultScreen (FR-10)', () => {
   });
 
   it('US EV: mi/kWh and per mi', async () => {
-    jest
-      .spyOn(Localization, 'getLocales')
-      .mockReturnValue([
-        {
-          languageTag: 'en-US',
-          regionCode: 'US',
-          currencyCode: 'USD',
-        } as unknown as Localization.Locale,
-      ]);
+    jest.spyOn(Localization, 'getLocales').mockReturnValue([
+      {
+        languageTag: 'en-US',
+        regionCode: 'US',
+        currencyCode: 'USD',
+      } as unknown as Localization.Locale,
+    ]);
     usePreferences.setState({ region: 'US' });
     await show(
       [

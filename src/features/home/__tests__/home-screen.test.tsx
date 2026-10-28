@@ -2,19 +2,24 @@ import { fireEvent, screen, waitFor } from '@testing-library/react-native';
 import * as Localization from 'expo-localization';
 import { router } from 'expo-router';
 
+import type { FillUp } from '@/domain/fill-up';
 import type { Vehicle } from '@/domain/vehicle';
 import { renderScreen } from '@/testing/render-screen';
 
 import { usePreferences } from '../../settings/preferences.store';
+import { useVehicleFillUps } from '../../fill-up/hooks/use-vehicle-fill-ups';
 import { useVehicles, type VehicleLists } from '../../vehicles/hooks/use-vehicles';
 import { HomeScreen } from '../components/home-screen';
 
 const mockSetCurrent = jest.fn(async (_id: string) => {});
+const mockClock = { now: () => new Date('2026-10-28T10:00:00.000Z') };
 jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
 jest.mock('@/container', () => ({
-  getContainer: () => ({ vehicleService: { setCurrent: mockSetCurrent } }),
+  getContainer: () => ({ clock: mockClock, vehicleService: { setCurrent: mockSetCurrent } }),
 }));
 jest.mock('../../vehicles/hooks/use-vehicles', () => ({ useVehicles: jest.fn() }));
+jest.mock('../../fill-up/hooks/use-vehicle-fill-ups', () => ({ useVehicleFillUps: jest.fn() }));
+const mockFillUps = jest.mocked(useVehicleFillUps);
 const mockVehicles = jest.mocked(useVehicles);
 
 const activa: Vehicle = {
@@ -61,6 +66,7 @@ describe('HomeScreen', () => {
     usePreferences.setState({ region: 'IN', language: 'en', unitOverrides: {} });
     jest.mocked(router.push).mockClear();
     mockSetCurrent.mockClear();
+    mockFillUps.mockReturnValue([]);
   });
 
   afterEach(() => jest.restoreAllMocks());
@@ -159,6 +165,56 @@ describe('HomeScreen', () => {
       await fireEvent.press(screen.getByLabelText('Current vehicle: My Activa'));
       await fireEvent.press(screen.getByText('Manage vehicles'));
       expect(router.push).toHaveBeenCalledWith('/vehicles');
+    });
+  });
+
+  describe('dashboard (F-06)', () => {
+    function f(id: string, km: number, litres: number, rupees: number, localDate: string): FillUp {
+      return {
+        id,
+        vehicleId: 'v1',
+        filledAt: `${localDate}T09:00:00.000Z`,
+        localDate,
+        odometerM: km * 1000,
+        quantityBase: litres * 1000,
+        totalMinor: rupees * 100,
+        currency: 'INR',
+        isFull: true,
+        missedPrevious: false,
+        entryMode: 'qty_total',
+        station: null,
+        note: null,
+        createdAt: `${localDate}T09:00:00.000Z`,
+        updatedAt: `${localDate}T09:00:00.000Z`,
+      };
+    }
+
+    it('before any fill-up: explains when mileage shows; odometer is the start', async () => {
+      mockVehicles.mockReturnValue(lists());
+      await renderScreen(<HomeScreen />);
+      expect(
+        screen.getByText('Log your fill-ups here. Mileage shows after two full tanks.'),
+      ).toBeTruthy();
+      expect(screen.getByText('Odometer: 12,345 km')).toBeTruthy();
+      expect(screen.getAllByText('—').length).toBeGreaterThan(0);
+    });
+
+    it('shows last and average mileage, cost per km and this month', async () => {
+      mockVehicles.mockReturnValue(lists());
+      mockFillUps.mockReturnValue([
+        f('a', 12_400, 5, 500, '2026-09-25'),
+        f('b', 12_800, 10, 1000, '2026-10-05'),
+        f('c', 12_900, 5, 500, '2026-10-20'),
+      ]);
+      await renderScreen(<HomeScreen />);
+
+      expect(screen.getByText('Odometer: 12,900 km')).toBeTruthy();
+      expect(screen.getByText('20.0 km/L')).toBeTruthy(); // last: 100 km / 5 L
+      expect(screen.getByText('33.3 km/L')).toBeTruthy(); // 500 km / 15 L, not 30
+      expect(screen.getByText('Tanks measured: 2')).toBeTruthy();
+      expect(screen.getByText('₹3.00 per km')).toBeTruthy();
+      expect(screen.getByText('₹1,500.00')).toBeTruthy();
+      expect(screen.getByText('500 km driven')).toBeTruthy();
     });
   });
 });

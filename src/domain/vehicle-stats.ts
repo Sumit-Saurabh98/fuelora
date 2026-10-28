@@ -131,3 +131,14 @@ export function vehicleStats(
     monthDistanceM,
   };
 }
+
+/**
+ * Latest known odometer (LLD §5.1). Fill-ups and the starting reading for now; services and
+ * manual readings join when they exist.
+ */
+export function currentOdometerM(
+  fillUps: readonly Pick<EfficiencyFillUp, 'odometerM'>[],
+  initialOdometerM: number,
+): number {
+  return fillUps.reduce((max, f) => Math.max(max, f.odometerM), initialOdometerM);
+}

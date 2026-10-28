@@ -1,6 +1,11 @@
 import type { EfficiencyFillUp } from '../efficiency';
 import { regionDefaults } from '../regions';
-import { efficiencyFormatFor, fillUpResult, vehicleStats } from '../vehicle-stats';
+import {
+  currentOdometerM,
+  efficiencyFormatFor,
+  fillUpResult,
+  vehicleStats,
+} from '../vehicle-stats';
 
 // odo km, litres, rupees, full?, date
 function f(
@@ -139,5 +144,12 @@ describe('vehicleStats (F-06)', () => {
     const stats = vehicleStats([f('sep', 10_000, 5, 500, true, '2026-09-28')], options);
     expect(stats.monthSpend).toEqual([]);
     expect(stats.monthDistanceM).toBeNull();
+  });
+});
+
+describe('currentOdometerM (LLD §5.1)', () => {
+  it('highest fill-up reading, or the starting odometer', () => {
+    expect(currentOdometerM([], 5_000)).toBe(5_000);
+    expect(currentOdometerM([{ odometerM: 9_000 }, { odometerM: 7_000 }], 5_000)).toBe(9_000);
   });
 });

@@ -275,5 +275,19 @@
     "saved": "Saved",
     "missedBody": "A fill-up was missed before this, so this tank's mileage is skipped instead of being wrong. The next tanks show it again.",
     "done": "Done"
+  },
+  "dashboard": {
+    "lastTank": "Last tank",
+    "lastCharge": "Last charge",
+    "average": "Average",
+    "overTanks": "Tanks measured: {{count}}",
+    "overCharges": "Charges measured: {{count}}",
+    "costPerDistance": "Cost per {{unit}}",
+    "thisMonth": "This month",
+    "driven": "{{distance}} driven",
+    "start": "Log your fill-ups here. Mileage shows after two full tanks.",
+    "startEv": "Log your charges here. Mileage shows after two full charges.",
+    "needTwo": "Mileage shows once you've logged two full tanks.",
+    "needTwoEv": "Mileage shows once you've logged two full charges."
   }
 }

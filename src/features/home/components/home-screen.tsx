@@ -5,19 +5,20 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { Card, FAB, Text, useTheme } from 'react-native-paper';
 
 import { metresTo } from '@/domain/units';
+import type { Vehicle } from '@/domain/vehicle';
 import { EmptyState } from '@/ui/empty-state';
 import { formatNumber } from '@/ui/format';
 
 import { useUnitPreferences } from '../../settings/hooks/use-unit-preferences';
 import { useVehicles } from '../../vehicles/hooks/use-vehicles';
 import { VEHICLE_TYPE_ICONS, vehicleDetails } from '../../vehicles/vehicle-display';
+import { useVehicleStats } from '../hooks/use-vehicle-stats';
+import { Dashboard } from './dashboard';
 import { VehicleSwitcher } from './vehicle-switcher';
 
 export function HomeScreen() {
   const { t } = useTranslation();
-  const theme = useTheme();
   const { active, archived, currentId } = useVehicles();
-  const { units, locale } = useUnitPreferences();
   const vehicle = active.find((v) => v.id === currentId);
 
   if (!vehicle) {
@@ -39,7 +40,16 @@ export function HomeScreen() {
     );
   }
 
-  const odometer = `${formatNumber(metresTo(vehicle.initialOdometerM, units.distanceUnit), locale, 0)} ${t(`units.${units.distanceUnit}`)}`;
+  return <VehicleHome vehicle={vehicle} active={active} />;
+}
+
+function VehicleHome({ vehicle, active }: { vehicle: Vehicle; active: Vehicle[] }) {
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const { units, locale } = useUnitPreferences();
+  const stats = useVehicleStats(vehicle);
+  const odometerM = stats?.odometerM ?? vehicle.initialOdometerM;
+  const odometer = `${formatNumber(metresTo(odometerM, units.distanceUnit), locale, 0)} ${t(`units.${units.distanceUnit}`)}`;
   const details = vehicleDetails(vehicle);
 
   return (
@@ -68,6 +78,7 @@ export function HomeScreen() {
             </View>
           </Card.Content>
         </Card>
+        {stats ? <Dashboard vehicle={vehicle} stats={stats} /> : null}
       </ScrollView>
       <FAB
         icon={vehicle.fuelType === 'electric' ? 'ev-station' : 'gas-station'}
