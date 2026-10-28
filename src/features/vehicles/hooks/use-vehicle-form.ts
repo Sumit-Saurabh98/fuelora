@@ -3,10 +3,12 @@ import { useForm, useWatch, type FieldErrors, type Resolver } from 'react-hook-f
 import { useTranslation } from 'react-i18next';
 
 import { getContainer } from '@/container';
+import type { Vehicle } from '@/domain/vehicle';
 import { numberSeparators } from '@/ui/format';
 
 import { useUnitPreferences } from '../../settings/hooks/use-unit-preferences';
 import {
+  toFormValues,
   toNewVehicleInput,
   type VehicleFormError,
   type VehicleFormField,
@@ -24,8 +26,11 @@ export function toFieldErrors(
   return out;
 }
 
-/** Form state for adding a vehicle; validation is the domain's (validateNewVehicle), not a copy. */
-export function useVehicleForm() {
+/**
+ * Form state for adding a vehicle, or editing `existing`; validation is the domain's
+ * (validateNewVehicle), not a copy.
+ */
+export function useVehicleForm(existing?: Vehicle) {
   const { t } = useTranslation();
   const { units, locale } = useUnitPreferences();
   const separators = useMemo(() => numberSeparators(locale), [locale]);
@@ -47,27 +52,30 @@ export function useVehicleForm() {
   };
 
   const form = useForm<VehicleFormValues>({
-    defaultValues: {
-      type: 'scooter',
-      fuelType: 'petrol',
-      name: t('vehicleForm.defaultName.scooter'),
-      odometer: '',
-      make: '',
-      model: '',
-      year: '',
-      plate: '',
-      tank: '',
-    },
+    defaultValues: existing
+      ? toFormValues(existing, { units, locale })
+      : {
+          type: 'scooter',
+          fuelType: 'petrol',
+          name: t('vehicleForm.defaultName.scooter'),
+          odometer: '',
+          make: '',
+          model: '',
+          year: '',
+          plate: '',
+          tank: '',
+        },
     resolver,
     reValidateMode: 'onChange',
   });
 
-  // Keep the suggested name in step with the type until the user writes their own.
+  // Keep the suggested name in step with the type until the user writes their own. A saved
+  // vehicle already has its own name.
   const type = useWatch({ control: form.control, name: 'type' });
-  const nameEdited = form.formState.dirtyFields.name === true;
+  const suggestName = !existing && form.formState.dirtyFields.name !== true;
   useEffect(() => {
-    if (!nameEdited) form.setValue('name', t(`vehicleForm.defaultName.${type}`));
-  }, [type, nameEdited, form, t]);
+    if (suggestName) form.setValue('name', t(`vehicleForm.defaultName.${type}`));
+  }, [type, suggestName, form, t]);
 
   return { form, convert };
 }

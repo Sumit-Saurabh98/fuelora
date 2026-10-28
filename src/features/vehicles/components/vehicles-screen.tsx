@@ -28,6 +28,7 @@ export function VehiclesScreen() {
         title={vehicle.name}
         description={details ? `${kind}\n${details}` : kind}
         descriptionNumberOfLines={2}
+        onPress={() => router.push({ pathname: '/vehicles/[id]', params: { id: vehicle.id } })}
         left={(props) => (
           <List.Icon
             {...props}

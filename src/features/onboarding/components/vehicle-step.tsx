@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { HelperText } from 'react-native-paper';
 
 import { VehicleForm } from '../../vehicles/components/vehicle-form';
+import { useCreateVehicle } from '../../vehicles/hooks/use-create-vehicle';
 import { useSaveVehicle } from '../../vehicles/hooks/use-save-vehicle';
 import { useVehicleForm } from '../../vehicles/hooks/use-vehicle-form';
 import { useOnboarding } from '../onboarding.store';
@@ -13,7 +14,13 @@ export function VehicleStep() {
   const { t } = useTranslation();
   const { form, convert } = useVehicleForm();
   const complete = useOnboarding((s) => s.complete);
-  const { save, saving, saveFailed } = useSaveVehicle({ form, convert, onSaved: complete });
+  const createVehicle = useCreateVehicle();
+  const { save, saving, saveFailed } = useSaveVehicle({
+    form,
+    convert,
+    persist: createVehicle,
+    onSaved: complete,
+  });
   const [skipping, setSkipping] = useState(false);
 
   const skip = async () => {

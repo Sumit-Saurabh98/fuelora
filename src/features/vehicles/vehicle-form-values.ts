@@ -1,6 +1,8 @@
 import type { UnitPreferences } from '@/domain/unit-preferences';
 import {
+  baseTo,
   distanceToMetres,
+  metresTo,
   parseDecimalInput,
   quantityToBase,
   type NumberSeparators,
@@ -10,9 +12,11 @@ import {
   validateNewVehicle,
   type FuelType,
   type NewVehicleInput,
+  type Vehicle,
   type VehicleIssue,
   type VehicleType,
 } from '@/domain/vehicle';
+import { formatNumber } from '@/ui/format';
 
 /** What the form holds: text exactly as typed, plus the two choices. */
 export type VehicleFormValues = {
@@ -102,4 +106,49 @@ export function toNewVehicleInput(
     }
   }
   return Object.keys(errors).length > 0 ? { ok: false, errors } : { ok: true, input };
+}
+
+/** A saved vehicle as form text in the user's units (for editing). */
+export function toFormValues(
+  vehicle: Vehicle,
+  context: { units: UnitPreferences; locale: string },
+): VehicleFormValues {
+  const { units, locale } = context;
+  return {
+    type: vehicle.type,
+    fuelType: vehicle.fuelType,
+    name: vehicle.name,
+    odometer: formatNumber(metresTo(vehicle.initialOdometerM, units.distanceUnit), locale, 1),
+    make: vehicle.make ?? '',
+    model: vehicle.model ?? '',
+    year: vehicle.year === null ? '' : String(vehicle.year),
+    plate: vehicle.plate ?? '',
+    tank:
+      vehicle.tankCapacityBase === null
+        ? ''
+        : formatNumber(
+            baseTo(vehicle.tankCapacityBase, tankUnitFor(vehicle.fuelType, units)),
+            locale,
+            2,
+          ),
+  };
+}
+
+/**
+ * Edits re-read numbers from rounded display text ("7,671 mi"), which would shift the stored
+ * metres slightly on every save. Fields the user didn't touch keep their exact stored value.
+ */
+export function keepUntouchedValues(
+  input: NewVehicleInput,
+  existing: Vehicle,
+  touched: { odometer: boolean; tank: boolean },
+  units: UnitPreferences,
+): NewVehicleInput {
+  const sameTankUnit = tankUnitFor(input.fuelType, units) === tankUnitFor(existing.fuelType, units);
+  return {
+    ...input,
+    initialOdometerM: touched.odometer ? input.initialOdometerM : existing.initialOdometerM,
+    tankCapacityBase:
+      touched.tank || !sameTankUnit ? input.tankCapacityBase : existing.tankCapacityBase,
+  };
 }

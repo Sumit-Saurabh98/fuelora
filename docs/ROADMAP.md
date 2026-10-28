@@ -27,10 +27,11 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
 - [ ] Vehicles: add/edit/archive/delete, switcher — Step 5
   - [x] 5.1 Data layer: update, archive/unarchive, delete with cascade; current vehicle moves to the next active one
   - [x] 5.2 Vehicles screen (active + archived, current badge) from Settings → Vehicles, "Add vehicle"
-  - [ ] 5.3 Edit vehicle screen
+  - [x] 5.3 Edit vehicle screen (tap a vehicle in the list); untouched odometer/tank keep their exact stored values
   - [ ] 5.4 Archive/unarchive + delete with typed-name confirmation
   - [ ] 5.5 Vehicle switcher on top of Home
 - [ ] Fill-up entry: any-two-of-three, amount-only, full/partial, missed flag, validation, plausibility warnings
+  - Then: once a vehicle has fill-ups, block fuel changes across quantity units (liquid ↔ CNG ↔ electric) and a starting odometer above the first fill-up (needs a KB decision)
 - [ ] Result card + dashboard (last/avg efficiency, month spend, cost per distance)
 - [ ] History list with edit/delete
 - **Demo:** log ₹200 partial fills on a bike and a full-tank car fill in gallons; correct numbers

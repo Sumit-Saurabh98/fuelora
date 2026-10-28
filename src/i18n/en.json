@@ -183,5 +183,11 @@
     "archived": "Archived",
     "noActive": "No active vehicles. Add one, or restore an archived one.",
     "add": "Add vehicle"
+  },
+  "editVehicle": {
+    "title": "Edit vehicle",
+    "save": "Save changes",
+    "notFoundTitle": "Vehicle not found",
+    "notFoundBody": "It may have been deleted."
   }
 }

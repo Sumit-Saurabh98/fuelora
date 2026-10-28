@@ -4,6 +4,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { Button, HelperText, useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useCreateVehicle } from '../hooks/use-create-vehicle';
 import { useSaveVehicle } from '../hooks/use-save-vehicle';
 import { useVehicleForm } from '../hooks/use-vehicle-form';
 import { VehicleForm } from './vehicle-form';
@@ -13,9 +14,11 @@ export function AddVehicleScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
   const { form, convert } = useVehicleForm();
+  const createVehicle = useCreateVehicle();
   const { save, saving, saveFailed } = useSaveVehicle({
     form,
     convert,
+    persist: createVehicle,
     onSaved: () => router.back(),
   });
 
