@@ -38,7 +38,7 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
   - [x] 6.5 Plausibility + tank warnings: "Does this look right?" with Check again / Save anyway (FR-8)
 - [ ] Result card + dashboard (last/avg efficiency, month spend, cost per distance) — Step 7
   - [x] 7.1 Domain: result for a saved fill-up (segment / baseline / partial / missed) and vehicle stats (last, distance-weighted average, cost per distance, month spend + distance), all through EfficiencyEngine
-  - [ ] 7.2 Result card after saving a fill-up
+  - [x] 7.2 Result card after saving: this tank's mileage, distance on fuel, cost per km/mi; or baseline / partial / missed explanation (FR-10)
   - [ ] 7.3 Home dashboard
 - [ ] History list with edit/delete
 - **Demo:** log ₹200 partial fills on a bike and a full-tank car fill in gallons; correct numbers

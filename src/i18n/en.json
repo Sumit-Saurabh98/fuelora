@@ -26,7 +26,8 @@
   },
   "stats": {
     "emptyTitle": "Not enough data yet",
-    "emptyBody": "Charts appear after a few full-tank fill-ups."
+    "emptyBody": "Charts appear after a few full-tank fill-ups.",
+    "perDistance": "{{cost}} per {{unit}}"
   },
   "tools": {
     "emptyTitle": "Calculators",
@@ -258,5 +259,21 @@
     "warnTank": "That's more fuel than the tank holds ({{tank}}). Check the amount.",
     "checkAgain": "Check again",
     "saveAnyway": "Save anyway"
+  },
+  "fillUpResult": {
+    "title": "Saved",
+    "thisTank": "This tank",
+    "thisCharge": "This charge",
+    "distanceOn": "{{distance}} on {{quantity}}",
+    "baseline": "First full tank saved",
+    "baselineBody": "Your mileage shows after your next full tank.",
+    "baselineEv": "First full charge saved",
+    "baselineEvBody": "Your mileage shows after your next full charge.",
+    "partial": "Partial fill saved",
+    "partialBody": "It's included in your next full tank. Mileage shows then.",
+    "partialEvBody": "It's included in your next full charge. Mileage shows then.",
+    "saved": "Saved",
+    "missedBody": "A fill-up was missed before this, so this tank's mileage is skipped instead of being wrong. The next tanks show it again.",
+    "done": "Done"
   }
 }

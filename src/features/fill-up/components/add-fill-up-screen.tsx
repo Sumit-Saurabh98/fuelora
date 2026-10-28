@@ -151,8 +151,12 @@ function FillUpForm({ vehicle, last }: { vehicle: Vehicle; last: FillUp | null }
   });
 
   const store = async (input: NewFillUpInput) => {
-    await add(input);
-    router.back();
+    const saved = await add(input);
+    // Replace, so Done on the result card goes straight back to Home.
+    router.replace({
+      pathname: '/fill-up/result',
+      params: { id: saved.id, vehicleId: saved.vehicleId },
+    });
   };
 
   const saveAnyway = async () => {

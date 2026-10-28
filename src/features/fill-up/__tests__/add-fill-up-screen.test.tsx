@@ -32,7 +32,7 @@ const mockVehicles = new VehicleService(
 );
 const mockFillUps = new FillUpService(mockFillUpRepo, mockVehicles, mockClock, ids);
 jest.mock('expo-router', () => ({
-  router: { back: jest.fn() },
+  router: { back: jest.fn(), replace: jest.fn() },
   Stack: { Screen: () => null },
 }));
 jest.mock('@/container', () => ({
@@ -75,7 +75,7 @@ describe('AddFillUpScreen', () => {
       } as unknown as Localization.Locale,
     ]);
     usePreferences.setState({ region: 'IN', language: 'en', unitOverrides: {} });
-    jest.mocked(router.back).mockClear();
+    jest.mocked(router.replace).mockClear();
   });
 
   afterEach(() => jest.restoreAllMocks());
@@ -91,7 +91,12 @@ describe('AddFillUpScreen', () => {
 
     await fireEvent.press(screen.getByText('Save'));
 
-    await waitFor(() => expect(router.back).toHaveBeenCalled());
+    await waitFor(() => expect(router.replace).toHaveBeenCalled());
+    // Opens the result card for the saved entry (FR-10).
+    expect(router.replace).toHaveBeenCalledWith({
+      pathname: '/fill-up/result',
+      params: { id: saved()[0]!.id, vehicleId: vehicle.id },
+    });
     expect(saved()).toEqual([
       expect.objectContaining({
         odometerM: 12_300_000,
@@ -203,7 +208,7 @@ describe('AddFillUpScreen', () => {
       await screen.findByText("Must be at least 12,000 km (the vehicle's starting odometer)"),
     ).toBeTruthy();
     expect(saved()).toHaveLength(0);
-    expect(router.back).not.toHaveBeenCalled();
+    expect(router.replace).not.toHaveBeenCalled();
   });
 
   it('EV: says charge and energy in kWh', async () => {
@@ -268,6 +273,6 @@ describe('AddFillUpScreen', () => {
     await fireEvent.press(await screen.findByText('Save anyway'));
 
     await waitFor(() => expect(saved()).toHaveLength(2));
-    expect(router.back).toHaveBeenCalled();
+    expect(router.replace).toHaveBeenCalled();
   });
 });

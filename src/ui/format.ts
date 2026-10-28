@@ -18,6 +18,14 @@ export function formatNumber(value: number, locale: string, maxFractionDigits: n
   return new Intl.NumberFormat(locale, { maximumFractionDigits: maxFractionDigits }).format(value);
 }
 
+/** Always `digits` decimals ("40.0"), for values whose precision is part of the meaning. */
+export function formatFixed(value: number, locale: string, digits: number): string {
+  return new Intl.NumberFormat(locale, {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  }).format(value);
+}
+
 /**
  * The locale's decimal and grouping characters, for parsing what users type. Read from format()
  * output: Hermes on iOS has no Intl formatToParts. Our parser only accepts '.' and ',', so locales
