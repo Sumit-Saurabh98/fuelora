@@ -8,6 +8,7 @@ import { renderScreen } from '@/testing/render-screen';
 
 import { usePreferences } from '../../settings/preferences.store';
 import { useVehicleFillUps } from '../../fill-up/hooks/use-vehicle-fill-ups';
+import { useActiveReminders } from '../../reminders/hooks/use-active-reminders';
 import { useVehicleServices } from '../../services/hooks/use-vehicle-services';
 import { useVehicles, type VehicleLists } from '../../vehicles/hooks/use-vehicles';
 import { HomeScreen } from '../components/home-screen';
@@ -21,6 +22,7 @@ jest.mock('@/container', () => ({
 jest.mock('../../vehicles/hooks/use-vehicles', () => ({ useVehicles: jest.fn() }));
 jest.mock('../../fill-up/hooks/use-vehicle-fill-ups', () => ({ useVehicleFillUps: jest.fn() }));
 jest.mock('../../services/hooks/use-vehicle-services', () => ({ useVehicleServices: jest.fn() }));
+jest.mock('../../reminders/hooks/use-active-reminders', () => ({ useActiveReminders: jest.fn() }));
 const mockFillUps = jest.mocked(useVehicleFillUps);
 const mockVehicles = jest.mocked(useVehicles);
 
@@ -70,6 +72,7 @@ describe('HomeScreen', () => {
     mockSetCurrent.mockClear();
     mockFillUps.mockReturnValue([]);
     jest.mocked(useVehicleServices).mockReturnValue([]);
+    jest.mocked(useActiveReminders).mockReturnValue([]);
   });
 
   afterEach(() => jest.restoreAllMocks());
@@ -250,5 +253,56 @@ describe('HomeScreen', () => {
     ]);
     await renderScreen(<HomeScreen />);
     expect(screen.getByText('Odometer: 13,000 km')).toBeTruthy();
+  });
+
+  describe('next reminders (F-06)', () => {
+    const r = (id: string, change: object) => ({
+      id,
+      vehicleId: 'v1',
+      kind: 'service' as const,
+      typeKey: 'engine_oil' as const,
+      title: null,
+      dueDate: null,
+      dueOdometerM: null,
+      repeatMonths: null,
+      repeatDistanceM: null,
+      leadDays: 7,
+      leadDistanceM: 300_000,
+      status: 'active' as const,
+      lastDoneDate: null,
+      lastDoneOdometerM: null,
+      createdAt: '2026-10-01T10:00:00.000Z',
+      updatedAt: '2026-10-01T10:00:00.000Z',
+      ...change,
+    });
+
+    it('offers to add one when there are none', async () => {
+      mockVehicles.mockReturnValue(lists());
+      await renderScreen(<HomeScreen />);
+      await fireEvent.press(screen.getByText('Add a service or document reminder'));
+      expect(router.push).toHaveBeenCalledWith({
+        pathname: '/reminder/new',
+        params: { vehicleId: 'v1' },
+      });
+    });
+
+    it('shows the 3 most urgent and links to all of them', async () => {
+      mockVehicles.mockReturnValue(lists());
+      jest
+        .mocked(useActiveReminders)
+        .mockReturnValue([
+          r('a', { dueOdometerM: 20_000_000 }),
+          r('b', { typeKey: 'air_filter', dueDate: '2026-10-20' }),
+          r('c', { typeKey: 'brake_check', dueDate: '2026-11-30' }),
+          r('d', { typeKey: 'spark_plug', dueDate: '2027-06-01' }),
+        ]);
+      await renderScreen(<HomeScreen />);
+      expect(screen.getByText('Air filter')).toBeTruthy();
+      expect(screen.getByText('Overdue since 20 Oct 2026')).toBeTruthy();
+      expect(screen.getByText('Brake check')).toBeTruthy();
+      expect(screen.queryByText('Engine oil change')).toBeNull();
+      await fireEvent.press(screen.getByText('All reminders'));
+      expect(router.push).toHaveBeenCalledWith('/reminders');
+    });
   });
 });

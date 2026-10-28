@@ -21,7 +21,10 @@
     "allArchivedBody": "Their data is kept. Restore one, or add a new vehicle.",
     "addFillUp": "Add fill-up",
     "addCharge": "Add charge",
-    "addService": "Add service"
+    "addService": "Add service",
+    "nextReminders": "Next reminders",
+    "addReminder": "Add a service or document reminder",
+    "allReminders": "All reminders"
   },
   "history": {
     "emptyTitle": "No entries yet",

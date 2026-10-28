@@ -52,13 +52,13 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
   - [x] 9.2 Data layer: `services` table (migration 0002 + upgrade test), repository, ServiceLogService; services count toward the current odometer
   - [x] 9.3 Add service screen (small wrench button on Home): date, presets for the vehicle + Other with a name, optional odometer and cost, note
   - [x] 9.4 Services in History next to fill-ups (month header = everything spent); tap to edit or delete; service readings move the current odometer
-- [ ] Reminders (date / distance / both, repeat, lead) + document presets + region names — Step 10
+- [x] Reminders (date / distance / both, repeat, lead) + document presets + region names — Step 10 (device check pending)
   - [x] 10.1 Domain: reminder rules (due date and/or odometer, repeat, lead 7 days / 300 km), document keys with region names, status (upcoming / due soon / due / overdue), roll-forward on done; calendar-day maths
   - [x] 10.2 Data layer: `reminders` table (migration 0003 + upgrade test, due CHECK), repository, ReminderService (create / update / delete / mark done); logging a matching service completes and rolls the reminder forward
   - [x] 10.3 Tabs Home · History · Reminders · More (LLD §6); Stats, Calculators, Vehicles and Settings open from More
   - [x] 10.4 Reminders list: current vehicle + licence, most urgent first, due text, Done (today, current odometer)
   - [x] 10.5 Add / edit / delete reminder: Service / Document / Other, presets pre-fill suggested due + repeat (labelled as suggestions), documents with region names, licence person-level, due date and/or odometer, repeat, lead
-  - [ ] 10.6 Next reminders on the Home dashboard (F-06)
+  - [x] 10.6 Next reminders on the Home dashboard: 3 most urgent, "All reminders", or a prompt to add one (F-06)
 - [ ] Distance forecaster + predicted dates
 - [ ] `ReminderPlanner` + `NotificationScheduler` (60 budget, 09:00, overdue once), permission on first reminder
 - [ ] Weekly nudge (toggle)

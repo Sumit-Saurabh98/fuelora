@@ -82,15 +82,13 @@ function reminder(change: Partial<Reminder>): Reminder {
 
 describe('Reminders', () => {
   beforeEach(async () => {
-    jest
-      .spyOn(Localization, 'getLocales')
-      .mockReturnValue([
-        {
-          languageTag: 'en-IN',
-          regionCode: 'IN',
-          currencyCode: 'INR',
-        } as unknown as Localization.Locale,
-      ]);
+    jest.spyOn(Localization, 'getLocales').mockReturnValue([
+      {
+        languageTag: 'en-IN',
+        regionCode: 'IN',
+        currencyCode: 'INR',
+      } as unknown as Localization.Locale,
+    ]);
     usePreferences.setState({ region: 'IN', language: 'en', unitOverrides: {} });
     mockRepo.rows.clear();
     vehicle = await mockVehicles.create({
@@ -111,18 +109,16 @@ describe('Reminders', () => {
 
   describe('list (F-10)', () => {
     it('most urgent first with region names and due text', async () => {
-      jest
-        .mocked(useActiveReminders)
-        .mockReturnValue([
-          reminder({ id: 'oil', dueOdometerM: 15_000_000 }),
-          reminder({
-            id: 'puc',
-            kind: 'document',
-            typeKey: 'emission_test',
-            dueDate: '2026-10-20',
-          }),
-          reminder({ id: 'ins', kind: 'document', typeKey: 'insurance', dueDate: '2026-11-02' }),
-        ]);
+      jest.mocked(useActiveReminders).mockReturnValue([
+        reminder({ id: 'oil', dueOdometerM: 15_000_000 }),
+        reminder({
+          id: 'puc',
+          kind: 'document',
+          typeKey: 'emission_test',
+          dueDate: '2026-10-20',
+        }),
+        reminder({ id: 'ins', kind: 'document', typeKey: 'insurance', dueDate: '2026-11-02' }),
+      ]);
       await renderScreen(<RemindersScreen />);
 
       const titles = ['PUC', 'Insurance', 'Engine oil change'].map(

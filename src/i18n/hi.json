@@ -21,7 +21,10 @@
     "allArchivedBody": "उनका डेटा सुरक्षित है। कोई वाहन वापस लाएँ या नया जोड़ें।",
     "addFillUp": "फ़्यूल जोड़ें",
     "addCharge": "चार्ज जोड़ें",
-    "addService": "सर्विस जोड़ें"
+    "addService": "सर्विस जोड़ें",
+    "nextReminders": "आने वाले रिमाइंडर",
+    "addReminder": "सर्विस या दस्तावेज़ रिमाइंडर जोड़ें",
+    "allReminders": "सभी रिमाइंडर"
   },
   "history": {
     "emptyTitle": "अभी कोई एंट्री नहीं",
