@@ -1,0 +1,122 @@
+{
+  "app": "fuelora",
+  "schemaVersion": 1,
+  "exportedAt": "2026-10-28T10:00:00.000Z",
+  "appVersion": "0.1.0",
+  "data": {
+    "vehicles": [
+      {
+        "id": "v1",
+        "name": "My Activa",
+        "type": "scooter",
+        "fuelType": "petrol",
+        "make": "Honda",
+        "model": "Activa 6G",
+        "year": 2023,
+        "plate": "KA01AB1234",
+        "initialOdometerM": 12000000,
+        "tankCapacityBase": 5300,
+        "isArchived": false,
+        "sortOrder": 0,
+        "createdAt": "2026-09-01T10:00:00.000Z",
+        "updatedAt": "2026-09-01T10:00:00.000Z"
+      }
+    ],
+    "fillUps": [
+      {
+        "id": "f1",
+        "vehicleId": "v1",
+        "filledAt": "2026-10-01T03:30:00.000Z",
+        "localDate": "2026-10-01",
+        "odometerM": 12100000,
+        "quantityBase": 5000,
+        "totalMinor": 52250,
+        "currency": "INR",
+        "isFull": true,
+        "missedPrevious": false,
+        "entryMode": "qty_total",
+        "station": "HP Indiranagar",
+        "note": null,
+        "createdAt": "2026-10-01T03:30:00.000Z",
+        "updatedAt": "2026-10-01T03:30:00.000Z"
+      },
+      {
+        "id": "f2",
+        "vehicleId": "v1",
+        "filledAt": "2026-10-20T03:30:00.000Z",
+        "localDate": "2026-10-20",
+        "odometerM": 12320000,
+        "quantityBase": 1914,
+        "totalMinor": 20000,
+        "currency": "INR",
+        "isFull": false,
+        "missedPrevious": false,
+        "entryMode": "amount_only",
+        "station": null,
+        "note": null,
+        "createdAt": "2026-10-20T03:30:00.000Z",
+        "updatedAt": "2026-10-20T03:30:00.000Z"
+      }
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "vehicleId": "v1",
+        "servicedDate": "2026-10-12",
+        "odometerM": 12200000,
+        "typeKey": "engine_oil",
+        "title": null,
+        "costMinor": 45000,
+        "currency": "INR",
+        "note": "Castrol",
+        "createdAt": "2026-10-12T09:00:00.000Z",
+        "updatedAt": "2026-10-12T09:00:00.000Z"
+      }
+    ],
+    "reminders": [
+      {
+        "id": "r1",
+        "vehicleId": "v1",
+        "kind": "service",
+        "typeKey": "engine_oil",
+        "title": null,
+        "dueDate": "2027-04-12",
+        "dueOdometerM": 15200000,
+        "repeatMonths": 6,
+        "repeatDistanceM": 3000000,
+        "leadDays": 7,
+        "leadDistanceM": 300000,
+        "status": "active",
+        "lastDoneDate": "2026-10-12",
+        "lastDoneOdometerM": 12200000,
+        "createdAt": "2026-10-12T09:00:00.000Z",
+        "updatedAt": "2026-10-12T09:00:00.000Z"
+      },
+      {
+        "id": "r2",
+        "vehicleId": null,
+        "kind": "document",
+        "typeKey": "licence",
+        "title": null,
+        "dueDate": "2030-05-01",
+        "dueOdometerM": null,
+        "repeatMonths": null,
+        "repeatDistanceM": null,
+        "leadDays": 30,
+        "leadDistanceM": 300000,
+        "status": "active",
+        "lastDoneDate": null,
+        "lastDoneOdometerM": null,
+        "createdAt": "2026-10-12T09:00:00.000Z",
+        "updatedAt": "2026-10-12T09:00:00.000Z"
+      }
+    ],
+    "odometerReadings": [],
+    "settings": [
+      { "key": "region", "value": "IN", "updatedAt": "2026-09-01T10:00:00.000Z" },
+      { "key": "language", "value": "hi", "updatedAt": "2026-09-01T10:00:00.000Z" },
+      { "key": "current_vehicle_id", "value": "v1", "updatedAt": "2026-09-01T10:00:00.000Z" },
+      { "key": "onboarding_done", "value": "true", "updatedAt": "2026-09-01T10:00:00.000Z" }
+    ]
+  }
+}

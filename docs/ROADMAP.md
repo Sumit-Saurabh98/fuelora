@@ -79,7 +79,13 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
 - [x] Calculators: trip cost, mileage, fuel split → "Track this vehicle" — Step 15 (device check pending)
   - [x] 15.1 Domain: EfficiencyEngine.quantityFor (inverse of value), trip cost with exact per-person shares, mileage in every format, even split
   - [x] 15.2 Calculators screen (More → Calculators): trip cost / mileage / split cost, petrol-diesel / CNG / electric, live results, nothing saved, "Track this vehicle" opens add vehicle
-- [ ] Backup export (JSON + CSV), restore with safety backup, monthly nudge
+- [ ] Backup export (JSON + CSV), restore with safety backup, monthly nudge — Step 16
+  - [x] 16.1 Backup format v1 (LLD §7): Zod-validated rows + cross-references, newer versions refused, migration steps scaffold, restore summary, v1 fixture
+  - [ ] 16.2 Export: JSON backup via share sheet + CSV per vehicle; last export time on the device (MMKV)
+  - [ ] 16.3 Restore: pick file → summary → safety backup → replace all in one transaction → notifications
+  - [ ] 16.4 Settings → Backup: export, restore, "Last backup: N days ago" (FR-26)
+  - [ ] 16.5 `.fuelora` file type / Open in Fuelora (FR-23) + Android "Keep app data" (FR-25) + Auto Backup check
+  - [ ] 16.6 Backup nudges: 30 days / 20 new entries, max one per 7 days (FR-27)
 - [ ] Verify Android Auto Backup / iOS backup include the DB
 - [ ] `.fuelora` backup file type: "Open in Fuelora" from WhatsApp/email/Drive/Files on both platforms (FR-23)
 - [ ] After restore: notification permission prompt + reschedule when reminders exist (FR-24)

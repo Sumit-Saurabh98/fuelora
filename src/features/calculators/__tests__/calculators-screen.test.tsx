@@ -14,15 +14,13 @@ const type = (label: string, text: string) =>
 
 describe('CalculatorsScreen (F-12)', () => {
   beforeEach(() => {
-    jest
-      .spyOn(Localization, 'getLocales')
-      .mockReturnValue([
-        {
-          languageTag: 'en-IN',
-          regionCode: 'IN',
-          currencyCode: 'INR',
-        } as unknown as Localization.Locale,
-      ]);
+    jest.spyOn(Localization, 'getLocales').mockReturnValue([
+      {
+        languageTag: 'en-IN',
+        regionCode: 'IN',
+        currencyCode: 'INR',
+      } as unknown as Localization.Locale,
+    ]);
     usePreferences.setState({ region: 'IN', language: 'en', unitOverrides: {} });
   });
 
