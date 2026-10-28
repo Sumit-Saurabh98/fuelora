@@ -80,6 +80,15 @@ function VehicleHome({ vehicle, active }: { vehicle: Vehicle; active: Vehicle[] 
         </Card>
         {stats ? <Dashboard vehicle={vehicle} stats={stats} /> : null}
       </ScrollView>
+      {/* Services are rarer than fill-ups, so they get the small button: fill-ups stay one tap. */}
+      <FAB
+        icon="wrench"
+        size="small"
+        mode="flat"
+        accessibilityLabel={t('home.addService')}
+        style={styles.serviceFab}
+        onPress={() => router.push({ pathname: '/service/new', params: { vehicleId: vehicle.id } })}
+      />
       <FAB
         icon={vehicle.fuelType === 'electric' ? 'ev-station' : 'gas-station'}
         label={vehicle.fuelType === 'electric' ? t('home.addCharge') : t('home.addFillUp')}
@@ -93,8 +102,9 @@ function VehicleHome({ vehicle, active }: { vehicle: Vehicle; active: Vehicle[] 
 const styles = StyleSheet.create({
   screen: { flex: 1 },
   // Room under the last card so the FAB never covers it.
-  content: { padding: 16, gap: 12, paddingBottom: 96 },
+  content: { padding: 16, gap: 12, paddingBottom: 152 },
   fab: { position: 'absolute', right: 16, bottom: 16 },
+  serviceFab: { position: 'absolute', right: 20, bottom: 88 },
   card: { flexDirection: 'row', alignItems: 'center', gap: 16 },
   text: { flex: 1, gap: 2 },
 });

@@ -19,6 +19,8 @@ type Props = {
   dateLabel: string;
   timeLabel: string;
   error?: string;
+  /** False for calendar days (services, documents): only the date button. */
+  withTime?: boolean;
 };
 
 type Mode = 'date' | 'time';
@@ -45,6 +47,7 @@ export function DateTimeField({
   dateLabel,
   timeLabel,
   error,
+  withTime = true,
 }: Props) {
   const theme = useTheme();
   const [iosMode, setIosMode] = useState<Mode | null>(null);
@@ -82,16 +85,18 @@ export function DateTimeField({
         >
           {formatDate(value, locale)}
         </Button>
-        <Button
-          mode="outlined"
-          icon="clock-outline"
-          onPress={() => open('time')}
-          style={styles.button}
-          contentStyle={styles.buttonContent}
-          accessibilityLabel={`${timeLabel}: ${formatTime(value, locale)}`}
-        >
-          {formatTime(value, locale)}
-        </Button>
+        {withTime ? (
+          <Button
+            mode="outlined"
+            icon="clock-outline"
+            onPress={() => open('time')}
+            style={styles.button}
+            contentStyle={styles.buttonContent}
+            accessibilityLabel={`${timeLabel}: ${formatTime(value, locale)}`}
+          >
+            {formatTime(value, locale)}
+          </Button>
+        ) : null}
       </View>
       {error ? (
         <HelperText type="error" visible>

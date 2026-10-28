@@ -46,6 +46,7 @@ export default function RootLayout() {
               <Stack.Screen name="fill-up/new" options={withHeader} />
               <Stack.Screen name="fill-up/result" options={withHeader} />
               <Stack.Screen name="fill-up/[id]" options={withHeader} />
+              <Stack.Screen name="service/new" options={withHeader} />
             </Stack.Protected>
             <Stack.Protected guard={!onboarded}>
               <Stack.Screen name="onboarding" />

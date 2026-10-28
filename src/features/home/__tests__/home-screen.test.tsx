@@ -126,6 +126,16 @@ describe('HomeScreen', () => {
     });
   });
 
+  it('the wrench button opens Add service for the current vehicle', async () => {
+    mockVehicles.mockReturnValue(lists());
+    await renderScreen(<HomeScreen />);
+    await fireEvent.press(screen.getByLabelText('Add service'));
+    expect(router.push).toHaveBeenCalledWith({
+      pathname: '/service/new',
+      params: { vehicleId: 'v1' },
+    });
+  });
+
   it('EVs get Add charge', async () => {
     mockVehicles.mockReturnValue(lists({ active: [{ ...activa, fuelType: 'electric' }] }));
     await renderScreen(<HomeScreen />);

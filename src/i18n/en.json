@@ -18,7 +18,8 @@
     "allArchivedTitle": "All vehicles are archived",
     "allArchivedBody": "Their data is kept. Restore one, or add a new vehicle.",
     "addFillUp": "Add fill-up",
-    "addCharge": "Add charge"
+    "addCharge": "Add charge",
+    "addService": "Add service"
   },
   "history": {
     "emptyTitle": "No entries yet",
@@ -300,5 +301,44 @@
     "startEv": "Log your charges here. Mileage shows after two full charges.",
     "needTwo": "Mileage shows once you've logged two full tanks.",
     "needTwoEv": "Mileage shows once you've logged two full charges."
+  },
+  "servicePresets": {
+    "general_service": "General service",
+    "engine_oil": "Engine oil change",
+    "oil_filter": "Oil filter",
+    "air_filter": "Air filter",
+    "chain_lube": "Chain lube",
+    "cvt_belt": "CVT belt",
+    "spark_plug": "Spark plug",
+    "brake_check": "Brake check",
+    "tyre_rotation": "Tyre rotation",
+    "wheel_alignment": "Wheel alignment",
+    "coolant": "Coolant",
+    "ac_service": "AC service",
+    "battery_check": "Battery check",
+    "tyre_pressure": "Tyre pressure",
+    "custom": "Other"
+  },
+  "serviceForm": {
+    "title": "Add service",
+    "editTitle": "Edit service",
+    "when": "Date",
+    "type": "What was done",
+    "titleLabel": "Name it",
+    "odometer": "Odometer (optional)",
+    "odometerHelp": "Helps with distance-based reminders.",
+    "cost": "Cost (optional)",
+    "delete": "Delete service",
+    "deleteTitle": "Delete this service?",
+    "deleteBody": "This can't be undone.",
+    "errors": {
+      "required": "Required",
+      "not_a_number": "Enter a number",
+      "out_of_range": "Check this value",
+      "too_long": "Too long",
+      "in_future": "Can't be in the future",
+      "invalid": "Choose an option",
+      "below_start": "Can't be below the vehicle's starting odometer"
+    }
   }
 }
