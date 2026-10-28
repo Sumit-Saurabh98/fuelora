@@ -62,3 +62,11 @@ export function currencySymbol(locale: string, currency: string): string {
   }).format(0);
   return sample.replace(/[\d\s\u00a0\u202f.,]/g, '') || currency;
 }
+
+/** "October 2026" for a YYYY-MM month key. */
+export function formatMonth(month: string, locale: string): string {
+  const [year, m] = month.split('-').map(Number);
+  return new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }).format(
+    new Date(year!, m! - 1, 1),
+  );
+}

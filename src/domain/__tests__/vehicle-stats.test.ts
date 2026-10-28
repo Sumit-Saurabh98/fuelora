@@ -4,6 +4,8 @@ import {
   currentOdometerM,
   efficiencyFormatFor,
   fillUpResult,
+  groupByMonth,
+  segmentMarks,
   vehicleStats,
 } from '../vehicle-stats';
 
@@ -151,5 +153,39 @@ describe('currentOdometerM (LLD §5.1)', () => {
   it('highest fill-up reading, or the starting odometer', () => {
     expect(currentOdometerM([], 5_000)).toBe(5_000);
     expect(currentOdometerM([{ odometerM: 9_000 }, { odometerM: 7_000 }], 5_000)).toBe(9_000);
+  });
+});
+
+describe('segmentMarks (F-07)', () => {
+  it('efficiency on each full fill that closes a segment; missed ones marked', () => {
+    const marks = segmentMarks(
+      [
+        f('a', 10_000, 5, 500),
+        f('b', 10_150, 3, 300, false),
+        f('c', 10_320, 5, 500),
+        f('d', 10_600, 7, 700, true, '2026-10-20', true),
+      ],
+      'km_per_l',
+    );
+    expect(marks.get('a')).toBeUndefined(); // baseline
+    expect(marks.get('b')).toBeUndefined(); // partial
+    expect(marks.get('c')).toEqual({ kind: 'efficiency', value: 40 });
+    expect(marks.get('d')).toEqual({ kind: 'missed' });
+  });
+});
+
+describe('groupByMonth', () => {
+  it('newest first by date, one group per month with its spend', () => {
+    const rows = [
+      { ...f('sep', 10_000, 5, 500, true, '2026-09-28'), filledAt: '2026-09-28T09:00:00.000Z' },
+      { ...f('oct1', 10_200, 4, 400, true, '2026-10-05'), filledAt: '2026-10-05T09:00:00.000Z' },
+      { ...f('oct2', 10_450, 5, 550, true, '2026-10-20'), filledAt: '2026-10-20T09:00:00.000Z' },
+    ];
+    const groups = groupByMonth(rows);
+    expect(groups.map((g) => [g.month, g.entries.map((e) => e.id)])).toEqual([
+      ['2026-10', ['oct2', 'oct1']],
+      ['2026-09', ['sep']],
+    ]);
+    expect(groups[0]!.spend.map((m) => m.amountMinor)).toEqual([95_000]);
   });
 });

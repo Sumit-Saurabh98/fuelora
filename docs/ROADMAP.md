@@ -40,7 +40,9 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
   - [x] 7.1 Domain: result for a saved fill-up (segment / baseline / partial / missed) and vehicle stats (last, distance-weighted average, cost per distance, month spend + distance), all through EfficiencyEngine
   - [x] 7.2 Result card after saving: this tank's mileage, distance on fuel, cost per km/mi; or baseline / partial / missed explanation (FR-10)
   - [x] 7.3 Home dashboard: last + average mileage, cost per km/mi, this month's spend and distance; current odometer on the vehicle card
-- [ ] History list with edit/delete
+- [ ] History list with edit/delete — Step 8
+  - [x] 8.1 History tab: current vehicle's fill-ups by month (newest first) with month spend; each entry shows date, total, odometer, quantity, station and its mileage / Partial / First full / Missed fill
+  - [ ] 8.2 Edit and delete a fill-up (tap an entry); segments recomputed (FR-11)
 - **Demo:** log ₹200 partial fills on a bike and a full-tank car fill in gallons; correct numbers
 
 ## Phase 2 — Services, reminders, notifications (Weeks 5–6)

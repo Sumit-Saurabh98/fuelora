@@ -22,7 +22,10 @@
   },
   "history": {
     "emptyTitle": "No entries yet",
-    "emptyBody": "Your fill-ups and services will appear here."
+    "emptyBody": "Your fill-ups and services will appear here.",
+    "partial": "Partial",
+    "firstFull": "First full",
+    "missed": "Missed fill"
   },
   "stats": {
     "emptyTitle": "Not enough data yet",

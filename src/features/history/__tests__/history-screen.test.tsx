@@ -1,0 +1,105 @@
+import { screen } from '@testing-library/react-native';
+import * as Localization from 'expo-localization';
+
+import type { FillUp } from '@/domain/fill-up';
+import type { Vehicle } from '@/domain/vehicle';
+import { renderScreen } from '@/testing/render-screen';
+
+import { useVehicleFillUps } from '../../fill-up/hooks/use-vehicle-fill-ups';
+import { usePreferences } from '../../settings/preferences.store';
+import { useVehicles } from '../../vehicles/hooks/use-vehicles';
+import { HistoryScreen } from '../components/history-screen';
+
+jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
+jest.mock('../../vehicles/hooks/use-vehicles', () => ({ useVehicles: jest.fn() }));
+jest.mock('../../fill-up/hooks/use-vehicle-fill-ups', () => ({ useVehicleFillUps: jest.fn() }));
+
+const activa: Vehicle = {
+  id: 'v1',
+  name: 'My Activa',
+  type: 'scooter',
+  fuelType: 'petrol',
+  make: null,
+  model: null,
+  year: null,
+  plate: null,
+  initialOdometerM: 0,
+  tankCapacityBase: null,
+  isArchived: false,
+  sortOrder: 0,
+  createdAt: '2026-09-01T10:00:00.000Z',
+  updatedAt: '2026-09-01T10:00:00.000Z',
+};
+
+function f(
+  id: string,
+  km: number,
+  litres: number,
+  rupees: number,
+  localDate: string,
+  change: Partial<FillUp> = {},
+): FillUp {
+  return {
+    id,
+    vehicleId: 'v1',
+    filledAt: `${localDate}T09:00:00.000Z`,
+    localDate,
+    odometerM: km * 1000,
+    quantityBase: litres * 1000,
+    totalMinor: rupees * 100,
+    currency: 'INR',
+    isFull: true,
+    missedPrevious: false,
+    entryMode: 'qty_total',
+    station: null,
+    note: null,
+    createdAt: `${localDate}T09:00:00.000Z`,
+    updatedAt: `${localDate}T09:00:00.000Z`,
+    ...change,
+  };
+}
+
+describe('HistoryScreen (F-07)', () => {
+  beforeEach(() => {
+    jest
+      .spyOn(Localization, 'getLocales')
+      .mockReturnValue([
+        {
+          languageTag: 'en-IN',
+          regionCode: 'IN',
+          currencyCode: 'INR',
+        } as unknown as Localization.Locale,
+      ]);
+    usePreferences.setState({ region: 'IN', language: 'en', unitOverrides: {} });
+    jest.mocked(useVehicles).mockReturnValue({ active: [activa], archived: [], currentId: 'v1' });
+  });
+
+  afterEach(() => jest.restoreAllMocks());
+
+  it('empty without a vehicle or without fill-ups', async () => {
+    jest.mocked(useVehicleFillUps).mockReturnValue([]);
+    await renderScreen(<HistoryScreen />);
+    expect(screen.getByText('No entries yet')).toBeTruthy();
+  });
+
+  it('groups by month newest first with month spend and marks on each entry', async () => {
+    jest
+      .mocked(useVehicleFillUps)
+      .mockReturnValue([
+        f('a', 10_000, 5, 500, '2026-09-25'),
+        f('b', 10_150, 3, 300, '2026-10-05', { isFull: false, station: 'HP' }),
+        f('c', 10_320, 5, 500, '2026-10-20'),
+        f('d', 10_600, 7, 700, '2026-10-27', { missedPrevious: true }),
+      ]);
+    await renderScreen(<HistoryScreen />);
+
+    const headers = screen.getAllByRole('header').map((h) => h.props.children);
+    expect(headers).toEqual(['October 2026', 'September 2026']);
+    expect(screen.getByText('₹1,500.00')).toBeTruthy(); // October: 300 + 500 + 700
+    expect(screen.getByText('40.0 km/L')).toBeTruthy(); // c closes 320 km on 8 L
+    expect(screen.getByText('Partial')).toBeTruthy();
+    expect(screen.getByText('Missed fill')).toBeTruthy();
+    expect(screen.getByText('First full')).toBeTruthy();
+    expect(screen.getByText('10,150 km · 3 L · HP')).toBeTruthy();
+  });
+});

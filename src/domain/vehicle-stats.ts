@@ -142,3 +142,42 @@ export function currentOdometerM(
 ): number {
   return fillUps.reduce((max, f) => Math.max(max, f.odometerM), initialOdometerM);
 }
+
+/** What the history shows next to a full fill: its segment's efficiency, or that it was missed. */
+export type SegmentMark = { kind: 'efficiency'; value: number | null } | { kind: 'missed' };
+
+/** Efficiency per closing fill-up id, for the history list (F-07); one engine pass. */
+export function segmentMarks(
+  fillUps: readonly EfficiencyFillUp[],
+  format: EfficiencyFormat,
+): Map<string, SegmentMark> {
+  const marks = new Map<string, SegmentMark>();
+  for (const s of engine.segments(fillUps)) {
+    marks.set(
+      s.endId,
+      s.valid ? { kind: 'efficiency', value: engine.value(s, format) } : { kind: 'missed' },
+    );
+  }
+  return marks;
+}
+
+/** Fill-ups newest first, grouped by calendar month (YYYY-MM) with the month's spend. */
+export function groupByMonth<
+  T extends Pick<EfficiencyFillUp, 'localDate' | 'totalMinor' | 'currency'> & { filledAt: string },
+>(fillUps: readonly T[]): { month: string; spend: Money[]; entries: T[] }[] {
+  const sorted = [...fillUps].sort((a, b) => b.filledAt.localeCompare(a.filledAt));
+  const groups: { month: string; spend: Money[]; entries: T[] }[] = [];
+  for (const f of sorted) {
+    const month = f.localDate.slice(0, 7);
+    let group = groups.at(-1);
+    if (group?.month !== month) {
+      group = { month, spend: [], entries: [] };
+      groups.push(group);
+    }
+    group.entries.push(f);
+  }
+  for (const g of groups) {
+    g.spend = sumByCurrency(g.entries.map((f) => Money.ofMinor(f.totalMinor, f.currency)));
+  }
+  return groups;
+}
