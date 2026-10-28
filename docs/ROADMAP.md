@@ -62,9 +62,9 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
 - [x] Distance forecaster + predicted dates — Step 11 (device check pending)
   - [x] 11.1 Domain: average daily distance from readings in the last 90 days (≥ 2 spanning ≥ 7 days), predicted due date, "predicted" flag on the reminder status
   - [x] 11.2 Reminders list and Home show "Around <date>" for distance reminders; the forecast also drives due-soon / due states
-- [ ] `ReminderPlanner` + `NotificationScheduler` (60 budget, 09:00, overdue once), permission on first reminder — Step 12
+- [x] `ReminderPlanner` + `NotificationScheduler` (60 budget, 09:00, overdue once), permission on first reminder — Step 12 (device check pending, new dev build needed)
   - [x] 12.1 ReminderPlanner (pure): 09:00 on the lead day, the due day and 3 days overdue; only future ones; soonest 60
-  - [ ] 12.2 NotificationScheduler (expo-notifications, new dev build): sync on change / foreground, permission on the first reminder
+  - [x] 12.2 NotificationScheduler (expo-notifications, new dev build): diff-based sync on start / foreground / data and settings changes, permission on the first reminder, "notifications are off" banner, tap opens Reminders
 - [ ] Weekly nudge (toggle)
 - [ ] First real-iPhone check (borrowed device, ad hoc dev build): notifications at 09:00 (KB #15)
 - **Demo:** set insurance date and oil change at +300 km; notification arrives; log service → reminder rolls forward

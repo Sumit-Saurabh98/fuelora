@@ -372,7 +372,9 @@
       "due_soon": "Soon",
       "upcoming": "Upcoming"
     },
-    "around": "Around {{date}}"
+    "around": "Around {{date}}",
+    "notificationsOff": "Notifications are off, so reminders only show here in the app.",
+    "openSettings": "Open settings"
   },
   "reminderForm": {
     "title": "Add reminder",
@@ -408,5 +410,11 @@
       "not_a_number": "Enter a number",
       "due": "Set a date, an odometer reading, or both"
     }
+  },
+  "notifications": {
+    "channel": "Reminders",
+    "lead": "Due {{date}}. Tap to see your reminders.",
+    "due": "Due today.",
+    "overdue": "Overdue since {{date}}."
   }
 }

@@ -4,6 +4,8 @@ import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from 'react-native-paper';
 
+import { useNotificationSync } from '@/features/reminders/hooks/use-notification-sync';
+
 type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
 
 // Home · History · Reminders · More (LLD §6); stats, calculators and settings live in More.
@@ -17,6 +19,8 @@ const TABS: readonly { name: string; titleKey: string; icon: IconName }[] = [
 export default function TabsLayout() {
   const { t } = useTranslation();
   const theme = useTheme();
+  // Only after onboarding: the tabs group is the onboarded app.
+  useNotificationSync();
 
   return (
     <Tabs

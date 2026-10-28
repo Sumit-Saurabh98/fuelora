@@ -61,6 +61,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-sqlite',
     '@react-native-community/datetimepicker',
     [
+      'expo-notifications',
+      {
+        // Android shows the small icon as a white silhouette; the monochrome icon is made for that.
+        icon: './assets/images/android-icon-monochrome.png',
+        color: '#C8F542',
+      },
+    ],
+    [
       'expo-splash-screen',
       {
         backgroundColor: '#0E0E14',

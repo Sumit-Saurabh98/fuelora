@@ -10,6 +10,9 @@ import { DrizzleSettingsRepository } from '@/repositories/drizzle-settings.repos
 import { DrizzleVehicleRepository } from '@/repositories/drizzle-vehicle.repository';
 import { FillUpService } from '@/services/fill-up.service';
 import { OnboardingService } from '@/services/onboarding.service';
+import { ExpoNotificationGateway } from '@/notifications/expo-notification-gateway';
+import { NotificationScheduler } from '@/notifications/notification-scheduler';
+import { ReminderNotificationService } from '@/services/reminder-notification.service';
 import { ReminderService } from '@/services/reminder.service';
 import { ServiceLogService } from '@/services/service-log.service';
 import { SettingsService } from '@/services/settings.service';
@@ -39,6 +42,8 @@ export type Container = {
   fillUpService: FillUpService;
   serviceLogService: ServiceLogService;
   reminderService: ReminderService;
+  reminderNotifications: ReminderNotificationService;
+  notificationGateway: ExpoNotificationGateway;
   onboardingService: OnboardingService;
 };
 
@@ -93,6 +98,7 @@ export function getContainer(): Container {
     idGenerator,
     reminderService,
   );
+  const notificationGateway = new ExpoNotificationGateway();
   container = {
     clock: systemClock,
     idGenerator,
@@ -101,6 +107,15 @@ export function getContainer(): Container {
     fillUpService,
     serviceLogService,
     reminderService,
+    reminderNotifications: new ReminderNotificationService(
+      reminderService,
+      vehicleService,
+      fillUpService,
+      serviceLogService,
+      new NotificationScheduler(notificationGateway),
+      systemClock,
+    ),
+    notificationGateway,
     onboardingService: new OnboardingService(settingsService, vehicleService),
   };
   return container;

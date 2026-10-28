@@ -1,8 +1,18 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Chip, Dialog, FAB, List, Portal, Text, useTheme } from 'react-native-paper';
+import { Linking, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  Banner,
+  Button,
+  Chip,
+  Dialog,
+  FAB,
+  List,
+  Portal,
+  Text,
+  useTheme,
+} from 'react-native-paper';
 
 import { getContainer } from '@/container';
 import { localDateOf } from '@/domain/fill-up';
@@ -13,6 +23,7 @@ import { useUnitPreferences } from '../../settings/hooks/use-unit-preferences';
 import { useOdometerForecast } from '../../vehicles/hooks/use-odometer-forecast';
 import { useVehicles } from '../../vehicles/hooks/use-vehicles';
 import { useActiveReminders } from '../hooks/use-active-reminders';
+import { useNotificationPermission } from '../hooks/use-notification-permission';
 import { useReminderActions } from '../hooks/use-reminder-actions';
 import { dueText, reminderName, sortedByUrgency } from '../reminder-display';
 
@@ -26,6 +37,7 @@ export function RemindersScreen() {
   const reminders = useActiveReminders(vehicle?.id ?? null);
   const forecast = useOdometerForecast(vehicle);
   const actions = useReminderActions();
+  const permission = useNotificationPermission();
   const [confirm, setConfirm] = useState<Reminder | null>(null);
   const today = localDateOf(getContainer().clock.now());
   const ctx = { t, units, locale, region };
@@ -64,6 +76,16 @@ export function RemindersScreen() {
         />
       ) : (
         <ScrollView contentContainerStyle={styles.content}>
+          {/* Reminders still work in the app; say so instead of failing silently (FR-24). */}
+          <Banner
+            visible={permission === 'denied'}
+            icon="bell-off-outline"
+            actions={[
+              { label: t('reminders.openSettings'), onPress: () => void Linking.openSettings() },
+            ]}
+          >
+            {t('reminders.notificationsOff')}
+          </Banner>
           {vehicle ? (
             <Text variant="titleSmall" style={styles.vehicle}>
               {vehicle.name}

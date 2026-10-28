@@ -65,7 +65,7 @@ Why: zero hosting cost, no account friction, privacy as a selling point, and one
 ### 4.3 Reminders and notifications
 
 - `ReminderPlanner` (pure) takes reminders + current odometer + forecast → list of desired notifications (id, fire time, text key, params).
-- `NotificationScheduler.sync()` diffs desired vs. scheduled (stored ids) and schedules/cancels. Runs on: app foreground, any data change, settings change, and once per day if the app is opened.
+- `NotificationScheduler.sync()` diffs desired vs. what the OS has scheduled (each notification carries its key, fire time and text signature in its data, so no ids are stored) and schedules/cancels only the differences. `ReminderNotificationService` builds the plan; `useNotificationSync` runs it on start, app foreground, any change to reminders / fill-ups / services / vehicles (expo-sqlite change listener, debounced 1 s) and language / region / unit changes. Without permission nothing is scheduled; the Reminders tab says notifications are off.
 - Budget: max 60 scheduled; priority = soonest first. Notifications fire at 09:00 local.
 - Android: inexact daily-time triggers (no exact-alarm permission). Boot persistence handled by expo-notifications.
 

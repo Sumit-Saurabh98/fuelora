@@ -45,11 +45,22 @@ jest.mock('expo-router', () => ({
   router: { back: jest.fn(), push: jest.fn() },
   Stack: { Screen: () => null },
 }));
+const mockPermission = { state: 'granted' as 'granted' | 'denied' | 'undetermined', prompts: 0 };
 jest.mock('@/container', () => ({
   getContainer: () => ({
     clock: mockClock,
     vehicleService: mockVehicles,
     reminderService: mockReminders,
+    reminderNotifications: {
+      permission: async () => mockPermission.state,
+      ensurePermission: async () => {
+        if (mockPermission.state === 'undetermined') {
+          mockPermission.prompts += 1;
+          mockPermission.state = 'granted';
+        }
+        return mockPermission.state;
+      },
+    },
   }),
 }));
 jest.mock('../../vehicles/hooks/use-vehicle', () => ({ useVehicle: jest.fn() }));
@@ -108,6 +119,8 @@ describe('Reminders', () => {
       .mocked(useOdometerForecast)
       .mockReturnValue({ currentOdometerM: 12_400_000, avgDailyM: null });
     jest.mocked(router.back).mockClear();
+    mockPermission.state = 'granted';
+    mockPermission.prompts = 0;
   });
 
   afterEach(() => jest.restoreAllMocks());
@@ -171,6 +184,18 @@ describe('Reminders', () => {
       );
     });
 
+    it('says so when notifications are off', async () => {
+      mockPermission.state = 'denied';
+      jest
+        .mocked(useActiveReminders)
+        .mockReturnValue([reminder({ id: 'oil', dueOdometerM: 15_000_000 })]);
+      await renderScreen(<RemindersScreen />);
+      expect(
+        await screen.findByText('Notifications are off, so reminders only show here in the app.'),
+      ).toBeTruthy();
+      expect(screen.getByText('Open settings')).toBeTruthy();
+    });
+
     it('empty state and the add button', async () => {
       jest.mocked(useActiveReminders).mockReturnValue([]);
       await renderScreen(<RemindersScreen />);
@@ -204,6 +229,14 @@ describe('Reminders', () => {
         leadDays: 7,
         leadDistanceM: 300_000,
       });
+    });
+
+    it('the first reminder asks for notification permission once (AGENTS.md rule 13)', async () => {
+      mockPermission.state = 'undetermined';
+      await renderScreen(<AddReminderScreen vehicleId={vehicle.id} />);
+      await fireEvent.press(screen.getByText('Save'));
+      await waitFor(() => expect(router.back).toHaveBeenCalled());
+      expect(mockPermission.prompts).toBe(1);
     });
 
     it('choosing a preset applies its suggested interval', async () => {

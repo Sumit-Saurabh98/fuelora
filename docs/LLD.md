@@ -93,7 +93,7 @@ create table settings (                           -- travels with backups
 );
 ```
 
-Device-only state (MMKV, not backed up): `ads.*` counters, `last_export_at`, `scheduled_notification_ids`, `nudge.*`.
+Device-only state (MMKV, not backed up): `ads.*` counters, `last_export_at`, `nudge.*`. Scheduled notifications need no stored ids: each carries its key in its data (ARCHITECTURE §4.3).
 
 Vehicle edits (KB #24): with at least one fill-up, `fuel_type` may only change to a fuel with the same base unit (`baseUnitFor`: mL / g / Wh) and `initial_odometer_m` must stay ≤ the lowest fill-up `odometer_m`. Enforced in `VehicleService.update` via the `VehicleFillUpHistory` port (implemented by `FillUpService`) as `INVALID_VEHICLE` issues `fuel_locked` / `above_first_fill_up`.
 
@@ -223,6 +223,8 @@ quantityFromTotal(total: Money, unitPrice, unit): number | null; // amount-only 
 ### 5.4 Desired notifications
 
 For each active reminder with an effective due date: one at 09:00 on `due − lead_days` (if in future), one at 09:00 on due day, one "overdue" 3 days after. Weekly nudge (if enabled and no entry in 7 days): Sunday 10:00. Monthly backup nudge is in-app only. Sort by fire time; keep first 60.
+
+Permission is asked when the user saves a reminder while the OS still allows a prompt (AGENTS.md rule 13), never at launch. Distance reminders without a forecast and reminders of archived vehicles are not scheduled. Tapping a notification opens the Reminders tab.
 
 ### 5.5 Completing a reminder
 
