@@ -37,6 +37,7 @@ import {
   derivedField,
   derivedText,
   effectiveSources,
+  keepUntouchedFillUp,
   quantityUnitFor,
   withEdited,
   type AmountField,
@@ -44,7 +45,7 @@ import {
   type FillUpFormField,
   type FillUpFormValues,
 } from '../fill-up-form-values';
-import { useAddFillUp } from '../hooks/use-add-fill-up';
+import { useFillUpActions } from '../hooks/use-fill-up-actions';
 import { useFillUpForm } from '../hooks/use-fill-up-form';
 import { useLatestFillUp } from '../hooks/use-latest-fill-up';
 
@@ -76,12 +77,22 @@ export function AddFillUpScreen({ vehicleId }: { vehicleId: string }) {
   return <FillUpForm key={vehicle.id} vehicle={vehicle} last={last} />;
 }
 
-function FillUpForm({ vehicle, last }: { vehicle: Vehicle; last: FillUp | null }) {
+type FormProps = {
+  vehicle: Vehicle;
+  last: FillUp | null;
+  /** Set when editing a saved entry (FR-11); otherwise a new one is added. */
+  existing?: FillUp;
+};
+
+/** The fill-up form, shared by adding and editing. */
+export function FillUpForm({ vehicle, last, existing }: FormProps) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { form, convert, ctx } = useFillUpForm(vehicle, last);
-  const { add, odometerProblem, warnings: checkWarnings } = useAddFillUp();
+  const { form, convert, ctx, initial } = useFillUpForm(vehicle, last, existing);
+  const actions = useFillUpActions();
+  const editingId = existing?.id ?? null;
   const [saving, setSaving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   // Set when the entry looks unusual; the user can still save it (FR-8).
   const [pending, setPending] = useState<{
     input: NewFillUpInput;
@@ -122,10 +133,14 @@ function FillUpForm({ vehicle, last }: { vehicle: Vehicle; last: FillUp | null }
   const save = form.handleSubmit(async (formValues) => {
     const result = convert(formValues);
     if (!result.ok) return; // the resolver already showed the errors
+    const input =
+      existing && initial
+        ? keepUntouchedFillUp(result.input, existing, initial, formValues)
+        : result.input;
     setSaving(true);
     setSaveFailed(false);
     try {
-      const problem = await odometerProblem(result.input);
+      const problem = await actions.odometerProblem(input, editingId);
       if (problem) {
         const limit =
           'limitM' in problem
@@ -137,12 +152,12 @@ function FillUpForm({ vehicle, last }: { vehicle: Vehicle; last: FillUp | null }
         });
         return;
       }
-      const warnings = await checkWarnings(result.input);
+      const warnings = await actions.warnings(input, editingId);
       if (warnings.length > 0) {
-        setPending({ input: result.input, warnings });
+        setPending({ input, warnings });
         return;
       }
-      await store(result.input);
+      await store(input);
     } catch (error: unknown) {
       handleSaveError(error);
     } finally {
@@ -151,7 +166,12 @@ function FillUpForm({ vehicle, last }: { vehicle: Vehicle; last: FillUp | null }
   });
 
   const store = async (input: NewFillUpInput) => {
-    const saved = await add(input);
+    if (existing) {
+      await actions.update(existing.id, input);
+      router.back(); // to the history it was opened from
+      return;
+    }
+    const saved = await actions.add(input);
     // Replace, so Done on the result card goes straight back to Home.
     router.replace({
       pathname: '/fill-up/result',
@@ -168,6 +188,20 @@ function FillUpForm({ vehicle, last }: { vehicle: Vehicle; last: FillUp | null }
       await store(input);
     } catch (error: unknown) {
       handleSaveError(error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const remove = async () => {
+    if (!existing) return;
+    setConfirmDelete(false);
+    setSaving(true);
+    try {
+      await actions.remove(existing.id);
+      router.back();
+    } catch {
+      setSaveFailed(true);
     } finally {
       setSaving(false);
     }
@@ -272,7 +306,17 @@ function FillUpForm({ vehicle, last }: { vehicle: Vehicle; last: FillUp | null }
       edges={['bottom']}
       style={[styles.screen, { backgroundColor: theme.colors.background }]}
     >
-      <Stack.Screen options={{ title: isEv ? t('fillUp.titleCharge') : t('fillUp.title') }} />
+      <Stack.Screen
+        options={{
+          title: existing
+            ? isEv
+              ? t('fillUp.editTitleCharge')
+              : t('fillUp.editTitle')
+            : isEv
+              ? t('fillUp.titleCharge')
+              : t('fillUp.title'),
+        }}
+      />
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Text variant="titleMedium">{vehicle.name}</Text>
 
@@ -372,8 +416,33 @@ function FillUpForm({ vehicle, last }: { vehicle: Vehicle; last: FillUp | null }
         <HelperText type="error" visible={saveFailed}>
           {t('vehicleForm.errors.saveFailed')}
         </HelperText>
+        {existing ? (
+          <Button
+            mode="text"
+            icon="delete-outline"
+            textColor={theme.colors.error}
+            onPress={() => setConfirmDelete(true)}
+            disabled={saving}
+            contentStyle={styles.deleteButton}
+          >
+            {isEv ? t('fillUp.deleteCharge') : t('fillUp.delete')}
+          </Button>
+        ) : null}
       </ScrollView>
       <Portal>
+        {/* Deleting one entry recomputes its segments; it still asks first (AGENTS.md rule 12). */}
+        <Dialog visible={confirmDelete} onDismiss={() => setConfirmDelete(false)}>
+          <Dialog.Title>{t('fillUp.deleteTitle')}</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">{t('fillUp.deleteBody')}</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setConfirmDelete(false)}>{t('common.cancel')}</Button>
+            <Button textColor={theme.colors.error} onPress={() => void remove()}>
+              {t('common.delete')}
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
         <Dialog visible={pending !== null} onDismiss={() => setPending(null)}>
           <Dialog.Title>{t('fillUp.warnTitle')}</Dialog.Title>
           <Dialog.Content style={styles.warnings}>
@@ -410,6 +479,7 @@ const styles = StyleSheet.create({
   toggle: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8 },
   toggleText: { flex: 1, gap: 2 },
   warnings: { gap: 8 },
+  deleteButton: { minHeight: 48 },
   footer: { paddingHorizontal: 24, paddingBottom: 16, paddingTop: 8 },
   button: { minHeight: 52 },
 });

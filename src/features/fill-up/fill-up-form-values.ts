@@ -2,6 +2,7 @@ import {
   resolveAmounts,
   validateFillUp,
   type EntryMode,
+  type FillUp,
   type FillUpAmounts,
   type FillUpField,
   type FillUpIssue,
@@ -13,6 +14,7 @@ import type { UnitPreferences } from '@/domain/unit-preferences';
 import {
   baseTo,
   distanceToMetres,
+  metresTo,
   parseDecimalInput,
   quantityToBase,
   type NumberSeparators,
@@ -248,4 +250,68 @@ export function toFillUpInput(
     }
   }
   return Object.keys(errors).length > 0 ? { ok: false, errors } : { ok: true, input };
+}
+
+const SOURCES_BY_MODE: Record<EntryMode, AmountField[]> = {
+  qty_price: ['quantity', 'price'],
+  qty_total: ['quantity', 'total'],
+  price_total: ['price', 'total'],
+  amount_only: ['price', 'total'],
+};
+
+/**
+ * A saved fill-up as form text, for editing (FR-11). The two fields the user typed stay the
+ * inputs; `ctx.units.currency` must be the entry's own currency.
+ */
+export function toFillUpFormValues(
+  fillUp: FillUp,
+  ctx: Pick<FillUpFormContext, 'fuelType' | 'units' | 'locale'>,
+): FillUpFormValues {
+  const resolved = {
+    quantityBase: fillUp.quantityBase,
+    total: Money.ofMinor(fillUp.totalMinor, fillUp.currency),
+  };
+  return {
+    layout: 'full',
+    filledAt: new Date(fillUp.filledAt),
+    odometer: formatNumber(metresTo(fillUp.odometerM, ctx.units.distanceUnit), ctx.locale, 1),
+    quantity: formatAmount('quantity', resolved, ctx),
+    price: formatAmount('price', resolved, ctx),
+    total: formatAmount('total', resolved, ctx),
+    sources: SOURCES_BY_MODE[fillUp.entryMode],
+    isFull: fillUp.isFull,
+    missedPrevious: fillUp.missedPrevious,
+    station: fillUp.station ?? '',
+    note: fillUp.note ?? '',
+  };
+}
+
+/**
+ * Edits re-read numbers from rounded display text (1.914 L shows as "1.91"), which would change
+ * stored values on every save. Untouched odometer and amounts keep their exact stored values.
+ */
+export function keepUntouchedFillUp(
+  input: NewFillUpInput,
+  existing: FillUp,
+  initial: FillUpFormValues,
+  current: FillUpFormValues,
+): NewFillUpInput {
+  const amountsUntouched =
+    current.layout === initial.layout &&
+    current.sources.join() === initial.sources.join() &&
+    current.quantity === initial.quantity &&
+    current.price === initial.price &&
+    current.total === initial.total;
+  return {
+    ...input,
+    odometerM: current.odometer === initial.odometer ? existing.odometerM : input.odometerM,
+    ...(amountsUntouched
+      ? {
+          quantityBase: existing.quantityBase,
+          totalMinor: existing.totalMinor,
+          currency: existing.currency,
+          entryMode: existing.entryMode,
+        }
+      : {}),
+  };
 }

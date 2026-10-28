@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SectionList, StyleSheet, View } from 'react-native';
@@ -92,6 +93,7 @@ function VehicleHistory({ vehicle }: { vehicle: Vehicle }) {
             title={`${formatDate(new Date(item.filledAt), locale)} · ${total}`}
             description={description}
             descriptionNumberOfLines={2}
+            onPress={() => router.push({ pathname: '/fill-up/[id]', params: { id: item.id } })}
             right={() => (
               <Chip compact style={styles.badge} textStyle={styles.badgeText}>
                 {badge(item)}

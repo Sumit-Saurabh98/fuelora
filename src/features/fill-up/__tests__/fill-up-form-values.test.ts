@@ -1,7 +1,11 @@
 import { regionDefaults } from '@/domain/regions';
 
+import type { FillUp } from '@/domain/fill-up';
+
 import {
   defaultLayout,
+  keepUntouchedFillUp,
+  toFillUpFormValues,
   derivedField,
   derivedText,
   rememberedPrice,
@@ -241,5 +245,69 @@ describe('amount-only (F-04, KB #25)', () => {
       save(remembered),
     );
     expect(result).toMatchObject({ ok: true, input: { quantityBase: 1914 } });
+  });
+});
+
+describe('editing a saved fill-up (FR-11)', () => {
+  const saved: FillUp = {
+    id: 'f1',
+    vehicleId: 'v1',
+    filledAt: '2026-10-20T09:00:00.000Z',
+    localDate: '2026-10-20',
+    odometerM: 12_345_678,
+    quantityBase: 1914,
+    totalMinor: 20_000,
+    currency: 'INR',
+    isFull: false,
+    missedPrevious: false,
+    entryMode: 'amount_only',
+    station: 'HP',
+    note: null,
+    createdAt: '2026-10-20T09:00:00.000Z',
+    updatedAt: '2026-10-20T09:00:00.000Z',
+  };
+
+  it('shows the entry in the user units with its typed fields as inputs', () => {
+    expect(toFillUpFormValues(saved, india)).toEqual({
+      layout: 'full',
+      filledAt: new Date('2026-10-20T09:00:00.000Z'),
+      odometer: '12,345.7',
+      quantity: '1.91',
+      price: '104.493',
+      total: '200',
+      sources: ['price', 'total'],
+      isFull: false,
+      missedPrevious: false,
+      station: 'HP',
+      note: '',
+    });
+  });
+
+  it('untouched odometer and amounts keep the exact stored values', () => {
+    const initial = toFillUpFormValues(saved, india);
+    const current = { ...initial, station: 'Shell', isFull: true };
+    const result = toFillUpInput(current, save(india));
+    if (!result.ok) throw new Error('expected ok');
+    expect(result.input.odometerM).toBe(12_345_700); // re-read from rounded text
+    expect(keepUntouchedFillUp(result.input, saved, initial, current)).toMatchObject({
+      odometerM: 12_345_678,
+      quantityBase: 1914,
+      totalMinor: 20_000,
+      entryMode: 'amount_only',
+      station: 'Shell',
+      isFull: true,
+    });
+  });
+
+  it('changed fields use the new values', () => {
+    const initial = toFillUpFormValues(saved, india);
+    const current = { ...initial, odometer: '12,400', total: '250' };
+    const result = toFillUpInput(current, save(india));
+    if (!result.ok) throw new Error('expected ok');
+    expect(keepUntouchedFillUp(result.input, saved, initial, current)).toMatchObject({
+      odometerM: 12_400_000,
+      totalMinor: 25_000,
+      entryMode: 'price_total',
+    });
   });
 });

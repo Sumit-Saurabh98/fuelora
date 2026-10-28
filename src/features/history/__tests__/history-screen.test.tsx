@@ -1,5 +1,6 @@
-import { screen } from '@testing-library/react-native';
+import { fireEvent, screen } from '@testing-library/react-native';
 import * as Localization from 'expo-localization';
+import { router } from 'expo-router';
 
 import type { FillUp } from '@/domain/fill-up';
 import type { Vehicle } from '@/domain/vehicle';
@@ -61,15 +62,13 @@ function f(
 
 describe('HistoryScreen (F-07)', () => {
   beforeEach(() => {
-    jest
-      .spyOn(Localization, 'getLocales')
-      .mockReturnValue([
-        {
-          languageTag: 'en-IN',
-          regionCode: 'IN',
-          currencyCode: 'INR',
-        } as unknown as Localization.Locale,
-      ]);
+    jest.spyOn(Localization, 'getLocales').mockReturnValue([
+      {
+        languageTag: 'en-IN',
+        regionCode: 'IN',
+        currencyCode: 'INR',
+      } as unknown as Localization.Locale,
+    ]);
     usePreferences.setState({ region: 'IN', language: 'en', unitOverrides: {} });
     jest.mocked(useVehicles).mockReturnValue({ active: [activa], archived: [], currentId: 'v1' });
   });
@@ -101,5 +100,12 @@ describe('HistoryScreen (F-07)', () => {
     expect(screen.getByText('Missed fill')).toBeTruthy();
     expect(screen.getByText('First full')).toBeTruthy();
     expect(screen.getByText('10,150 km · 3 L · HP')).toBeTruthy();
+  });
+
+  it('tapping an entry opens it for editing', async () => {
+    jest.mocked(useVehicleFillUps).mockReturnValue([f('a', 10_000, 5, 500, '2026-10-05')]);
+    await renderScreen(<HistoryScreen />);
+    await fireEvent.press(screen.getByText('10,000 km · 5 L'));
+    expect(router.push).toHaveBeenCalledWith({ pathname: '/fill-up/[id]', params: { id: 'a' } });
   });
 });

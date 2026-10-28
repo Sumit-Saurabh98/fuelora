@@ -261,7 +261,15 @@
     "warnLow": "That's unusually low mileage for this vehicle. Check the odometer and the fuel amount.",
     "warnTank": "That's more fuel than the tank holds ({{tank}}). Check the amount.",
     "checkAgain": "Check again",
-    "saveAnyway": "Save anyway"
+    "saveAnyway": "Save anyway",
+    "editTitle": "Edit fill-up",
+    "editTitleCharge": "Edit charge",
+    "delete": "Delete fill-up",
+    "deleteCharge": "Delete charge",
+    "deleteTitle": "Delete this entry?",
+    "deleteBody": "Mileage for the tanks around it is worked out again. This can't be undone.",
+    "notFoundTitle": "Entry not found",
+    "notFoundBody": "It may have been deleted."
   },
   "fillUpResult": {
     "title": "Saved",
