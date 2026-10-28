@@ -296,7 +296,7 @@ interface AdsGateway {
 
 ## 9. Error model
 
-`AppError(code, message, details)`; codes in `src/domain/errors.ts`: `ODOMETER_NOT_INCREASING`, `ODOMETER_AFTER_NEXT`, `DUPLICATE_ODOMETER`, `MISSING_FILL_FIELDS`, `INVALID_NUMBER`, `REMINDER_NEEDS_DUE`, `BACKUP_INVALID_FILE`, `BACKUP_NEWER_VERSION`, `NOTIFICATION_PERMISSION_DENIED`. Screens map codes to `errors.<code>` i18n keys.
+`AppError(code, message, details)`; codes in `src/domain/errors.ts`: `ODOMETER_NOT_INCREASING`, `ODOMETER_AFTER_NEXT`, `DUPLICATE_ODOMETER`, `ODOMETER_BELOW_START` (below the vehicle's starting odometer), `INVALID_FILL_UP` (field issues in `details.issues`, like `INVALID_VEHICLE`; replaces the planned `MISSING_FILL_FIELDS` / `INVALID_NUMBER`), `FILL_UP_NOT_FOUND`, `REMINDER_NEEDS_DUE`, `BACKUP_INVALID_FILE`, `BACKUP_NEWER_VERSION`, `NOTIFICATION_PERMISSION_DENIED`. Screens map codes to `errors.<code>` i18n keys.
 
 ## 10. Testing strategy
 
