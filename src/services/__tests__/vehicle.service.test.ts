@@ -124,4 +124,128 @@ describe('VehicleService', () => {
       .catch((e: unknown) => e);
     expect(JSON.stringify((error as AppError).details)).not.toContain('SECRET');
   });
+
+  describe('update', () => {
+    it('validates and saves edits, keeping id, order, archive state and creation time', async () => {
+      const { service } = setup();
+      const created = await service.create(activa);
+
+      const edited = await service.update('v1', {
+        ...activa,
+        name: ' Activa 6G ',
+        plate: 'ka01ab1234',
+        initialOdometerM: 12_000_000,
+      });
+
+      expect(edited).toEqual({
+        ...created,
+        name: 'Activa 6G',
+        plate: 'KA01AB1234',
+        initialOdometerM: 12_000_000,
+        updatedAt: NOW.toISOString(),
+      });
+      expect(await service.get('v1')).toEqual(edited);
+    });
+
+    it('rejects invalid edits and leaves the stored vehicle unchanged', async () => {
+      const { service } = setup();
+      const created = await service.create(activa);
+
+      await expect(service.update('v1', { ...activa, name: '' })).rejects.toMatchObject({
+        code: 'INVALID_VEHICLE',
+        details: { issues: { name: 'required' } },
+      });
+      expect(await service.get('v1')).toEqual(created);
+    });
+
+    it('refuses an unknown id', async () => {
+      const { service } = setup();
+      await expect(service.update('nope', activa)).rejects.toMatchObject({
+        code: 'VEHICLE_NOT_FOUND',
+      });
+    });
+  });
+
+  describe('archive', () => {
+    it('hides the vehicle from the switcher list but keeps it (FR-5)', async () => {
+      const { service } = setup();
+      await service.create(activa);
+      await service.create(swift);
+
+      await service.archive('v2');
+
+      expect((await service.list()).map((v) => v.id)).toEqual(['v1']);
+      expect((await service.listAll()).map((v) => [v.id, v.isArchived])).toEqual([
+        ['v1', false],
+        ['v2', true],
+      ]);
+    });
+
+    it('archiving the current vehicle makes the next active one current', async () => {
+      const { service, settings } = setup();
+      await service.create(activa);
+      await service.create(swift);
+
+      await service.archive('v1');
+
+      expect(await settings.getCurrentVehicleId()).toBe('v2');
+    });
+
+    it('archiving the only vehicle leaves no current vehicle', async () => {
+      const { service } = setup();
+      await service.create(activa);
+      await service.archive('v1');
+      expect(await service.getCurrent()).toBeNull();
+    });
+
+    it('unarchiving does not take over from another current vehicle', async () => {
+      const { service } = setup();
+      await service.create(activa);
+      await service.create(swift);
+      await service.archive('v1');
+
+      await service.unarchive('v1');
+
+      expect((await service.getCurrent())?.id).toBe('v2');
+      expect((await service.list()).map((v) => v.id)).toEqual(['v1', 'v2']);
+    });
+
+    it('unarchiving when nothing is active makes it current', async () => {
+      const { service } = setup();
+      await service.create(activa);
+      await service.archive('v1');
+
+      await service.unarchive('v1');
+
+      expect((await service.getCurrent())?.id).toBe('v1');
+    });
+  });
+
+  describe('delete', () => {
+    it('removes the vehicle; the next active one becomes current', async () => {
+      const { service, settings } = setup();
+      await service.create(activa);
+      await service.create(swift);
+
+      await service.delete('v1');
+
+      expect(await service.get('v1')).toBeNull();
+      expect(await settings.getCurrentVehicleId()).toBe('v2');
+    });
+
+    it('deleting another vehicle keeps the current one', async () => {
+      const { service, settings } = setup();
+      await service.create(activa);
+      await service.create(swift);
+
+      await service.delete('v2');
+
+      expect(await settings.getCurrentVehicleId()).toBe('v1');
+    });
+
+    it('refuses an unknown id', async () => {
+      const { service } = setup();
+      await expect(service.delete('nope')).rejects.toMatchObject({ code: 'VEHICLE_NOT_FOUND' });
+    });
+  });
 });

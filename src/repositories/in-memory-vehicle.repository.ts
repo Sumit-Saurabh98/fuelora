@@ -25,4 +25,12 @@ export class InMemoryVehicleRepository implements VehicleRepository {
   async count(): Promise<number> {
     return this.rows.size;
   }
+
+  async update(vehicle: Vehicle): Promise<void> {
+    if (this.rows.has(vehicle.id)) this.rows.set(vehicle.id, { ...vehicle });
+  }
+
+  async delete(id: string): Promise<void> {
+    this.rows.delete(id);
+  }
 }

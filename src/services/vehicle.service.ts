@@ -71,4 +71,72 @@ export class VehicleService {
     }
     await this.settings.setCurrentVehicleId(id);
   }
+
+  /** Any vehicle, archived or not; null when it doesn't exist. */
+  get(id: string): Promise<Vehicle | null> {
+    return this.vehicles.getById(id);
+  }
+
+  /** Active and archived vehicles, for the vehicles screen. */
+  listAll(): Promise<Vehicle[]> {
+    return this.vehicles.list({ includeArchived: true });
+  }
+
+  /** Same rules as create; id, order, archive state and creation time are kept. */
+  async update(id: string, input: NewVehicleInput): Promise<Vehicle> {
+    const existing = await this.require(id);
+    const now = this.clock.now();
+    const result = validateNewVehicle(input, now.getUTCFullYear());
+    if (!result.ok) {
+      throw new AppError('INVALID_VEHICLE', 'Vehicle input is invalid', { issues: result.issues });
+    }
+    const vehicle: Vehicle = { ...existing, ...result.value, updatedAt: now.toISOString() };
+    await this.vehicles.update(vehicle);
+    return vehicle;
+  }
+
+  /** Hides the vehicle from the switcher but keeps all its data (FR-5). */
+  async archive(id: string): Promise<void> {
+    await this.setArchived(await this.require(id), true);
+    await this.moveCurrentOffIfNeeded(id);
+  }
+
+  async unarchive(id: string): Promise<void> {
+    await this.setArchived(await this.require(id), false);
+    // Becomes current only when no other active vehicle is.
+    const current = await this.getCurrent();
+    if (!current || current.id === id) await this.settings.setCurrentVehicleId(id);
+  }
+
+  /**
+   * Removes the vehicle and everything recorded for it (cascade). The screen asks for a typed
+   * confirmation first (FR-5, AGENTS.md rule 12).
+   */
+  async delete(id: string): Promise<void> {
+    await this.require(id);
+    await this.vehicles.delete(id);
+    await this.moveCurrentOffIfNeeded(id);
+  }
+
+  private async require(id: string): Promise<Vehicle> {
+    const vehicle = await this.vehicles.getById(id);
+    if (!vehicle) throw new AppError('VEHICLE_NOT_FOUND', 'No vehicle with this id');
+    return vehicle;
+  }
+
+  private async setArchived(vehicle: Vehicle, isArchived: boolean): Promise<void> {
+    if (vehicle.isArchived === isArchived) return;
+    await this.vehicles.update({
+      ...vehicle,
+      isArchived,
+      updatedAt: this.clock.now().toISOString(),
+    });
+  }
+
+  // Save the fallback explicitly, so unarchiving the old vehicle later doesn't silently switch.
+  private async moveCurrentOffIfNeeded(removedId: string): Promise<void> {
+    if ((await this.settings.getCurrentVehicleId()) !== removedId) return;
+    const [next] = await this.vehicles.list();
+    if (next) await this.settings.setCurrentVehicleId(next.id);
+  }
 }

@@ -18,13 +18,18 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
 - [x] `EfficiencyEngine` with all fixture cases (LLD §4.4) (3.1–3.2)
   - [x] 3.1 Engine: full-to-full segments, range-aware summary, all formats (km/L, L/100 km, mpg US/UK, km/kg, km/kWh, mi/kWh, kWh/100 km), cost per km/mi as Money per currency, amount-only quantity; all 11 fixtures
   - [x] 3.2 Plausibility warnings (LLD §4.2) + tank-capacity warning, ranges per KB #20
-- [ ] Onboarding (language, region, first vehicle) — Step 4 (decisions: KB #21)
+- [x] Onboarding (language, region, first vehicle) — Step 4 (decisions: KB #21)
   - [x] 4.1 Vehicle data layer: VehicleRepository (Drizzle + in-memory), VehicleService (create, list, current vehicle), validation + error codes
   - [x] 4.2 Onboarding shell: first launch opens onboarding until done; welcome + language screen ("no login, data stays on this phone"); dev-only "Reset app data" in Settings
   - [x] 4.3 Region screen: pre-selected from the phone, units preview, change if needed; shared onboarding frame (step dots, Back/Continue)
   - [x] 4.4 First vehicle screen: type, fuel, name, current odometer (+ optional details); saves, sets current vehicle, Home shows it; Skip for now. Onboarding layout: back arrow top-left, one full-width action, Skip under Save. iOS Intl crash fixed + guarded
-  - [ ] 4.5 Home "Add your first vehicle" button + add-vehicle screen (for users who skipped)
-- [ ] Vehicles: add/edit/archive/delete, switcher
+  - [x] 4.5 Home "Add your first vehicle" button + add-vehicle screen (for users who skipped) — device check pending
+- [ ] Vehicles: add/edit/archive/delete, switcher — Step 5
+  - [x] 5.1 Data layer: update, archive/unarchive, delete with cascade; current vehicle moves to the next active one
+  - [ ] 5.2 Vehicles screen (active + archived) from Settings, "Add vehicle"
+  - [ ] 5.3 Edit vehicle screen
+  - [ ] 5.4 Archive/unarchive + delete with typed-name confirmation
+  - [ ] 5.5 Vehicle switcher on top of Home
 - [ ] Fill-up entry: any-two-of-three, amount-only, full/partial, missed flag, validation, plausibility warnings
 - [ ] Result card + dashboard (last/avg efficiency, month spend, cost per distance)
 - [ ] History list with edit/delete

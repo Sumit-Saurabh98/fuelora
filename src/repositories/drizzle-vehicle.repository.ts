@@ -31,4 +31,13 @@ export class DrizzleVehicleRepository implements VehicleRepository {
     const [row] = await this.db.select({ n: count() }).from(vehicles);
     return row?.n ?? 0;
   }
+
+  async update(vehicle: Vehicle): Promise<void> {
+    const { id, ...fields } = vehicle;
+    await this.db.update(vehicles).set(fields).where(eq(vehicles.id, id));
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.db.delete(vehicles).where(eq(vehicles.id, id));
+  }
 }

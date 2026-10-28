@@ -65,4 +65,42 @@ describe('DrizzleVehicleRepository', () => {
     await repo.insert(vehicle('a'));
     await expect(repo.insert(vehicle('a'))).rejects.toThrow();
   });
+
+  it('updates every field of an existing row', async () => {
+    const repo = new DrizzleVehicleRepository(createTestDatabase().db);
+    await repo.insert(vehicle('a'));
+    const edited = vehicle('a', {
+      name: 'Renamed',
+      plate: 'MH12AB0001',
+      tankCapacityBase: 37_000,
+      isArchived: true,
+      updatedAt: '2026-10-29T10:00:00.000Z',
+    });
+
+    await repo.update(edited);
+
+    expect(await repo.getById('a')).toEqual(edited);
+  });
+
+  it('delete removes the vehicle and its fill-ups (cascade), nothing else', async () => {
+    const { db, sqlite } = createTestDatabase();
+    const repo = new DrizzleVehicleRepository(db);
+    await repo.insert(vehicle('a'));
+    await repo.insert(vehicle('b'));
+    const fill = sqlite.prepare(
+      `insert into fill_ups (id, vehicle_id, filled_at, local_date, odometer_m, quantity_base,
+        total_minor, currency, entry_mode, created_at, updated_at)
+       values (?, ?, '2026-10-28T10:00:00.000Z', '2026-10-28', 1000, 5000, 50000, 'INR',
+        'qty_total', '2026-10-28T10:00:00.000Z', '2026-10-28T10:00:00.000Z')`,
+    );
+    fill.run('f1', 'a');
+    fill.run('f2', 'b');
+
+    await repo.delete('a');
+
+    expect(await repo.getById('a')).toBeNull();
+    expect(await repo.getById('b')).not.toBeNull();
+    const left = sqlite.prepare('select id from fill_ups').all() as { id: string }[];
+    expect(left.map((r) => r.id)).toEqual(['f2']);
+  });
 });
