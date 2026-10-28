@@ -40,6 +40,9 @@ export default function RootLayout() {
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Protected guard={onboarded}>
               <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="stats" options={withHeader} />
+              <Stack.Screen name="tools" options={withHeader} />
+              <Stack.Screen name="settings" options={withHeader} />
               <Stack.Screen name="vehicles/index" options={withHeader} />
               <Stack.Screen name="vehicles/new" options={withHeader} />
               <Stack.Screen name="vehicles/[id]" options={withHeader} />

@@ -2,13 +2,13 @@ import { useTranslation } from 'react-i18next';
 
 import { EmptyState } from '@/ui/empty-state';
 
-export default function ToolsScreen() {
+export default function RemindersRoute() {
   const { t } = useTranslation();
   return (
     <EmptyState
-      icon="calculator-variant"
-      title={t('tools.emptyTitle')}
-      body={t('tools.emptyBody')}
+      icon="bell-outline"
+      title={t('reminders.emptyTitle')}
+      body={t('reminders.emptyBody')}
     />
   );
 }

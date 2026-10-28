@@ -6,12 +6,12 @@ import { useTheme } from 'react-native-paper';
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
 
+// Home · History · Reminders · More (LLD §6); stats, calculators and settings live in More.
 const TABS: readonly { name: string; titleKey: string; icon: IconName }[] = [
   { name: 'index', titleKey: 'tabs.home', icon: 'gas-station' },
   { name: 'history', titleKey: 'tabs.history', icon: 'history' },
-  { name: 'stats', titleKey: 'tabs.stats', icon: 'chart-line' },
-  { name: 'tools', titleKey: 'tabs.tools', icon: 'calculator-variant' },
-  { name: 'settings', titleKey: 'tabs.settings', icon: 'cog' },
+  { name: 'reminders', titleKey: 'tabs.reminders', icon: 'bell-outline' },
+  { name: 'more', titleKey: 'tabs.more', icon: 'dots-horizontal' },
 ];
 
 export default function TabsLayout() {

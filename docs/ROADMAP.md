@@ -55,7 +55,10 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
 - [ ] Reminders (date / distance / both, repeat, lead) + document presets + region names — Step 10
   - [x] 10.1 Domain: reminder rules (due date and/or odometer, repeat, lead 7 days / 300 km), document keys with region names, status (upcoming / due soon / due / overdue), roll-forward on done; calendar-day maths
   - [x] 10.2 Data layer: `reminders` table (migration 0003 + upgrade test, due CHECK), repository, ReminderService (create / update / delete / mark done); logging a matching service completes and rolls the reminder forward
-  - [ ] 10.3 Reminders UI
+  - [x] 10.3 Tabs Home · History · Reminders · More (LLD §6); Stats, Calculators, Vehicles and Settings open from More
+  - [ ] 10.4 Reminders list: grouped by urgency, mark done
+  - [ ] 10.5 Add / edit reminder: presets with suggested intervals, documents with region names, due date and/or odometer, repeat, lead
+  - [ ] 10.6 Next reminders on the Home dashboard (F-06)
 - [ ] Distance forecaster + predicted dates
 - [ ] `ReminderPlanner` + `NotificationScheduler` (60 budget, 09:00, overdue once), permission on first reminder
 - [ ] Weekly nudge (toggle)

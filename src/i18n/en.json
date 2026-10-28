@@ -4,7 +4,9 @@
     "history": "History",
     "stats": "Stats",
     "tools": "Tools",
-    "settings": "Settings"
+    "settings": "Settings",
+    "reminders": "Reminders",
+    "more": "More"
   },
   "home": {
     "emptyTitle": "No vehicles yet",
@@ -340,5 +342,15 @@
       "invalid": "Choose an option",
       "below_start": "Can't be below the vehicle's starting odometer"
     }
+  },
+  "more": {
+    "statsBody": "Mileage and spend over time",
+    "toolsBody": "Trip cost, mileage and fuel split",
+    "vehiclesBody": "Add, edit or archive vehicles",
+    "settingsBody": "Language, region, units, theme"
+  },
+  "reminders": {
+    "emptyTitle": "No reminders yet",
+    "emptyBody": "Services, insurance, emission test and licence renewals will show here."
   }
 }
