@@ -9,7 +9,8 @@
   "home": {
     "emptyTitle": "No vehicles yet",
     "emptyBody": "Add your bike, scooter, car or EV to start logging fill-ups and services.",
-    "odometer": "Odometer"
+    "odometer": "Odometer",
+    "addFirstVehicle": "Add your first vehicle"
   },
   "history": {
     "emptyTitle": "No entries yet",
@@ -168,5 +169,9 @@
       "not_a_number": "Enter a number",
       "saveFailed": "Couldn't save. Please try again."
     }
+  },
+  "addVehicle": {
+    "title": "Add vehicle",
+    "save": "Save"
   }
 }

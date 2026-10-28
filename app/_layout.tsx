@@ -36,6 +36,11 @@ export default function RootLayout() {
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Protected guard={onboarded}>
               <Stack.Screen name="(tabs)" />
+              {/* Minimal back button: the tabs group has no title, so iOS would show "(tabs)". */}
+              <Stack.Screen
+                name="vehicles/new"
+                options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+              />
             </Stack.Protected>
             <Stack.Protected guard={!onboarded}>
               <Stack.Screen name="onboarding" />

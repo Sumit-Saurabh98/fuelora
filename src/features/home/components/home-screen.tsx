@@ -1,4 +1,5 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Card, Text, useTheme } from 'react-native-paper';
@@ -26,7 +27,12 @@ export function HomeScreen() {
 
   if (!vehicle) {
     return (
-      <EmptyState icon="car-outline" title={t('home.emptyTitle')} body={t('home.emptyBody')} />
+      <EmptyState
+        icon="car-outline"
+        title={t('home.emptyTitle')}
+        body={t('home.emptyBody')}
+        action={{ label: t('home.addFirstVehicle'), onPress: () => router.push('/vehicles/new') }}
+      />
     );
   }
 

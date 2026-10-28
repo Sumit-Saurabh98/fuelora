@@ -1,5 +1,6 @@
-import { screen } from '@testing-library/react-native';
+import { fireEvent, screen } from '@testing-library/react-native';
 import * as Localization from 'expo-localization';
+import { router } from 'expo-router';
 
 import type { Vehicle } from '@/domain/vehicle';
 import { renderScreen } from '@/testing/render-screen';
@@ -8,6 +9,7 @@ import { usePreferences } from '../../settings/preferences.store';
 import { useCurrentVehicle } from '../../vehicles/hooks/use-current-vehicle';
 import { HomeScreen } from '../components/home-screen';
 
+jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
 jest.mock('../../vehicles/hooks/use-current-vehicle', () => ({ useCurrentVehicle: jest.fn() }));
 const mockCurrent = jest.mocked(useCurrentVehicle);
 
@@ -61,5 +63,18 @@ describe('HomeScreen', () => {
     mockCurrent.mockReturnValue(null);
     await renderScreen(<HomeScreen />);
     expect(screen.getByText('No vehicles yet')).toBeTruthy();
+  });
+
+  it('opens the add-vehicle screen from the empty state', async () => {
+    mockCurrent.mockReturnValue(null);
+    await renderScreen(<HomeScreen />);
+    await fireEvent.press(screen.getByText('Add your first vehicle'));
+    expect(router.push).toHaveBeenCalledWith('/vehicles/new');
+  });
+
+  it('has no add button once a vehicle exists', async () => {
+    mockCurrent.mockReturnValue(activa);
+    await renderScreen(<HomeScreen />);
+    expect(screen.queryByText('Add your first vehicle')).toBeNull();
   });
 });
