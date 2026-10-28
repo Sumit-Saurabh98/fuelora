@@ -4,6 +4,7 @@ import { useTheme } from 'react-native-paper';
 import { AboutSettings } from './about-settings';
 import { AppearanceSettings } from './appearance-settings';
 import { DeveloperSettings } from './developer-settings';
+import { NotificationSettings } from './notification-settings';
 import { RegionSettings } from './region-settings';
 import { UnitsSettings } from './units-settings';
 import { VehiclesSettings } from './vehicles-settings';
@@ -16,6 +17,7 @@ export function SettingsScreen() {
       <AppearanceSettings />
       <RegionSettings />
       <UnitsSettings />
+      <NotificationSettings />
       <AboutSettings />
       <DeveloperSettings />
     </ScrollView>

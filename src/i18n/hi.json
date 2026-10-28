@@ -72,7 +72,12 @@
     "devResetConfirm": "सब कुछ हटाकर फिर से शुरू करें?",
     "vehicles": "वाहन",
     "manageVehicles": "वाहन संभालें",
-    "vehicleCount": "सेव किए गए वाहन: {{count}}"
+    "vehicleCount": "सेव किए गए वाहन: {{count}}",
+    "notifications": "नोटिफ़िकेशन",
+    "weeklyNudge": "हर हफ़्ते लिखने की याद",
+    "weeklyNudgeDescription": "रविवार सुबह 10 बजे, सिर्फ़ तब जब उस हफ़्ते कुछ नहीं लिखा।",
+    "notificationsOff": "नोटिफ़िकेशन बंद हैं",
+    "notificationsOffDescription": "रिमाइंडर सिर्फ़ ऐप में दिखेंगे। सिस्टम सेटिंग्स खोलने के लिए टैप करें।"
   },
   "languages": {
     "en": "English",

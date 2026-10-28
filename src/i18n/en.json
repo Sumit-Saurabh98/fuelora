@@ -72,7 +72,12 @@
     "devResetConfirm": "Delete everything and restart?",
     "vehicles": "Vehicles",
     "manageVehicles": "Manage vehicles",
-    "vehicleCount": "Vehicles saved: {{count}}"
+    "vehicleCount": "Vehicles saved: {{count}}",
+    "notifications": "Notifications",
+    "weeklyNudge": "Weekly reminder to log",
+    "weeklyNudgeDescription": "Sunday 10:00, only if you logged nothing that week.",
+    "notificationsOff": "Notifications are off",
+    "notificationsOffDescription": "Reminders only show in the app. Tap to open system settings."
   },
   "languages": {
     "en": "English",
