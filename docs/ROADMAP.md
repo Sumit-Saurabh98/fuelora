@@ -59,7 +59,9 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
   - [x] 10.4 Reminders list: current vehicle + licence, most urgent first, due text, Done (today, current odometer)
   - [x] 10.5 Add / edit / delete reminder: Service / Document / Other, presets pre-fill suggested due + repeat (labelled as suggestions), documents with region names, licence person-level, due date and/or odometer, repeat, lead
   - [x] 10.6 Next reminders on the Home dashboard: 3 most urgent, "All reminders", or a prompt to add one (F-06)
-- [ ] Distance forecaster + predicted dates
+- [ ] Distance forecaster + predicted dates — Step 11
+  - [x] 11.1 Domain: average daily distance from readings in the last 90 days (≥ 2 spanning ≥ 7 days), predicted due date, "predicted" flag on the reminder status
+  - [ ] 11.2 Reminders list and Home show "around <date>" for distance reminders
 - [ ] `ReminderPlanner` + `NotificationScheduler` (60 budget, 09:00, overdue once), permission on first reminder
 - [ ] Weekly nudge (toggle)
 - [ ] First real-iPhone check (borrowed device, ad hoc dev build): notifications at 09:00 (KB #15)

@@ -177,6 +177,8 @@ export type ReminderStatusView = {
   state: ReminderState;
   /** LLD §5.3: the date, the predicted date for distance, or the earlier of both. */
   effectiveDate: string | null;
+  /** True when the effective date is a forecast from the odometer ("around 15 Nov"). */
+  predicted: boolean;
   /** Distance left to the due odometer (negative when past it); null without one. */
   remainingM: number | null;
 };
@@ -194,6 +196,10 @@ export function reminderStatus(
     (d): d is string => d !== null,
   );
   const effectiveDate = dates.length ? dates.sort()[0]! : null;
+  const predicted =
+    effectiveDate !== null &&
+    effectiveDate === (context.predictedDate ?? null) &&
+    (reminder.dueDate === null || context.predictedDate! < reminder.dueDate);
   const remainingM =
     reminder.dueOdometerM !== null && currentOdometerM !== null
       ? reminder.dueOdometerM - currentOdometerM
@@ -211,7 +217,7 @@ export function reminderStatus(
       remainingM <= 0 ? 'due' : remainingM <= reminder.leadDistanceM ? 'due_soon' : 'upcoming';
     state = moreUrgent(state, byDistance);
   }
-  return { state, effectiveDate, remainingM };
+  return { state, effectiveDate, predicted, remainingM };
 }
 
 const URGENCY: Record<ReminderState, number> = { upcoming: 0, due_soon: 1, due: 2, overdue: 3 };

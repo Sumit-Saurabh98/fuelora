@@ -97,7 +97,12 @@ describe('reminderStatus (LLD §5.3)', () => {
   it('distance reminders by odometer: within 300 km is due soon, reached is due', () => {
     const at = (current: number) =>
       reminderStatus({ ...base, dueOdometerM: 15_000_000 }, { today, currentOdometerM: current });
-    expect(at(14_500_000)).toEqual({ state: 'upcoming', effectiveDate: null, remainingM: 500_000 });
+    expect(at(14_500_000)).toEqual({
+      state: 'upcoming',
+      effectiveDate: null,
+      predicted: false,
+      remainingM: 500_000,
+    });
     expect(at(14_800_000).state).toBe('due_soon');
     expect(at(15_050_000)).toMatchObject({ state: 'due', remainingM: -50_000 });
   });
@@ -107,7 +112,12 @@ describe('reminderStatus (LLD §5.3)', () => {
       { ...base, dueDate: '2027-04-01', dueOdometerM: 15_000_000 },
       { today, currentOdometerM: 14_900_000, predictedDate: '2026-11-02' },
     );
-    expect(view).toEqual({ state: 'due_soon', effectiveDate: '2026-11-02', remainingM: 100_000 });
+    expect(view).toEqual({
+      state: 'due_soon',
+      effectiveDate: '2026-11-02',
+      predicted: true,
+      remainingM: 100_000,
+    });
   });
 });
 
@@ -171,5 +181,26 @@ describe('documentNameKey (KB §4)', () => {
     expect(documentNameKey('emission_test', 'IN')).toBe('regionNames.emission.puc');
     expect(documentNameKey('emission_test', 'GB')).toBe('regionNames.emission.mot');
     expect(documentNameKey('registration', 'GB')).toBe('regionNames.registration.roadTax');
+  });
+});
+
+describe('predicted dates (FR-13)', () => {
+  const base = { dueDate: null, dueOdometerM: 15_000_000, leadDays: 7, leadDistanceM: 300_000 };
+
+  it('a forecast date drives the state for a distance-only reminder', () => {
+    const view = reminderStatus(base, {
+      today: '2026-10-28',
+      currentOdometerM: 13_000_000, // 2,000 km to go: upcoming by distance
+      predictedDate: '2026-11-01', // but 4 days away at this pace
+    });
+    expect(view).toMatchObject({ state: 'due_soon', effectiveDate: '2026-11-01', predicted: true });
+  });
+
+  it('a set due date earlier than the forecast is not "predicted"', () => {
+    const view = reminderStatus(
+      { ...base, dueDate: '2026-11-15' },
+      { today: '2026-10-28', currentOdometerM: 13_000_000, predictedDate: '2026-12-20' },
+    );
+    expect(view).toMatchObject({ effectiveDate: '2026-11-15', predicted: false });
   });
 });
