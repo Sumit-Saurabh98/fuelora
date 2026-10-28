@@ -48,7 +48,7 @@ function insertFillUp(db: DatabaseSync, id: string, vehicleId: string, odometerM
 describe('migrations', () => {
   it('bundles every journal entry in migrations.js', () => {
     const bundle = readFileSync(path.join(__dirname, '..', 'migrations', 'migrations.js'), 'utf8');
-    expect(migrationTags()).toEqual(['0000_init', '0001_vehicles_fill_ups']);
+    expect(migrationTags()).toEqual(['0000_init', '0001_vehicles_fill_ups', '0002_services']);
     for (const tag of migrationTags()) {
       expect(bundle).toContain(`./${tag}.sql`);
     }
@@ -173,6 +173,66 @@ describe('migrations', () => {
       // sqlite_autoindex_* backs the text primary key and always exists.
       const ours = indexes.map((i) => i.name).filter((n) => !n.startsWith('sqlite_autoindex'));
       expect(ours.sort()).toEqual(['fill_ups_vehicle_date', 'fill_ups_vehicle_odo']);
+    });
+  });
+
+  describe('0002_services', () => {
+    it('a v2 database (vehicles + fill-ups) upgrades with every row intact', () => {
+      const db = freshDb();
+      applyMigrations(db, { to: 2 });
+      db.prepare('INSERT INTO settings (key, value, updated_at) VALUES (?, ?, ?)').run(
+        'current_vehicle_id',
+        'v1',
+        NOW,
+      );
+      insertVehicle(db, 'v1');
+      insertFillUp(db, 'f1', 'v1', 1_000_000);
+      insertFillUp(db, 'f2', 'v1', 1_300_000);
+
+      applyMigrations(db, { from: 2 });
+
+      expect(db.prepare('SELECT id, name FROM vehicles').all()).toEqual([
+        { id: 'v1', name: 'My Activa' },
+      ]);
+      expect(db.prepare('SELECT id, odometer_m FROM fill_ups ORDER BY odometer_m').all()).toEqual([
+        { id: 'f1', odometer_m: 1_000_000 },
+        { id: 'f2', odometer_m: 1_300_000 },
+      ]);
+      expect(db.prepare('SELECT value FROM settings').get()).toEqual({ value: 'v1' });
+      expect(columns(db, 'services').map(([name]) => name)).toEqual([
+        'id',
+        'vehicle_id',
+        'serviced_date',
+        'odometer_m',
+        'type_key',
+        'title',
+        'cost_minor',
+        'currency',
+        'note',
+        'created_at',
+        'updated_at',
+      ]);
+    });
+
+    it('optional odometer and cost; deleted with their vehicle; indexed by vehicle + date', () => {
+      const db = freshDb();
+      applyMigrations(db);
+      insertVehicle(db, 'v1');
+      db.prepare(
+        `INSERT INTO services (id, vehicle_id, serviced_date, type_key, created_at, updated_at)
+         VALUES ('s1', 'v1', '2026-10-20', 'general_service', ?, ?)`,
+      ).run(NOW, NOW);
+      expect(db.prepare('SELECT odometer_m, cost_minor FROM services').get()).toEqual({
+        odometer_m: null,
+        cost_minor: null,
+      });
+
+      db.prepare("DELETE FROM vehicles WHERE id = 'v1'").run();
+      expect(db.prepare('SELECT id FROM services').all()).toEqual([]);
+
+      const indexes = db.prepare('PRAGMA index_list(services)').all() as { name: string }[];
+      const ours = indexes.map((i) => i.name).filter((n) => !n.startsWith('sqlite_autoindex'));
+      expect(ours).toEqual(['services_vehicle_date']);
     });
   });
 });

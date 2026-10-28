@@ -1,6 +1,7 @@
 import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 import { ENTRY_MODES } from '@/domain/fill-up';
+import type { ServiceTypeKey } from '@/domain/presets';
 import { FUEL_TYPES, VEHICLE_TYPES } from '@/domain/vehicle';
 
 // Source of truth for the schema (LLD §2). After editing: `pnpm db:generate`, review the SQL,
@@ -58,4 +59,25 @@ export const fillUps = sqliteTable(
     uniqueIndex('fill_ups_vehicle_odo').on(t.vehicleId, t.odometerM),
     index('fill_ups_vehicle_date').on(t.vehicleId, t.localDate),
   ],
+);
+
+export const services = sqliteTable(
+  'services',
+  {
+    id: text('id').primaryKey(),
+    vehicleId: text('vehicle_id')
+      .notNull()
+      .references(() => vehicles.id, { onDelete: 'cascade' }),
+    servicedDate: text('serviced_date').notNull(), // YYYY-MM-DD
+    odometerM: integer('odometer_m'), // optional
+    // Preset key (KB §5) or 'custom'; plain text so new presets need no migration.
+    typeKey: text('type_key').$type<ServiceTypeKey>().notNull(),
+    title: text('title'), // required when type_key = 'custom'
+    costMinor: integer('cost_minor'),
+    currency: text('currency'), // ISO 4217, set whenever cost_minor is
+    note: text('note'),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (t) => [index('services_vehicle_date').on(t.vehicleId, t.servicedDate)],
 );

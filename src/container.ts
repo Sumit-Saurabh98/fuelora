@@ -3,10 +3,12 @@ import { getDatabase } from '@/db/client';
 import type { Clock } from '@/domain/clock';
 import { UuidV7Generator, type IdGenerator, type RandomSource } from '@/domain/id-generator';
 import { DrizzleFillUpRepository } from '@/repositories/drizzle-fill-up.repository';
+import { DrizzleServiceLogRepository } from '@/repositories/drizzle-service-log.repository';
 import { DrizzleSettingsRepository } from '@/repositories/drizzle-settings.repository';
 import { DrizzleVehicleRepository } from '@/repositories/drizzle-vehicle.repository';
 import { FillUpService } from '@/services/fill-up.service';
 import { OnboardingService } from '@/services/onboarding.service';
+import { ServiceLogService } from '@/services/service-log.service';
 import { SettingsService } from '@/services/settings.service';
 import { VehicleService } from '@/services/vehicle.service';
 
@@ -32,6 +34,7 @@ export type Container = {
   settingsService: SettingsService;
   vehicleService: VehicleService;
   fillUpService: FillUpService;
+  serviceLogService: ServiceLogService;
   onboardingService: OnboardingService;
 };
 
@@ -67,6 +70,12 @@ export function getContainer(): Container {
     settingsService,
     vehicleService,
     fillUpService,
+    serviceLogService: new ServiceLogService(
+      new DrizzleServiceLogRepository(db),
+      vehicleService,
+      systemClock,
+      idGenerator,
+    ),
     onboardingService: new OnboardingService(settingsService, vehicleService),
   };
   return container;

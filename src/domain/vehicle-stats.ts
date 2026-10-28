@@ -133,14 +133,14 @@ export function vehicleStats(
 }
 
 /**
- * Latest known odometer (LLD §5.1). Fill-ups and the starting reading for now; services and
- * manual readings join when they exist.
+ * Latest known odometer (LLD §5.1): the highest of fill-up and service readings and the starting
+ * reading. Manual odometer readings join when they exist. Services may have no reading.
  */
 export function currentOdometerM(
-  fillUps: readonly Pick<EfficiencyFillUp, 'odometerM'>[],
+  readings: readonly { odometerM: number | null }[],
   initialOdometerM: number,
 ): number {
-  return fillUps.reduce((max, f) => Math.max(max, f.odometerM), initialOdometerM);
+  return readings.reduce((max, r) => Math.max(max, r.odometerM ?? 0), initialOdometerM);
 }
 
 /** What the history shows next to a full fill: its segment's efficiency, or that it was missed. */

@@ -13,6 +13,8 @@ export const ERROR_CODES = [
   'ODOMETER_BELOW_START',
   'ODOMETER_NOT_INCREASING',
   'ODOMETER_AFTER_NEXT',
+  'INVALID_SERVICE',
+  'SERVICE_NOT_FOUND',
 ] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];
 

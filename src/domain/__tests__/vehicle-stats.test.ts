@@ -150,9 +150,11 @@ describe('vehicleStats (F-06)', () => {
 });
 
 describe('currentOdometerM (LLD §5.1)', () => {
-  it('highest fill-up reading, or the starting odometer', () => {
+  it('highest fill-up or service reading, or the starting odometer', () => {
     expect(currentOdometerM([], 5_000)).toBe(5_000);
     expect(currentOdometerM([{ odometerM: 9_000 }, { odometerM: 7_000 }], 5_000)).toBe(9_000);
+    // A service without a reading doesn't count.
+    expect(currentOdometerM([{ odometerM: null }, { odometerM: 6_000 }], 5_000)).toBe(6_000);
   });
 });
 

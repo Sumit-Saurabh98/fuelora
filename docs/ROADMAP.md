@@ -49,7 +49,7 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
 
 - [ ] Service log with presets per vehicle type — Step 9
   - [x] 9.1 Domain: service presets with suggested intervals per vehicle column (bike / scooter / car / EV, KB §5), service record rules
-  - [ ] 9.2 Data layer: `services` table (migration 0002 + test), repository, ServiceLogService; services count toward the current odometer
+  - [x] 9.2 Data layer: `services` table (migration 0002 + upgrade test), repository, ServiceLogService; services count toward the current odometer
   - [ ] 9.3 Add service screen (from Home)
   - [ ] 9.4 Services in History; edit and delete
 - [ ] Reminders (date / distance / both, repeat, lead) + document presets + region names
