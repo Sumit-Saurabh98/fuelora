@@ -22,8 +22,8 @@ module.exports = defineConfig([
     ignores: ['dist/*', '.expo/*', 'node_modules/*', 'web/*', 'store/**', 'src/db/migrations/*'],
   },
   {
-    // Node build scripts (CommonJS).
-    files: ['scripts/**/*.js'],
+    // Node build scripts and Expo config plugins (CommonJS).
+    files: ['scripts/**/*.js', 'plugins/**/*.js'],
     languageOptions: {
       globals: {
         __dirname: 'readonly',

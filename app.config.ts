@@ -11,6 +11,10 @@ const variant: Variant = (() => {
 // after the first upload, so production must not ship with this value.
 const APP_ID = 'com.fuelora.dev';
 
+// Our own file type for backups (FR-23): ".fuelora", JSON inside. Not tied to the bundle id, so
+// it doesn't change when the final id is chosen.
+const BACKUP_UTI = 'app.fuelora.backup';
+
 // Google's public sample IDs. Real IDs come in Phase 4/5 (ADS.md §9) and only for production.
 const TEST_ADMOB = {
   androidAppId: 'ca-app-pub-3940256099942544~3347511713',
@@ -44,6 +48,27 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     supportsTablet: false,
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
+      // "Open in Fuelora" for .fuelora files from WhatsApp, Mail, Files (FR-23).
+      CFBundleDocumentTypes: [
+        {
+          CFBundleTypeName: 'Fuelora backup',
+          LSHandlerRank: 'Owner',
+          LSItemContentTypes: [BACKUP_UTI],
+        },
+      ],
+      UTExportedTypeDeclarations: [
+        {
+          UTTypeIdentifier: BACKUP_UTI,
+          UTTypeDescription: 'Fuelora backup',
+          UTTypeConformsTo: ['public.json', 'public.data'],
+          UTTypeTagSpecification: {
+            'public.filename-extension': ['fuelora'],
+            'public.mime-type': ['application/json'],
+          },
+        },
+      ],
+      // The OS copies the file into the app's Inbox; we read that copy.
+      LSSupportsOpeningDocumentsInPlace: false,
     },
   },
   android: {
@@ -54,8 +79,22 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       backgroundImage: './assets/images/android-icon-background.png',
       monochromeImage: './assets/images/android-icon-monochrome.png',
     },
+    // "Open with Fuelora" for backup files (FR-23). WhatsApp and Drive often send no extension
+    // and a generic type, so JSON and octet-stream are accepted; the restore screen validates.
+    intentFilters: [
+      {
+        action: 'VIEW',
+        category: ['DEFAULT', 'BROWSABLE'],
+        data: [
+          { scheme: 'content', mimeType: 'application/json' },
+          { scheme: 'content', mimeType: 'application/octet-stream' },
+          { scheme: 'file', mimeType: '*/*', pathPattern: '.*\\.fuelora' },
+        ],
+      },
+    ],
   },
   plugins: [
+    './plugins/with-keep-app-data.js',
     'expo-router',
     'expo-localization',
     'expo-sqlite',

@@ -39,6 +39,8 @@ export function WelcomeScreen() {
         label: t('onboarding.continue'),
         onPress: () => router.push('/onboarding/region'),
       }}
+      // New phone: bring everything over from a backup instead of starting fresh (FR-22).
+      secondary={{ label: t('onboarding.restore'), onPress: () => router.push('/restore') }}
     >
       <View style={[styles.promise, { backgroundColor: theme.colors.secondaryContainer }]}>
         <MaterialCommunityIcons

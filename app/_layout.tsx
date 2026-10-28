@@ -53,11 +53,12 @@ export default function RootLayout() {
               <Stack.Screen name="service/[id]" options={withHeader} />
               <Stack.Screen name="reminder/new" options={withHeader} />
               <Stack.Screen name="reminder/[id]" options={withHeader} />
-              <Stack.Screen name="restore" options={withHeader} />
             </Stack.Protected>
             <Stack.Protected guard={!onboarded}>
               <Stack.Screen name="onboarding" />
             </Stack.Protected>
+            {/* Outside both groups: a new phone restores before onboarding (FR-22, FR-23). */}
+            <Stack.Screen name="restore" options={withHeader} />
           </Stack>
         )}
         <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />

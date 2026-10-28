@@ -172,7 +172,8 @@
     "vehicleTitle": "Add your vehicle",
     "vehicleSubtitle": "Just the basics. You can add more vehicles later.",
     "save": "Save",
-    "skip": "Skip for now"
+    "skip": "Skip for now",
+    "restore": "Restore from a backup"
   },
   "vehicleForm": {
     "typeLabel": "Vehicle type",

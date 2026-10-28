@@ -84,13 +84,13 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
   - [x] 16.2 Export (Settings → Backup): JSON backup via share sheet + CSV of the current vehicle; last export time on the device (MMKV)
   - [x] 16.3 Restore (Settings → Backup → Restore): pick file → validate → summary → confirm → safety copy on the phone (last 3 kept) → replace all in one transaction → reload settings / onboarding → notification permission when reminders exist + reschedule (FR-17, FR-24)
   - [x] 16.4 Settings → Backup status row: "Last backup: N days ago" / "Never backed up", warning colour after 30 days or never with entries, tap to back up (FR-26)
-  - [ ] 16.5 `.fuelora` file type / Open in Fuelora (FR-23) + Android "Keep app data" (FR-25) + Auto Backup check
+  - [x] 16.5 `.fuelora` file type / Open in Fuelora (FR-23, KB #26), restore before onboarding (welcome screen link), Android "Keep app data" config plugin (FR-25), Auto Backup on (allowBackup, no exclusions)
   - [ ] 16.6 Backup nudges: 30 days / 20 new entries, max one per 7 days (FR-27)
 - [ ] Verify Android Auto Backup / iOS backup include the DB
-- [ ] `.fuelora` backup file type: "Open in Fuelora" from WhatsApp/email/Drive/Files on both platforms (FR-23)
+- [x] `.fuelora` backup file type: "Open in Fuelora" from WhatsApp/email/Drive/Files on both platforms (FR-23) — in 16.5, device check pending
 - [x] After restore: notification permission prompt + reschedule when reminders exist (FR-24) — in 16.3, device check pending
 - [ ] Cross-platform restore tested both ways: Android → iOS and iOS → Android (FR-22)
-- [ ] Android "Keep app data" on uninstall via a small config plugin; test uninstall-keep-reinstall (FR-25)
+- [x] Android "Keep app data" on uninstall via a small config plugin; test uninstall-keep-reinstall (FR-25) — plugin in 16.5, device test pending
 - [x] Backup status row in Settings: "Last backup: N days ago" with warning color (FR-26) — in 16.4
 - [ ] Nudge after 20 new entries since last export, max one nudge per 7 days (FR-27)
 - **Demo:** export on the Android phone, send via WhatsApp, tap the file on the iPhone (Simulator), restore — everything matches, reminders notify

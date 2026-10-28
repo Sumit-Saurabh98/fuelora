@@ -3,7 +3,8 @@
 export type ShareKind = { mimeType: string; uti: string };
 
 export const SHARE_KINDS = {
-  backup: { mimeType: 'application/json', uti: 'public.json' },
+  // Our exported type (app.config.ts), so iOS keeps the .fuelora name and offers Fuelora.
+  backup: { mimeType: 'application/json', uti: 'app.fuelora.backup' },
   csv: { mimeType: 'text/csv', uti: 'public.comma-separated-values-text' },
 } as const satisfies Record<string, ShareKind>;
 
