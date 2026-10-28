@@ -24,12 +24,12 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
   - [x] 4.3 Region screen: pre-selected from the phone, units preview, change if needed; shared onboarding frame (step dots, Back/Continue)
   - [x] 4.4 First vehicle screen: type, fuel, name, current odometer (+ optional details); saves, sets current vehicle, Home shows it; Skip for now. Onboarding layout: back arrow top-left, one full-width action, Skip under Save. iOS Intl crash fixed + guarded
   - [x] 4.5 Home "Add your first vehicle" button + add-vehicle screen (for users who skipped) — device check pending
-- [ ] Vehicles: add/edit/archive/delete, switcher — Step 5
+- [x] Vehicles: add/edit/archive/delete, switcher — Step 5 (5.1–5.5 device check pending)
   - [x] 5.1 Data layer: update, archive/unarchive, delete with cascade; current vehicle moves to the next active one
   - [x] 5.2 Vehicles screen (active + archived, current badge) from Settings → Vehicles, "Add vehicle"
   - [x] 5.3 Edit vehicle screen (tap a vehicle in the list); untouched odometer/tank keep their exact stored values
   - [x] 5.4 Archive/restore + delete with typed-name confirmation (on the edit screen)
-  - [ ] 5.5 Vehicle switcher on top of Home
+  - [x] 5.5 Vehicle switcher on top of Home (switch, add, manage); "all archived" state on Home
 - [ ] Fill-up entry: any-two-of-three, amount-only, full/partial, missed flag, validation, plausibility warnings
   - Then: once a vehicle has fill-ups, block fuel changes across quantity units (liquid ↔ CNG ↔ electric) and a starting odometer above the first fill-up (needs a KB decision)
 - [ ] Result card + dashboard (last/avg efficiency, month spend, cost per distance)

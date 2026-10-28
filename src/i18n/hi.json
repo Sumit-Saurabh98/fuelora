@@ -10,7 +10,13 @@
     "emptyTitle": "अभी कोई वाहन नहीं",
     "emptyBody": "फ़्यूल और सर्विस लिखना शुरू करने के लिए अपनी बाइक, स्कूटर, कार या EV जोड़ें।",
     "odometer": "ओडोमीटर",
-    "addFirstVehicle": "अपना पहला वाहन जोड़ें"
+    "addFirstVehicle": "अपना पहला वाहन जोड़ें",
+    "switchVehicle": "चालू वाहन: {{name}}",
+    "switchVehicleHint": "वाहन बदलें, जोड़ें या संभालें",
+    "yourVehicles": "आपके वाहन",
+    "manageVehicles": "वाहन संभालें",
+    "allArchivedTitle": "सभी वाहन संग्रहित हैं",
+    "allArchivedBody": "उनका डेटा सुरक्षित है। कोई वाहन वापस लाएँ या नया जोड़ें।"
   },
   "history": {
     "emptyTitle": "अभी कोई एंट्री नहीं",

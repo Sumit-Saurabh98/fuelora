@@ -9,17 +9,27 @@ import { EmptyState } from '@/ui/empty-state';
 import { formatNumber } from '@/ui/format';
 
 import { useUnitPreferences } from '../../settings/hooks/use-unit-preferences';
-import { useCurrentVehicle } from '../../vehicles/hooks/use-current-vehicle';
+import { useVehicles } from '../../vehicles/hooks/use-vehicles';
 import { VEHICLE_TYPE_ICONS, vehicleDetails } from '../../vehicles/vehicle-display';
+import { VehicleSwitcher } from './vehicle-switcher';
 
 export function HomeScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const vehicle = useCurrentVehicle();
+  const { active, archived, currentId } = useVehicles();
   const { units, locale } = useUnitPreferences();
+  const vehicle = active.find((v) => v.id === currentId);
 
   if (!vehicle) {
-    return (
+    // Archived vehicles still hold data, so don't claim there are none.
+    return archived.length > 0 ? (
+      <EmptyState
+        icon="archive-outline"
+        title={t('home.allArchivedTitle')}
+        body={t('home.allArchivedBody')}
+        action={{ label: t('home.manageVehicles'), onPress: () => router.push('/vehicles') }}
+      />
+    ) : (
       <EmptyState
         icon="car-outline"
         title={t('home.emptyTitle')}
@@ -37,6 +47,7 @@ export function HomeScreen() {
       style={{ backgroundColor: theme.colors.background }}
       contentContainerStyle={styles.content}
     >
+      <VehicleSwitcher vehicles={active} current={vehicle} />
       <Card mode="contained" style={{ backgroundColor: theme.colors.primaryContainer }}>
         <Card.Content style={styles.card}>
           <MaterialCommunityIcons
@@ -64,7 +75,7 @@ export function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: 16 },
+  content: { padding: 16, gap: 12 },
   card: { flexDirection: 'row', alignItems: 'center', gap: 16 },
   text: { flex: 1, gap: 2 },
 });

@@ -10,7 +10,13 @@
     "emptyTitle": "No vehicles yet",
     "emptyBody": "Add your bike, scooter, car or EV to start logging fill-ups and services.",
     "odometer": "Odometer",
-    "addFirstVehicle": "Add your first vehicle"
+    "addFirstVehicle": "Add your first vehicle",
+    "switchVehicle": "Current vehicle: {{name}}",
+    "switchVehicleHint": "Switch, add or manage vehicles",
+    "yourVehicles": "Your vehicles",
+    "manageVehicles": "Manage vehicles",
+    "allArchivedTitle": "All vehicles are archived",
+    "allArchivedBody": "Their data is kept. Restore one, or add a new vehicle."
   },
   "history": {
     "emptyTitle": "No entries yet",
