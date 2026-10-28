@@ -4,7 +4,7 @@ import type {
   LiquidEfficiencyFormat,
 } from './efficiency-formats';
 import { Money, sumByCurrency } from './money';
-import { baseTo, metresTo, type DistanceUnit } from './units';
+import { baseTo, metresTo, quantityToBase, type DistanceUnit } from './units';
 import type { FuelType, VehicleType } from './vehicle';
 
 // The only place that computes efficiency or cost per distance (AGENTS.md rule 5, LLD §4).
@@ -187,6 +187,29 @@ export class EfficiencyEngine {
         return metresTo(m, 'mi') / baseTo(q, 'gal_uk');
       case 'mi_per_kwh':
         return metresTo(m, 'mi') / baseTo(q, 'kWh');
+    }
+  }
+
+  /**
+   * The inverse of value(): fuel (base units) needed for a distance at a given efficiency, for the
+   * trip-cost calculator (FR-19). Null when the efficiency or distance can't give a quantity.
+   */
+  quantityFor(distanceM: number, efficiency: number, format: EfficiencyFormat): number | null {
+    if (!(distanceM > 0) || !(efficiency > 0) || !Number.isFinite(efficiency)) return null;
+    switch (format) {
+      case 'km_per_l':
+      case 'km_per_kg':
+      case 'km_per_kwh':
+        return Math.round(distanceM / efficiency);
+      case 'l_per_100km':
+      case 'kwh_per_100km':
+        return Math.round((efficiency * distanceM) / 100);
+      case 'mpg_us':
+        return quantityToBase(metresTo(distanceM, 'mi') / efficiency, 'gal_us');
+      case 'mpg_uk':
+        return quantityToBase(metresTo(distanceM, 'mi') / efficiency, 'gal_uk');
+      case 'mi_per_kwh':
+        return quantityToBase(metresTo(distanceM, 'mi') / efficiency, 'kWh');
     }
   }
 

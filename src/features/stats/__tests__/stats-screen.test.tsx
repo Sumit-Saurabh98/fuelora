@@ -67,15 +67,13 @@ function f(id: string, km: number, litres: number, rupees: number, localDate: st
 
 describe('StatsScreen (F-08)', () => {
   beforeEach(() => {
-    jest
-      .spyOn(Localization, 'getLocales')
-      .mockReturnValue([
-        {
-          languageTag: 'en-IN',
-          regionCode: 'IN',
-          currencyCode: 'INR',
-        } as unknown as Localization.Locale,
-      ]);
+    jest.spyOn(Localization, 'getLocales').mockReturnValue([
+      {
+        languageTag: 'en-IN',
+        regionCode: 'IN',
+        currencyCode: 'INR',
+      } as unknown as Localization.Locale,
+    ]);
     usePreferences.setState({ region: 'IN', language: 'en', unitOverrides: {} });
     jest.mocked(useVehicles).mockReturnValue({ active: [activa], archived: [], currentId: 'v1' });
     mockCharts.line = undefined;

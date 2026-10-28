@@ -175,6 +175,7 @@ class EfficiencyEngine {
     distanceM; quantityBase; validSegments; costs: { cost: Money; distanceM }[];
   };
   value(totals: { distanceM; quantityBase }, format: EfficiencyFormat): number | null; // LLD §3 formulas
+  quantityFor(distanceM, efficiency, format): number | null; // inverse, for the trip-cost calculator
   costPerDistance(cost: { cost: Money; distanceM }, unit: 'km' | 'mi'): Money | null;
 }
 quantityFromTotal(total: Money, unitPrice, unit): number | null; // amount-only (src/domain/fill-up.ts)
