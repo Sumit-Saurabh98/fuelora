@@ -16,7 +16,9 @@
     "yourVehicles": "Your vehicles",
     "manageVehicles": "Manage vehicles",
     "allArchivedTitle": "All vehicles are archived",
-    "allArchivedBody": "Their data is kept. Restore one, or add a new vehicle."
+    "allArchivedBody": "Their data is kept. Restore one, or add a new vehicle.",
+    "addFillUp": "Add fill-up",
+    "addCharge": "Add charge"
   },
   "history": {
     "emptyTitle": "No entries yet",
@@ -206,5 +208,41 @@
     "deleteBody": "This deletes {{name}} and all its fill-ups, services and reminders. It can't be undone. To keep the data, archive it instead.",
     "deleteTypeName": "Type the vehicle name to confirm",
     "deleteFailed": "Couldn't delete. Please try again."
+  },
+  "fillUp": {
+    "title": "Add fill-up",
+    "titleCharge": "Add charge",
+    "when": "When",
+    "date": "Date",
+    "time": "Time",
+    "done": "Done",
+    "odometer": "Odometer",
+    "anyTwo": "Enter any two. We calculate the third.",
+    "quantity": "Fuel",
+    "energy": "Energy",
+    "price": "Price per {{unit}}",
+    "total": "Total paid",
+    "calculated": "Calculated",
+    "fullTank": "Full tank",
+    "fullTankHelp": "Filled to the top. Mileage is worked out from one full tank to the next.",
+    "fullCharge": "Full charge",
+    "fullChargeHelp": "Charged to your usual full level. Mileage is worked out from one full charge to the next.",
+    "missed": "Missed a fill-up before this",
+    "missedHelp": "Turn on if you forgot to log one. This tank's mileage is skipped so it's never wrong.",
+    "station": "Station (optional)",
+    "note": "Note (optional)",
+    "save": "Save",
+    "errors": {
+      "required": "Required",
+      "not_a_number": "Enter a number",
+      "need_two": "Enter any two of these",
+      "out_of_range": "Check this value",
+      "too_long": "Too long",
+      "in_future": "Can't be in the future",
+      "DUPLICATE_ODOMETER": "You already logged this odometer reading",
+      "ODOMETER_BELOW_START": "Must be at least {{limit}} (the vehicle's starting odometer)",
+      "ODOMETER_NOT_INCREASING": "Must be above {{limit}} (an earlier entry)",
+      "ODOMETER_AFTER_NEXT": "Must be below {{limit}} (a later entry)"
+    }
   }
 }

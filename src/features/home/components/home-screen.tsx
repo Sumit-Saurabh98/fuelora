@@ -2,7 +2,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { Card, Text, useTheme } from 'react-native-paper';
+import { Card, FAB, Text, useTheme } from 'react-native-paper';
 
 import { metresTo } from '@/domain/units';
 import { EmptyState } from '@/ui/empty-state';
@@ -43,39 +43,47 @@ export function HomeScreen() {
   const details = vehicleDetails(vehicle);
 
   return (
-    <ScrollView
-      style={{ backgroundColor: theme.colors.background }}
-      contentContainerStyle={styles.content}
-    >
-      <VehicleSwitcher vehicles={active} current={vehicle} />
-      <Card mode="contained" style={{ backgroundColor: theme.colors.primaryContainer }}>
-        <Card.Content style={styles.card}>
-          <MaterialCommunityIcons
-            name={VEHICLE_TYPE_ICONS[vehicle.type]}
-            size={40}
-            color={theme.colors.onPrimaryContainer}
-          />
-          <View style={styles.text}>
-            <Text variant="headlineSmall" style={{ color: theme.colors.onPrimaryContainer }}>
-              {vehicle.name}
-            </Text>
-            {details ? (
-              <Text variant="bodyMedium" style={{ color: theme.colors.onPrimaryContainer }}>
-                {details}
+    <View style={[styles.screen, { backgroundColor: theme.colors.background }]}>
+      <ScrollView contentContainerStyle={styles.content}>
+        <VehicleSwitcher vehicles={active} current={vehicle} />
+        <Card mode="contained" style={{ backgroundColor: theme.colors.primaryContainer }}>
+          <Card.Content style={styles.card}>
+            <MaterialCommunityIcons
+              name={VEHICLE_TYPE_ICONS[vehicle.type]}
+              size={40}
+              color={theme.colors.onPrimaryContainer}
+            />
+            <View style={styles.text}>
+              <Text variant="headlineSmall" style={{ color: theme.colors.onPrimaryContainer }}>
+                {vehicle.name}
               </Text>
-            ) : null}
-            <Text variant="bodyMedium" style={{ color: theme.colors.onPrimaryContainer }}>
-              {t('home.odometer')}: {odometer}
-            </Text>
-          </View>
-        </Card.Content>
-      </Card>
-    </ScrollView>
+              {details ? (
+                <Text variant="bodyMedium" style={{ color: theme.colors.onPrimaryContainer }}>
+                  {details}
+                </Text>
+              ) : null}
+              <Text variant="bodyMedium" style={{ color: theme.colors.onPrimaryContainer }}>
+                {t('home.odometer')}: {odometer}
+              </Text>
+            </View>
+          </Card.Content>
+        </Card>
+      </ScrollView>
+      <FAB
+        icon={vehicle.fuelType === 'electric' ? 'ev-station' : 'gas-station'}
+        label={vehicle.fuelType === 'electric' ? t('home.addCharge') : t('home.addFillUp')}
+        style={styles.fab}
+        onPress={() => router.push({ pathname: '/fill-up/new', params: { vehicleId: vehicle.id } })}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  content: { padding: 16, gap: 12 },
+  screen: { flex: 1 },
+  // Room under the last card so the FAB never covers it.
+  content: { padding: 16, gap: 12, paddingBottom: 96 },
+  fab: { position: 'absolute', right: 16, bottom: 16 },
   card: { flexDirection: 'row', alignItems: 'center', gap: 16 },
   text: { flex: 1, gap: 2 },
 });

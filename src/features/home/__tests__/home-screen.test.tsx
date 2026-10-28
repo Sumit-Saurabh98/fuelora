@@ -110,6 +110,22 @@ describe('HomeScreen', () => {
     expect(router.push).toHaveBeenCalledWith('/vehicles');
   });
 
+  it('Add fill-up opens the entry for the current vehicle', async () => {
+    mockVehicles.mockReturnValue(lists());
+    await renderScreen(<HomeScreen />);
+    await fireEvent.press(screen.getByText('Add fill-up'));
+    expect(router.push).toHaveBeenCalledWith({
+      pathname: '/fill-up/new',
+      params: { vehicleId: 'v1' },
+    });
+  });
+
+  it('EVs get Add charge', async () => {
+    mockVehicles.mockReturnValue(lists({ active: [{ ...activa, fuelType: 'electric' }] }));
+    await renderScreen(<HomeScreen />);
+    expect(screen.getByText('Add charge')).toBeTruthy();
+  });
+
   describe('vehicle switcher', () => {
     it('lists active vehicles and switches the current one', async () => {
       mockVehicles.mockReturnValue(lists({ active: [activa, swift] }));

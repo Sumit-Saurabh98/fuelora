@@ -31,3 +31,26 @@ export function numberSeparators(locale: string): NumberSeparators {
   const separators = [...sample].filter((c) => c === '.' || c === ',');
   return separators.at(-1) === ',' ? { decimal: ',', group: '.' } : { decimal: '.', group: ',' };
 }
+
+// Explicit fields instead of dateStyle/timeStyle: Hermes' Intl coverage differs on iOS (KB #23).
+export function formatDate(date: Date, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(date);
+}
+
+export function formatTime(date: Date, locale: string): string {
+  return new Intl.DateTimeFormat(locale, { hour: 'numeric', minute: '2-digit' }).format(date);
+}
+
+/** "₹", "$", "£" for a field affix: format() output with the digits removed (KB #23). */
+export function currencySymbol(locale: string, currency: string): string {
+  const sample = new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+    maximumFractionDigits: 0,
+  }).format(0);
+  return sample.replace(/[\d\s\u00a0\u202f.,]/g, '') || currency;
+}
