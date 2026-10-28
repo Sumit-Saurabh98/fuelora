@@ -247,3 +247,27 @@ export function backupStatus(
   const daysAgo = Math.max(0, Math.floor((now.getTime() - Date.parse(lastExportAt)) / 86_400_000));
   return { daysAgo, warn: hasEntries && daysAgo > BACKUP_STALE_DAYS };
 }
+
+export const BACKUP_NUDGE = { minEntries: 5, entriesSinceExport: 20, quietDays: 7 } as const;
+
+/**
+ * FR-27 / LLD §4.4: nudge when the last export is over 30 days old (or never) with at least 5
+ * entries, or when 20 entries were added since it; never more than once per 7 days.
+ */
+export function shouldNudgeBackup(input: {
+  lastExportAt: string | null;
+  lastNudgeAt: string | null;
+  entries: number;
+  entriesSinceExport: number;
+  now: Date;
+}): boolean {
+  const daysSince = (iso: string) => (input.now.getTime() - Date.parse(iso)) / 86_400_000;
+  if (input.lastNudgeAt !== null && daysSince(input.lastNudgeAt) < BACKUP_NUDGE.quietDays) {
+    return false;
+  }
+  const stale = input.lastExportAt === null || daysSince(input.lastExportAt) > BACKUP_STALE_DAYS;
+  return (
+    (stale && input.entries >= BACKUP_NUDGE.minEntries) ||
+    input.entriesSinceExport >= BACKUP_NUDGE.entriesSinceExport
+  );
+}

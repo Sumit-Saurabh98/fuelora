@@ -13,6 +13,7 @@ import { useUnitPreferences } from '../../settings/hooks/use-unit-preferences';
 import { useVehicles } from '../../vehicles/hooks/use-vehicles';
 import { VEHICLE_TYPE_ICONS, vehicleDetails } from '../../vehicles/vehicle-display';
 import { useVehicleStats } from '../hooks/use-vehicle-stats';
+import { BackupNudge } from './backup-nudge';
 import { Dashboard } from './dashboard';
 import { NextReminders } from './next-reminders';
 import { VehicleSwitcher } from './vehicle-switcher';
@@ -81,6 +82,7 @@ function VehicleHome({ vehicle, active }: { vehicle: Vehicle; active: Vehicle[] 
         </Card>
         {stats ? <Dashboard vehicle={vehicle} stats={stats} /> : null}
         {stats ? <NextReminders vehicle={vehicle} /> : null}
+        <BackupNudge />
       </ScrollView>
       {/* Services are rarer than fill-ups, so they get the small button: fill-ups stay one tap. */}
       <FAB

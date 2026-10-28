@@ -477,7 +477,10 @@
     "lastToday": "Last backup: today",
     "lastDaysAgo": "Last backup: {{days}} days ago",
     "staleHint": "Back up now so a lost or new phone doesn't mean lost data.",
-    "lastYesterday": "Last backup: yesterday"
+    "lastYesterday": "Last backup: yesterday",
+    "nudgeTitle": "Back up your data",
+    "nudgeBody": "Your entries live only on this phone. Save a backup file to Drive or WhatsApp so a lost or new phone doesn't mean starting over.",
+    "later": "Later"
   },
   "csv": {
     "type": "Type",

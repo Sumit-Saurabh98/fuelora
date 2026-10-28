@@ -2,7 +2,14 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
-import { backupFileName, backupStatus, buildBackup, parseBackup, summarizeBackup } from '../backup';
+import {
+  backupFileName,
+  backupStatus,
+  buildBackup,
+  parseBackup,
+  shouldNudgeBackup,
+  summarizeBackup,
+} from '../backup';
 import { CURRENT_BACKUP_VERSION } from '../backup-migrations';
 
 // AGENTS.md: one fixture per schemaVersion ever shipped; every one must keep importing.
@@ -114,5 +121,38 @@ describe('backupStatus (FR-26)', () => {
   it('never backed up warns once there are entries', () => {
     expect(backupStatus(null, now, true)).toEqual({ daysAgo: null, warn: true });
     expect(backupStatus(null, now, false)).toEqual({ daysAgo: null, warn: false });
+  });
+});
+
+describe('shouldNudgeBackup (FR-27)', () => {
+  const now = new Date('2026-10-28T10:00:00.000Z');
+  const base = { lastExportAt: null, lastNudgeAt: null, entries: 0, entriesSinceExport: 0, now };
+
+  it('never backed up: after 5 entries', () => {
+    expect(shouldNudgeBackup({ ...base, entries: 4, entriesSinceExport: 4 })).toBe(false);
+    expect(shouldNudgeBackup({ ...base, entries: 5, entriesSinceExport: 5 })).toBe(true);
+  });
+
+  it('a recent backup: only after 20 new entries', () => {
+    const recent = { ...base, lastExportAt: '2026-10-20T10:00:00.000Z', entries: 40 };
+    expect(shouldNudgeBackup({ ...recent, entriesSinceExport: 19 })).toBe(false);
+    expect(shouldNudgeBackup({ ...recent, entriesSinceExport: 20 })).toBe(true);
+  });
+
+  it('an old backup with a few entries', () => {
+    expect(
+      shouldNudgeBackup({
+        ...base,
+        lastExportAt: '2026-09-20T10:00:00.000Z',
+        entries: 6,
+        entriesSinceExport: 1,
+      }),
+    ).toBe(true);
+  });
+
+  it('at most once per 7 days', () => {
+    const due = { ...base, entries: 30, entriesSinceExport: 30 };
+    expect(shouldNudgeBackup({ ...due, lastNudgeAt: '2026-10-25T10:00:00.000Z' })).toBe(false);
+    expect(shouldNudgeBackup({ ...due, lastNudgeAt: '2026-10-21T10:00:00.000Z' })).toBe(true);
   });
 });

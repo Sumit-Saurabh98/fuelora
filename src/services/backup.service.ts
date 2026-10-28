@@ -53,6 +53,15 @@ export class BackupService {
     await this.files.share(fileName, csv, SHARE_KINDS.csv, dialogTitle);
   }
 
+  /** When the backup nudge was last put away on this phone (FR-27). */
+  lastNudgeAt(): string | null {
+    return this.device.getString(DEVICE_KEYS.lastBackupNudgeAt);
+  }
+
+  markNudged(): void {
+    this.device.setString(DEVICE_KEYS.lastBackupNudgeAt, this.clock.now().toISOString());
+  }
+
   /** UTC ISO instant of the last export from this phone, or null if never. */
   lastExportAt(): string | null {
     return this.device.getString(DEVICE_KEYS.lastExportAt);
