@@ -488,5 +488,35 @@
     "service": "Service",
     "yes": "yes",
     "no": "no"
+  },
+  "restore": {
+    "title": "Restore from a backup",
+    "settingsDescription": "Replace the data on this phone with a backup file, e.g. from your old phone.",
+    "intro": "Choose a Fuelora backup file (.fuelora or .json) from Files, Drive, WhatsApp or email.",
+    "introSafety": "Before anything is replaced, the data on this phone is saved as a safety copy.",
+    "choose": "Choose backup file",
+    "chooseOther": "Choose another file",
+    "fileFrom": "Backup from {{date}}",
+    "summary": {
+      "vehicles": "Vehicles: {{count}}",
+      "fillUps": "Fill-ups: {{count}}",
+      "services": "Services: {{count}}",
+      "reminders": "Active reminders: {{count}}",
+      "range": "Entries from {{from}} to {{to}}"
+    },
+    "replaceWarning": "Restoring replaces everything on this phone with this backup.",
+    "replace": "Replace all data",
+    "confirmTitle": "Replace all data?",
+    "confirmBody": "Everything on this phone is replaced by the backup. A safety copy of the current data is saved first.",
+    "restoring": "Restoring…",
+    "done": "Restored",
+    "doneSafety": "Your previous data was kept as a safety copy on this phone.",
+    "notificationsOff": "Notifications are off, so reminders will only show in the app.",
+    "toHome": "Go to Home",
+    "errors": {
+      "invalid": "That file isn't a Fuelora backup, or it's damaged. Nothing was changed.",
+      "newer": "This backup is from a newer version of Fuelora. Update the app, then try again.",
+      "failed": "Restore didn't finish. Your data wasn't changed. Please try again."
+    }
   }
 }

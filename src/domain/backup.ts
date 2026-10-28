@@ -223,6 +223,11 @@ export function summarizeBackup(data: BackupData): BackupSummary {
   };
 }
 
+/** `fuelora-safety-2026-10-28T10-00-00.fuelora`: sorts by time, safe in every file system. */
+export function safetyFileName(instant: Date): string {
+  return `fuelora-safety-${instant.toISOString().slice(0, 19).replace(/:/g, '-')}.fuelora`;
+}
+
 /** `fuelora-backup-2026-10-28.fuelora` (LLD §7). */
 export function backupFileName(today: string): string {
   return `fuelora-backup-${today}.fuelora`;

@@ -17,6 +17,8 @@ export const ERROR_CODES = [
   'SERVICE_NOT_FOUND',
   'INVALID_REMINDER',
   'REMINDER_NOT_FOUND',
+  'BACKUP_INVALID_FILE',
+  'BACKUP_NEWER_VERSION',
 ] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];
 

@@ -12,6 +12,7 @@ import { DrizzleSettingsRepository } from '@/repositories/drizzle-settings.repos
 import { DrizzleVehicleRepository } from '@/repositories/drizzle-vehicle.repository';
 import { FillUpService } from '@/services/fill-up.service';
 import { OnboardingService } from '@/services/onboarding.service';
+import { ExpoBackupFiles } from '@/platform/expo-backup-files';
 import { ExpoShareFiles } from '@/platform/expo-share-files';
 import { MmkvDeviceState } from '@/platform/mmkv-device-state';
 import { DrizzleBackupRepository } from '@/repositories/drizzle-backup.repository';
@@ -127,6 +128,7 @@ export function getContainer(): Container {
     backupService: new BackupService(
       new DrizzleBackupRepository(db),
       new ExpoShareFiles(),
+      new ExpoBackupFiles(),
       new MmkvDeviceState(),
       systemClock,
       Constants.expoConfig?.version ?? '0.0.0',

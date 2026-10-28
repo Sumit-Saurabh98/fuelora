@@ -273,6 +273,7 @@ Tabs: **Home · History · Reminders · More** (More = stats, calculators, backu
 - File name `fuelora-backup-YYYY-MM-DD.fuelora` (JSON content; MIME `application/json`). Registered as a document type so other apps offer "Open in Fuelora" (FR-23). Import also accepts `.json`.
 - Import: validate with Zod → migrate `schemaVersion` n → current step by step (`backup-migrations.ts`) → replace all in one transaction.
 - CSV export: one file per vehicle with display units and a header row; not importable in MVP.
+- Restore (`BackupService.readBackup` → `restore`): the current data is written as `safety-backups/fuelora-safety-<UTC time>.fuelora` in the app's documents folder (last 3 kept) before `BackupRepository.replaceAll` runs in one transaction; no safety copy, no restore. Afterwards preferences and onboarding are re-read and notifications re-planned; with active reminders the app asks for notification permission (FR-24).
 - Format code: `src/domain/backup.ts` (`buildBackup`, `parseBackup`, `summarizeBackup`), steps in `src/domain/backup-migrations.ts`, fixtures `src/services/__tests__/fixtures/backup-v<n>.fuelora`. Parsing refuses unknown fields, wrong types, floats in canonical integers, dangling vehicle references and duplicate odometer readings, and a `schemaVersion` newer than the app (`BACKUP_NEWER_VERSION`). `odometerReadings` is always empty until that table exists.
 
 ## 8. Key interfaces

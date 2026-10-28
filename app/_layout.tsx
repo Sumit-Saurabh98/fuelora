@@ -53,6 +53,7 @@ export default function RootLayout() {
               <Stack.Screen name="service/[id]" options={withHeader} />
               <Stack.Screen name="reminder/new" options={withHeader} />
               <Stack.Screen name="reminder/[id]" options={withHeader} />
+              <Stack.Screen name="restore" options={withHeader} />
             </Stack.Protected>
             <Stack.Protected guard={!onboarded}>
               <Stack.Screen name="onboarding" />

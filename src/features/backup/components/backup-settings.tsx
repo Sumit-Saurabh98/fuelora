@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HelperText, List } from 'react-native-paper';
@@ -46,6 +47,14 @@ export function BackupSettings() {
           onPress={() => void run(() => actions.exportCsv(vehicle))}
         />
       ) : null}
+      <List.Item
+        title={t('restore.title')}
+        description={t('restore.settingsDescription')}
+        descriptionNumberOfLines={2}
+        disabled={busy}
+        left={(props) => <List.Icon {...props} icon="backup-restore" />}
+        onPress={() => router.push('/restore')}
+      />
       <HelperText type="error" visible={failed}>
         {t('backup.exportFailed')}
       </HelperText>

@@ -82,13 +82,13 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
 - [ ] Backup export (JSON + CSV), restore with safety backup, monthly nudge — Step 16
   - [x] 16.1 Backup format v1 (LLD §7): Zod-validated rows + cross-references, newer versions refused, migration steps scaffold, restore summary, v1 fixture
   - [x] 16.2 Export (Settings → Backup): JSON backup via share sheet + CSV of the current vehicle; last export time on the device (MMKV)
-  - [ ] 16.3 Restore: pick file → summary → safety backup → replace all in one transaction → notifications
+  - [x] 16.3 Restore (Settings → Backup → Restore): pick file → validate → summary → confirm → safety copy on the phone (last 3 kept) → replace all in one transaction → reload settings / onboarding → notification permission when reminders exist + reschedule (FR-17, FR-24)
   - [ ] 16.4 Settings → Backup: export, restore, "Last backup: N days ago" (FR-26)
   - [ ] 16.5 `.fuelora` file type / Open in Fuelora (FR-23) + Android "Keep app data" (FR-25) + Auto Backup check
   - [ ] 16.6 Backup nudges: 30 days / 20 new entries, max one per 7 days (FR-27)
 - [ ] Verify Android Auto Backup / iOS backup include the DB
 - [ ] `.fuelora` backup file type: "Open in Fuelora" from WhatsApp/email/Drive/Files on both platforms (FR-23)
-- [ ] After restore: notification permission prompt + reschedule when reminders exist (FR-24)
+- [x] After restore: notification permission prompt + reschedule when reminders exist (FR-24) — in 16.3, device check pending
 - [ ] Cross-platform restore tested both ways: Android → iOS and iOS → Android (FR-22)
 - [ ] Android "Keep app data" on uninstall via a small config plugin; test uninstall-keep-reinstall (FR-25)
 - [ ] Backup status row in Settings: "Last backup: N days ago" with warning color (FR-26)
