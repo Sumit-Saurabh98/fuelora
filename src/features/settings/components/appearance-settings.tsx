@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
-import { List, RadioButton, SegmentedButtons, Text } from 'react-native-paper';
+import { List, RadioButton, Text } from 'react-native-paper';
 
-import { isLanguage, isThemeMode, LANGUAGES, THEME_MODES } from '@/domain/preferences';
+import { isLanguage, LANGUAGES, THEME_MODES } from '@/domain/preferences';
+import { SegmentedControl } from '@/ui/segmented-control';
 
 import { usePreferences } from '../preferences.store';
 
@@ -23,12 +24,11 @@ export function AppearanceSettings() {
           <Text variant="bodyLarge" style={styles.label}>
             {t('settings.theme')}
           </Text>
-          <SegmentedButtons
+          <SegmentedControl
             value={themeMode}
-            onValueChange={(v) => {
-              if (isThemeMode(v)) setThemeMode(v);
-            }}
-            buttons={THEME_MODES.map((m) => ({ value: m, label: t(themeLabelKey[m]) }))}
+            onChange={setThemeMode}
+            accessibilityLabel={t('settings.theme')}
+            segments={THEME_MODES.map((m) => ({ value: m, label: t(themeLabelKey[m]) }))}
           />
         </View>
       </List.Section>
