@@ -2,7 +2,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
-import { backupFileName, buildBackup, parseBackup, summarizeBackup } from '../backup';
+import { backupFileName, backupStatus, buildBackup, parseBackup, summarizeBackup } from '../backup';
 import { CURRENT_BACKUP_VERSION } from '../backup-migrations';
 
 // AGENTS.md: one fixture per schemaVersion ever shipped; every one must keep importing.
@@ -87,5 +87,32 @@ describe('backup file (LLD §7)', () => {
 
   it('file name', () => {
     expect(backupFileName('2026-10-28')).toBe('fuelora-backup-2026-10-28.fuelora');
+  });
+});
+
+describe('backupStatus (FR-26)', () => {
+  const now = new Date('2026-10-28T10:00:00.000Z');
+  it('days since the last export; warns after 30 days only when there is data', () => {
+    expect(backupStatus('2026-10-27T09:00:00.000Z', now, true)).toEqual({
+      daysAgo: 1,
+      warn: false,
+    });
+    expect(backupStatus('2026-09-28T10:00:00.000Z', now, true)).toEqual({
+      daysAgo: 30,
+      warn: false,
+    });
+    expect(backupStatus('2026-09-27T10:00:00.000Z', now, true)).toEqual({
+      daysAgo: 31,
+      warn: true,
+    });
+    expect(backupStatus('2026-09-01T10:00:00.000Z', now, false)).toEqual({
+      daysAgo: 57,
+      warn: false,
+    });
+  });
+
+  it('never backed up warns once there are entries', () => {
+    expect(backupStatus(null, now, true)).toEqual({ daysAgo: null, warn: true });
+    expect(backupStatus(null, now, false)).toEqual({ daysAgo: null, warn: false });
   });
 });

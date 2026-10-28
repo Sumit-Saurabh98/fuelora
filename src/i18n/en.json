@@ -471,7 +471,12 @@
     "exportDescription": "Saves one file with all your vehicles, entries and reminders. Keep it in Drive, WhatsApp or email. Anyone with the file can read it.",
     "exportCsv": "Export as spreadsheet (CSV)",
     "exportCsvDescription": "Fill-ups and services of {{name}}, for Excel or Sheets. Can't be restored.",
-    "exportFailed": "Couldn't create the file. Please try again."
+    "exportFailed": "Couldn't create the file. Please try again.",
+    "never": "Never backed up",
+    "lastToday": "Last backup: today",
+    "lastDaysAgo": "Last backup: {{days}} days ago",
+    "staleHint": "Back up now so a lost or new phone doesn't mean lost data.",
+    "lastYesterday": "Last backup: yesterday"
   },
   "csv": {
     "type": "Type",

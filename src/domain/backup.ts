@@ -232,3 +232,18 @@ export function safetyFileName(instant: Date): string {
 export function backupFileName(today: string): string {
   return `fuelora-backup-${today}.fuelora`;
 }
+
+/** FR-26: warn when the last export is over 30 days old, or never done while there are entries. */
+export const BACKUP_STALE_DAYS = 30;
+
+export type BackupStatus = { daysAgo: number | null; warn: boolean };
+
+export function backupStatus(
+  lastExportAt: string | null,
+  now: Date,
+  hasEntries: boolean,
+): BackupStatus {
+  if (lastExportAt === null) return { daysAgo: null, warn: hasEntries };
+  const daysAgo = Math.max(0, Math.floor((now.getTime() - Date.parse(lastExportAt)) / 86_400_000));
+  return { daysAgo, warn: hasEntries && daysAgo > BACKUP_STALE_DAYS };
+}
