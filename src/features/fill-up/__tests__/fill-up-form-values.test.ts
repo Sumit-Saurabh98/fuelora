@@ -1,6 +1,7 @@
 import { regionDefaults } from '@/domain/regions';
 
 import {
+  defaultLayout,
   derivedField,
   derivedText,
   rememberedPrice,
@@ -26,6 +27,7 @@ const NOW = new Date('2026-10-28T10:00:00.000Z');
 const save = (ctx: FillUpFormContext) => ({ ...ctx, vehicleId: 'v1', now: NOW });
 
 const values = (change: Partial<FillUpFormValues> = {}): FillUpFormValues => ({
+  layout: 'full',
   filledAt: new Date('2026-10-28T09:00:00.000Z'),
   odometer: '12,345',
   quantity: '',
@@ -178,5 +180,66 @@ describe('rememberedPrice', () => {
     expect(rememberedPrice({ totalMinor: 5000, currency: 'EUR', quantityBase: 5000 }, india)).toBe(
       '',
     );
+  });
+});
+
+describe('amount-only (F-04, KB #25)', () => {
+  const remembered = { ...india, rememberedPrice: '104.5' };
+
+  it('two-wheelers start in amount mode when a last price exists; cars do not', () => {
+    expect(defaultLayout('scooter', true)).toBe('amount');
+    expect(defaultLayout('bike', true)).toBe('amount');
+    expect(defaultLayout('car', true)).toBe('full');
+    expect(defaultLayout('scooter', false)).toBe('full');
+  });
+
+  it('total + untouched remembered price → amount_only, fuel derived', () => {
+    const result = toFillUpInput(
+      values({ layout: 'amount', price: '104.5', total: '200', sources: ['price'] }),
+      save(remembered),
+    );
+    expect(result).toMatchObject({
+      ok: true,
+      input: { entryMode: 'amount_only', quantityBase: 1914, totalMinor: 20_000 },
+    });
+    expect(
+      derivedText(values({ layout: 'amount', price: '104.5', total: '200' }), remembered),
+    ).toBe('1.91');
+  });
+
+  it('a price the user changed makes it price_total', () => {
+    const result = toFillUpInput(
+      values({ layout: 'amount', price: '106', total: '200', sources: ['price', 'total'] }),
+      save(remembered),
+    );
+    expect(result).toMatchObject({ ok: true, input: { entryMode: 'price_total' } });
+  });
+
+  it('the full form with the remembered price and a total is amount_only too', () => {
+    const result = toFillUpInput(
+      values({ price: '104.5', total: '200', sources: ['price', 'total'] }),
+      save(remembered),
+    );
+    expect(result).toMatchObject({ ok: true, input: { entryMode: 'amount_only' } });
+  });
+
+  it('amount mode needs the amount and a price', () => {
+    expect(
+      toFillUpInput(values({ layout: 'amount', price: '', total: '' }), save(remembered)),
+    ).toEqual({ ok: false, errors: { price: 'required', total: 'required' } });
+  });
+
+  it('a stale quantity from the full form is ignored in amount mode', () => {
+    const result = toFillUpInput(
+      values({
+        layout: 'amount',
+        quantity: '9',
+        price: '104.5',
+        total: '200',
+        sources: ['quantity', 'total'],
+      }),
+      save(remembered),
+    );
+    expect(result).toMatchObject({ ok: true, input: { quantityBase: 1914 } });
   });
 });

@@ -243,6 +243,14 @@
       "ODOMETER_BELOW_START": "Must be at least {{limit}} (the vehicle's starting odometer)",
       "ODOMETER_NOT_INCREASING": "Must be above {{limit}} (an earlier entry)",
       "ODOMETER_AFTER_NEXT": "Must be below {{limit}} (a later entry)"
-    }
+    },
+    "layout": "How do you want to enter it?",
+    "layoutAmount": "Amount only",
+    "layoutFull": "Fuel + amount",
+    "layoutFullEv": "Energy + amount",
+    "amountHint": "Just what you paid. We work out the fuel from the price.",
+    "amountHintEv": "Just what you paid. We work out the energy from the price.",
+    "amountPaid": "Amount paid",
+    "amountResult": "≈ {{quantity}} at this price"
   }
 }

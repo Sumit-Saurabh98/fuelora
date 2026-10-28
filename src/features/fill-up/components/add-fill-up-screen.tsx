@@ -13,15 +13,18 @@ import { metresTo } from '@/domain/units';
 import type { Vehicle } from '@/domain/vehicle';
 import { DateTimeField } from '@/ui/date-time-field';
 import { EmptyState } from '@/ui/empty-state';
+import { SegmentedControl } from '@/ui/segmented-control';
 import { currencySymbol, formatNumber } from '@/ui/format';
 
 import { useVehicle } from '../../vehicles/hooks/use-vehicle';
 import {
   derivedField,
   derivedText,
+  effectiveSources,
   quantityUnitFor,
   withEdited,
   type AmountField,
+  type EntryLayout,
   type FillUpFormField,
   type FillUpFormValues,
 } from '../fill-up-form-values';
@@ -66,7 +69,7 @@ function FillUpForm({ vehicle, last }: { vehicle: Vehicle; last: FillUp | null }
   const [saveFailed, setSaveFailed] = useState(false);
   const { control, formState, setValue, getValues } = form;
   const values = useWatch({ control }) as FillUpFormValues;
-  const derived = derivedField(values.sources);
+  const derived = derivedField(effectiveSources(values));
   const isEv = vehicle.fuelType === 'electric';
   const unit = quantityUnitFor(vehicle.fuelType, ctx.units);
   const symbol = currencySymbol(ctx.locale, ctx.units.currency);
@@ -82,6 +85,16 @@ function FillUpForm({ vehicle, last }: { vehicle: Vehicle; last: FillUp | null }
   const editAmount = (field: AmountField, text: string) => {
     setValue(field, text);
     setValue('sources', withEdited(getValues('sources'), field, text), { shouldValidate: false });
+    for (const f of ['quantity', 'price', 'total'] as const) form.clearErrors(f);
+  };
+
+  const switchLayout = (layout: EntryLayout) => {
+    setValue('layout', layout);
+    // Into the full form, what was typed in amount mode is the two inputs.
+    if (layout === 'full') {
+      const typed = (['price', 'total'] as const).filter((f) => getValues(f).trim() !== '');
+      setValue('sources', typed);
+    }
     for (const f of ['quantity', 'price', 'total'] as const) form.clearErrors(f);
   };
 
@@ -242,16 +255,47 @@ function FillUpForm({ vehicle, last }: { vehicle: Vehicle; last: FillUp | null }
           )}
         />
 
-        <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
-          {t('fillUp.anyTwo')}
-        </Text>
-        {amountField(
-          'quantity',
-          isEv ? t('fillUp.energy') : t('fillUp.quantity'),
-          t(`units.${unit}`),
+        <SegmentedControl
+          value={values.layout}
+          onChange={switchLayout}
+          accessibilityLabel={t('fillUp.layout')}
+          segments={[
+            { value: 'amount', label: t('fillUp.layoutAmount') },
+            {
+              value: 'full',
+              label: isEv ? t('fillUp.layoutFullEv') : t('fillUp.layoutFull'),
+            },
+          ]}
+        />
+        {values.layout === 'amount' ? (
+          <>
+            <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
+              {isEv ? t('fillUp.amountHintEv') : t('fillUp.amountHint')}
+            </Text>
+            {amountField('total', t('fillUp.amountPaid'), symbol)}
+            {amountField('price', t('fillUp.price', { unit: t(`units.${unit}`) }), symbol)}
+            {derivedText(values, ctx) ? (
+              <Text variant="titleMedium" accessibilityLiveRegion="polite">
+                {t('fillUp.amountResult', {
+                  quantity: `${derivedText(values, ctx)} ${t(`units.${unit}`)}`,
+                })}
+              </Text>
+            ) : null}
+          </>
+        ) : (
+          <>
+            <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
+              {t('fillUp.anyTwo')}
+            </Text>
+            {amountField(
+              'quantity',
+              isEv ? t('fillUp.energy') : t('fillUp.quantity'),
+              t(`units.${unit}`),
+            )}
+            {amountField('price', t('fillUp.price', { unit: t(`units.${unit}`) }), symbol)}
+            {amountField('total', t('fillUp.total'), symbol)}
+          </>
         )}
-        {amountField('price', t('fillUp.price', { unit: t(`units.${unit}`) }), symbol)}
-        {amountField('total', t('fillUp.total'), symbol)}
 
         {toggle(
           'isFull',

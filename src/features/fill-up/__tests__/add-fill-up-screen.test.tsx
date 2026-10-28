@@ -114,30 +114,52 @@ describe('AddFillUpScreen', () => {
     expect(screen.getByLabelText('Price per L').props.value).toBe('125');
   });
 
-  it('pre-fills the last price and station; the total alone then gives the litres', async () => {
-    const last: FillUp = {
-      id: 'old',
-      vehicleId: 'x',
-      filledAt: '2026-10-20T09:00:00.000Z',
-      localDate: '2026-10-20',
-      odometerM: 12_100_000,
-      quantityBase: 5000,
-      totalMinor: 52_250,
-      currency: 'INR',
-      isFull: true,
-      missedPrevious: false,
-      entryMode: 'qty_total',
-      station: 'HP Indiranagar',
-      note: null,
-      createdAt: '2026-10-20T09:00:00.000Z',
-      updatedAt: '2026-10-20T09:00:00.000Z',
-    };
+  const last: FillUp = {
+    id: 'old',
+    vehicleId: 'x',
+    filledAt: '2026-10-20T09:00:00.000Z',
+    localDate: '2026-10-20',
+    odometerM: 12_100_000,
+    quantityBase: 5000,
+    totalMinor: 52_250,
+    currency: 'INR',
+    isFull: true,
+    missedPrevious: false,
+    entryMode: 'qty_total',
+    station: 'HP Indiranagar',
+    note: null,
+    createdAt: '2026-10-20T09:00:00.000Z',
+    updatedAt: '2026-10-20T09:00:00.000Z',
+  };
+
+  it('scooter with a last price: amount only, fuel from the price (F-04, KB #25)', async () => {
     await setup('petrol', last);
+    expect(screen.queryByLabelText('Fuel')).toBeNull();
     expect(screen.getByLabelText('Price per L').props.value).toBe('104.5');
     expect(screen.getByLabelText('Station (optional)').props.value).toBe('HP Indiranagar');
 
-    await type('Total paid', '200');
+    await type('Odometer', '12,300');
+    await type('Amount paid', '200');
+    expect(screen.getByText('≈ 1.91 L at this price')).toBeTruthy();
 
+    await fireEvent.press(screen.getByText('Save'));
+
+    await waitFor(() => expect(saved()).toHaveLength(1));
+    expect(saved()[0]).toMatchObject({
+      entryMode: 'amount_only',
+      quantityBase: 1914,
+      totalMinor: 20_000,
+      station: 'HP Indiranagar',
+    });
+  });
+
+  it('switching to the full form keeps the typed amount and shows the calculated litres', async () => {
+    await setup('petrol', last);
+    await type('Amount paid', '200');
+
+    await fireEvent.press(screen.getByLabelText('Fuel + amount'));
+
+    expect(screen.getByLabelText('Total paid').props.value).toBe('200');
     expect(screen.getByLabelText('Fuel').props.value).toBe('1.91');
   });
 

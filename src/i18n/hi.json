@@ -243,6 +243,14 @@
       "ODOMETER_BELOW_START": "कम से कम {{limit}} होना चाहिए (वाहन का शुरुआती ओडोमीटर)",
       "ODOMETER_NOT_INCREASING": "{{limit}} से ज़्यादा होना चाहिए (पहले की एंट्री)",
       "ODOMETER_AFTER_NEXT": "{{limit}} से कम होना चाहिए (बाद की एंट्री)"
-    }
+    },
+    "layout": "कैसे लिखना चाहते हैं?",
+    "layoutAmount": "सिर्फ़ रकम",
+    "layoutFull": "फ़्यूल + रकम",
+    "layoutFullEv": "ऊर्जा + रकम",
+    "amountHint": "बस जितना भुगतान किया। फ़्यूल हम दाम से निकाल देंगे।",
+    "amountHintEv": "बस जितना भुगतान किया। ऊर्जा हम दाम से निकाल देंगे।",
+    "amountPaid": "भुगतान की गई रकम",
+    "amountResult": "इस दाम पर ≈ {{quantity}}"
   }
 }

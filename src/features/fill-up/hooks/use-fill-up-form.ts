@@ -8,6 +8,7 @@ import { numberSeparators } from '@/ui/format';
 
 import { useUnitPreferences } from '../../settings/hooks/use-unit-preferences';
 import {
+  defaultLayout,
   rememberedPrice,
   toFillUpInput,
   type FillUpFormContext,
@@ -18,7 +19,9 @@ import {
 export function useFillUpForm(vehicle: Vehicle, last: FillUp | null) {
   const { units, locale } = useUnitPreferences();
   const separators = useMemo(() => numberSeparators(locale), [locale]);
-  const ctx: FillUpFormContext = { fuelType: vehicle.fuelType, units, separators, locale };
+  const base = { fuelType: vehicle.fuelType, units, locale };
+  const price = rememberedPrice(last, base);
+  const ctx: FillUpFormContext = { ...base, separators, rememberedPrice: price };
 
   const convert = (values: FillUpFormValues) =>
     toFillUpInput(values, { ...ctx, vehicleId: vehicle.id, now: getContainer().clock.now() });
@@ -36,9 +39,9 @@ export function useFillUpForm(vehicle: Vehicle, last: FillUp | null) {
     return { values: {}, errors };
   };
 
-  const price = rememberedPrice(last, ctx);
   const form = useForm<FillUpFormValues>({
     defaultValues: {
+      layout: defaultLayout(vehicle.type, price !== ''),
       filledAt: getContainer().clock.now(),
       odometer: '',
       quantity: '',

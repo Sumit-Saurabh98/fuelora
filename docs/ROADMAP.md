@@ -34,7 +34,7 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
   - [x] 6.1 Domain: FillUp type, any-two-of-three resolution (FR-9), field validation (no future dates, free charge allowed), odometer order by date + not below vehicle start (FR-7), localDate
   - [x] 6.2 Data layer: FillUpRepository + FillUpService (add/update/delete/latest, FR-7, archived vehicles read-only); vehicle edit rules once fill-ups exist (KB #24)
   - [x] 6.3 Fill-up entry screen (Home "Add fill-up" / "Add charge"): native date/time pickers, any two of three with live third value, full/missed toggles, station/note, pre-filled price + station, odometer order messages — needs a new dev build (native picker)
-  - [ ] 6.4 Amount-only mode
+  - [x] 6.4 Amount-only mode: "Amount only" / "Fuel + amount" switch, two-wheelers default to amount only when a last price exists (KB #25)
   - [ ] 6.5 Plausibility + tank warnings (warn, never block)
 - [ ] Result card + dashboard (last/avg efficiency, month spend, cost per distance)
 - [ ] History list with edit/delete

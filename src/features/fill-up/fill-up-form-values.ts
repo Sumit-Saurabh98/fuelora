@@ -17,7 +17,7 @@ import {
   quantityToBase,
   type NumberSeparators,
 } from '@/domain/units';
-import type { FuelType } from '@/domain/vehicle';
+import type { FuelType, VehicleType } from '@/domain/vehicle';
 import { formatNumber } from '@/ui/format';
 
 import { tankUnitFor } from '../vehicles/vehicle-form-values';
@@ -25,7 +25,11 @@ import { tankUnitFor } from '../vehicles/vehicle-form-values';
 /** The three money/quantity inputs; the user types any two (FR-9). */
 export type AmountField = 'quantity' | 'price' | 'total';
 
+/** "amount": only money is typed, fuel comes from the price (F-04); "full": any two of three. */
+export type EntryLayout = 'amount' | 'full';
+
 export type FillUpFormValues = {
+  layout: EntryLayout;
   filledAt: Date;
   odometer: string;
   quantity: string;
@@ -48,7 +52,22 @@ export type FillUpFormContext = {
   units: UnitPreferences;
   separators: NumberSeparators;
   locale: string;
+  /** Price text pre-filled from the last entry ('' when none); untouched, it means amount-only. */
+  rememberedPrice?: string;
 };
+
+/**
+ * KB #25: two-wheeler owners mostly fill by money ("₹200 of petrol"), so they start in amount
+ * mode when a last price exists; cars and others start with the full form.
+ */
+export function defaultLayout(type: VehicleType, hasRememberedPrice: boolean): EntryLayout {
+  return hasRememberedPrice && (type === 'bike' || type === 'scooter') ? 'amount' : 'full';
+}
+
+/** The amount fields that count as typed: in amount mode always price + total. */
+export function effectiveSources(values: Pick<FillUpFormValues, 'layout' | 'sources'>) {
+  return values.layout === 'amount' ? (['price', 'total'] as AmountField[]) : values.sources;
+}
 
 /** Unit the user enters fuel in: their volume unit for liquids, kg for CNG, kWh for EVs. */
 export const quantityUnitFor = tankUnitFor;
@@ -70,11 +89,16 @@ export function derivedField(sources: readonly AmountField[]): AmountField | nul
   return ALL.find((f) => !sources.includes(f)) ?? null;
 }
 
-function modeFor(sources: readonly AmountField[]): EntryMode {
+function modeFor(
+  sources: readonly AmountField[],
+  price: string,
+  rememberedPrice: string | undefined,
+): EntryMode {
   const has = (f: AmountField) => sources.includes(f);
   if (has('quantity') && has('price')) return 'qty_price';
   if (has('quantity') && has('total')) return 'qty_total';
-  return 'price_total';
+  // Money only, fuel from the remembered price (F-04); a price the user typed is price_total.
+  return rememberedPrice && price.trim() === rememberedPrice ? 'amount_only' : 'price_total';
 }
 
 type Parsed =
@@ -83,14 +107,17 @@ type Parsed =
 
 /** Parses the two source fields and resolves the third in canonical units. */
 export function parseAmounts(values: FillUpFormValues, ctx: FillUpFormContext): Parsed {
-  if (values.sources.length < 2) {
-    const errors: Partial<Record<AmountField, FillUpFormError>> = {};
-    for (const f of ALL) if (!values.sources.includes(f)) errors[f] = 'need_two';
+  const sources = effectiveSources(values);
+  const errors: Partial<Record<AmountField, FillUpFormError>> = {};
+  if (values.layout === 'amount') {
+    for (const f of sources) if (values[f].trim() === '') errors[f] = 'required';
+    if (Object.keys(errors).length > 0) return { ok: false, errors };
+  } else if (sources.length < 2) {
+    for (const f of ALL) if (!sources.includes(f)) errors[f] = 'need_two';
     return { ok: false, errors };
   }
-  const errors: Partial<Record<AmountField, FillUpFormError>> = {};
   const read = (f: AmountField) => {
-    if (!values.sources.includes(f)) return null;
+    if (!sources.includes(f)) return null;
     const n = parseDecimalInput(values[f], ctx.separators);
     if (n === null) errors[f] = 'not_a_number';
     return n;
@@ -102,7 +129,7 @@ export function parseAmounts(values: FillUpFormValues, ctx: FillUpFormContext): 
   const total = read('total');
   if (Object.keys(errors).length > 0) return { ok: false, errors };
 
-  const mode = modeFor(values.sources);
+  const mode = modeFor(sources, values.price, ctx.rememberedPrice);
   let amounts: FillUpAmounts;
   if (mode === 'qty_price') {
     amounts = {
@@ -145,7 +172,7 @@ export function formatAmount(
 
 /** Live text for the derived field, or '' while the inputs aren't complete. */
 export function derivedText(values: FillUpFormValues, ctx: FillUpFormContext): string {
-  const field = derivedField(values.sources);
+  const field = derivedField(effectiveSources(values));
   if (!field) return '';
   const parsed = parseAmounts(values, ctx);
   return parsed.ok ? formatAmount(field, parsed.resolved, ctx) : '';
@@ -214,8 +241,9 @@ export function toFillUpInput(
   if (!result.ok) {
     for (const [field, issue] of Object.entries(result.issues) as [FillUpField, FillUpIssue][]) {
       // A derived quantity/total that is out of range is reported on a field the user typed.
+      const sources = effectiveSources(values);
       let formField = DOMAIN_TO_FORM[field];
-      if (formField === derivedField(values.sources)) formField = values.sources[1] ?? formField;
+      if (formField === derivedField(sources)) formField = sources[1] ?? formField;
       errors[formField] ??= issue;
     }
   }
