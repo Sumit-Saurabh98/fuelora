@@ -5,6 +5,7 @@ import {
   efficiencyFormatFor,
   fillUpResult,
   groupByMonth,
+  historyItems,
   segmentMarks,
   vehicleStats,
 } from '../vehicle-stats';
@@ -176,18 +177,48 @@ describe('segmentMarks (F-07)', () => {
   });
 });
 
-describe('groupByMonth', () => {
-  it('newest first by date, one group per month with its spend', () => {
-    const rows = [
-      { ...f('sep', 10_000, 5, 500, true, '2026-09-28'), filledAt: '2026-09-28T09:00:00.000Z' },
-      { ...f('oct1', 10_200, 4, 400, true, '2026-10-05'), filledAt: '2026-10-05T09:00:00.000Z' },
-      { ...f('oct2', 10_450, 5, 550, true, '2026-10-20'), filledAt: '2026-10-20T09:00:00.000Z' },
-    ];
-    const groups = groupByMonth(rows);
+describe('groupByMonth (History)', () => {
+  const fill = (id: string, localDate: string, rupees: number) =>
+    ({
+      ...f(id, 10_000, 5, rupees, true, localDate),
+      vehicleId: 'v1',
+      filledAt: `${localDate}T09:00:00.000Z`,
+      entryMode: 'qty_total',
+      station: null,
+      note: null,
+      createdAt: `${localDate}T09:00:00.000Z`,
+      updatedAt: `${localDate}T09:00:00.000Z`,
+    }) as const;
+  const service = (id: string, servicedDate: string, costMinor: number | null) => ({
+    id,
+    vehicleId: 'v1',
+    servicedDate,
+    odometerM: null,
+    typeKey: 'general_service' as const,
+    title: null,
+    costMinor,
+    currency: costMinor === null ? null : 'INR',
+    note: null,
+    createdAt: `${servicedDate}T18:00:00.000Z`,
+    updatedAt: `${servicedDate}T18:00:00.000Z`,
+  });
+
+  it('fill-ups and services together, newest first, with everything spent per month', () => {
+    const groups = groupByMonth(
+      historyItems(
+        [
+          fill('sep', '2026-09-28', 500),
+          fill('oct1', '2026-10-05', 400),
+          fill('oct2', '2026-10-20', 550),
+        ],
+        [service('s1', '2026-10-12', 120_000), service('s2', '2026-10-20', null)],
+      ),
+    );
     expect(groups.map((g) => [g.month, g.entries.map((e) => e.id)])).toEqual([
-      ['2026-10', ['oct2', 'oct1']],
+      ['2026-10', ['s2', 'oct2', 's1', 'oct1']],
       ['2026-09', ['sep']],
     ]);
-    expect(groups[0]!.spend.map((m) => m.amountMinor)).toEqual([95_000]);
+    // ₹400 + ₹550 fuel + ₹1,200 service; the service without a cost adds nothing.
+    expect(groups[0]!.spend.map((m) => m.amountMinor)).toEqual([215_000]);
   });
 });

@@ -7,6 +7,7 @@ import type { Vehicle } from '@/domain/vehicle';
 import { renderScreen } from '@/testing/render-screen';
 
 import { useVehicleFillUps } from '../../fill-up/hooks/use-vehicle-fill-ups';
+import { useVehicleServices } from '../../services/hooks/use-vehicle-services';
 import { usePreferences } from '../../settings/preferences.store';
 import { useVehicles } from '../../vehicles/hooks/use-vehicles';
 import { HistoryScreen } from '../components/history-screen';
@@ -14,6 +15,7 @@ import { HistoryScreen } from '../components/history-screen';
 jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
 jest.mock('../../vehicles/hooks/use-vehicles', () => ({ useVehicles: jest.fn() }));
 jest.mock('../../fill-up/hooks/use-vehicle-fill-ups', () => ({ useVehicleFillUps: jest.fn() }));
+jest.mock('../../services/hooks/use-vehicle-services', () => ({ useVehicleServices: jest.fn() }));
 
 const activa: Vehicle = {
   id: 'v1',
@@ -71,6 +73,7 @@ describe('HistoryScreen (F-07)', () => {
     ]);
     usePreferences.setState({ region: 'IN', language: 'en', unitOverrides: {} });
     jest.mocked(useVehicles).mockReturnValue({ active: [activa], archived: [], currentId: 'v1' });
+    jest.mocked(useVehicleServices).mockReturnValue([]);
   });
 
   afterEach(() => jest.restoreAllMocks());
@@ -107,5 +110,52 @@ describe('HistoryScreen (F-07)', () => {
     await renderScreen(<HistoryScreen />);
     await fireEvent.press(screen.getByText('10,000 km · 5 L'));
     expect(router.push).toHaveBeenCalledWith({ pathname: '/fill-up/[id]', params: { id: 'a' } });
+  });
+
+  it('services appear with fill-ups, count in the month spend and open for editing', async () => {
+    jest.mocked(useVehicleFillUps).mockReturnValue([f('a', 10_000, 5, 500, '2026-10-05')]);
+    jest.mocked(useVehicleServices).mockReturnValue([
+      {
+        id: 's1',
+        vehicleId: 'v1',
+        servicedDate: '2026-10-12',
+        odometerM: 10_200_000,
+        typeKey: 'engine_oil',
+        title: null,
+        costMinor: 45_000,
+        currency: 'INR',
+        note: 'Castrol',
+        createdAt: '2026-10-12T09:00:00.000Z',
+        updatedAt: '2026-10-12T09:00:00.000Z',
+      },
+    ]);
+    await renderScreen(<HistoryScreen />);
+
+    expect(screen.getByText('Engine oil change · 10,200 km · Castrol')).toBeTruthy();
+    expect(screen.getByText('₹950.00')).toBeTruthy(); // ₹500 fuel + ₹450 service
+    await fireEvent.press(screen.getByText('Engine oil change · 10,200 km · Castrol'));
+    expect(router.push).toHaveBeenCalledWith({ pathname: '/service/[id]', params: { id: 's1' } });
+  });
+
+  it('only services is not empty', async () => {
+    jest.mocked(useVehicleFillUps).mockReturnValue([]);
+    jest.mocked(useVehicleServices).mockReturnValue([
+      {
+        id: 's1',
+        vehicleId: 'v1',
+        servicedDate: '2026-10-12',
+        odometerM: null,
+        typeKey: 'custom',
+        title: 'Horn',
+        costMinor: null,
+        currency: null,
+        note: null,
+        createdAt: '2026-10-12T09:00:00.000Z',
+        updatedAt: '2026-10-12T09:00:00.000Z',
+      },
+    ]);
+    await renderScreen(<HistoryScreen />);
+    expect(screen.getByText('Horn')).toBeTruthy();
+    expect(screen.queryByText('No entries yet')).toBeNull();
   });
 });

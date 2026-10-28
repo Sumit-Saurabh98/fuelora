@@ -47,11 +47,11 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
 
 ## Phase 2 — Services, reminders, notifications (Weeks 5–6)
 
-- [ ] Service log with presets per vehicle type — Step 9
+- [x] Service log with presets per vehicle type — Step 9 (device check pending)
   - [x] 9.1 Domain: service presets with suggested intervals per vehicle column (bike / scooter / car / EV, KB §5), service record rules
   - [x] 9.2 Data layer: `services` table (migration 0002 + upgrade test), repository, ServiceLogService; services count toward the current odometer
   - [x] 9.3 Add service screen (small wrench button on Home): date, presets for the vehicle + Other with a name, optional odometer and cost, note
-  - [ ] 9.4 Services in History; edit and delete
+  - [x] 9.4 Services in History next to fill-ups (month header = everything spent); tap to edit or delete; service readings move the current odometer
 - [ ] Reminders (date / distance / both, repeat, lead) + document presets + region names
 - [ ] Distance forecaster + predicted dates
 - [ ] `ReminderPlanner` + `NotificationScheduler` (60 budget, 09:00, overdue once), permission on first reminder

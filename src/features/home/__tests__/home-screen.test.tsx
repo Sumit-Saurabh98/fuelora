@@ -8,6 +8,7 @@ import { renderScreen } from '@/testing/render-screen';
 
 import { usePreferences } from '../../settings/preferences.store';
 import { useVehicleFillUps } from '../../fill-up/hooks/use-vehicle-fill-ups';
+import { useVehicleServices } from '../../services/hooks/use-vehicle-services';
 import { useVehicles, type VehicleLists } from '../../vehicles/hooks/use-vehicles';
 import { HomeScreen } from '../components/home-screen';
 
@@ -19,6 +20,7 @@ jest.mock('@/container', () => ({
 }));
 jest.mock('../../vehicles/hooks/use-vehicles', () => ({ useVehicles: jest.fn() }));
 jest.mock('../../fill-up/hooks/use-vehicle-fill-ups', () => ({ useVehicleFillUps: jest.fn() }));
+jest.mock('../../services/hooks/use-vehicle-services', () => ({ useVehicleServices: jest.fn() }));
 const mockFillUps = jest.mocked(useVehicleFillUps);
 const mockVehicles = jest.mocked(useVehicles);
 
@@ -67,6 +69,7 @@ describe('HomeScreen', () => {
     jest.mocked(router.push).mockClear();
     mockSetCurrent.mockClear();
     mockFillUps.mockReturnValue([]);
+    jest.mocked(useVehicleServices).mockReturnValue([]);
   });
 
   afterEach(() => jest.restoreAllMocks());
@@ -226,5 +229,26 @@ describe('HomeScreen', () => {
       expect(screen.getByText('₹1,500.00')).toBeTruthy();
       expect(screen.getByText('500 km driven')).toBeTruthy();
     });
+  });
+
+  it('a later service reading moves the odometer on the card (LLD §5.1)', async () => {
+    mockVehicles.mockReturnValue(lists());
+    jest.mocked(useVehicleServices).mockReturnValue([
+      {
+        id: 's1',
+        vehicleId: 'v1',
+        servicedDate: '2026-10-25',
+        odometerM: 13_000_000,
+        typeKey: 'general_service',
+        title: null,
+        costMinor: null,
+        currency: null,
+        note: null,
+        createdAt: '2026-10-25T09:00:00.000Z',
+        updatedAt: '2026-10-25T09:00:00.000Z',
+      },
+    ]);
+    await renderScreen(<HomeScreen />);
+    expect(screen.getByText('Odometer: 13,000 km')).toBeTruthy();
   });
 });

@@ -56,15 +56,13 @@ const saved = () => [...mockRepo.rows.values()];
 
 describe('AddServiceScreen (F-09)', () => {
   beforeEach(() => {
-    jest
-      .spyOn(Localization, 'getLocales')
-      .mockReturnValue([
-        {
-          languageTag: 'en-IN',
-          regionCode: 'IN',
-          currencyCode: 'INR',
-        } as unknown as Localization.Locale,
-      ]);
+    jest.spyOn(Localization, 'getLocales').mockReturnValue([
+      {
+        languageTag: 'en-IN',
+        regionCode: 'IN',
+        currencyCode: 'INR',
+      } as unknown as Localization.Locale,
+    ]);
     usePreferences.setState({ region: 'IN', language: 'en', unitOverrides: {} });
     jest.mocked(router.back).mockClear();
   });

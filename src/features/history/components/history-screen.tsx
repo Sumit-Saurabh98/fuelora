@@ -4,15 +4,20 @@ import { useTranslation } from 'react-i18next';
 import { SectionList, StyleSheet, View } from 'react-native';
 import { Chip, Divider, List, Text, useTheme } from 'react-native-paper';
 
-import { Money } from '@/domain/money';
 import type { FillUp } from '@/domain/fill-up';
 import type { Vehicle } from '@/domain/vehicle';
-import { efficiencyFormatFor, groupByMonth, segmentMarks } from '@/domain/vehicle-stats';
+import {
+  efficiencyFormatFor,
+  groupByMonth,
+  historyItems,
+  segmentMarks,
+} from '@/domain/vehicle-stats';
 import { EmptyState } from '@/ui/empty-state';
 import { formatDate, formatMonth } from '@/ui/format';
 
 import { distanceText, efficiencyText, quantityText } from '../../fill-up/figures-text';
 import { useVehicleFillUps } from '../../fill-up/hooks/use-vehicle-fill-ups';
+import { useVehicleServices } from '../../services/hooks/use-vehicle-services';
 import { useUnitPreferences } from '../../settings/hooks/use-unit-preferences';
 import { useVehicles } from '../../vehicles/hooks/use-vehicles';
 
@@ -38,6 +43,7 @@ function VehicleHistory({ vehicle }: { vehicle: Vehicle }) {
   const theme = useTheme();
   const { units, locale } = useUnitPreferences();
   const fillUps = useVehicleFillUps(vehicle.id);
+  const services = useVehicleServices(vehicle.id);
   const format = efficiencyFormatFor(vehicle.fuelType, units);
   const ctx = { t, units, locale };
 
@@ -45,12 +51,15 @@ function VehicleHistory({ vehicle }: { vehicle: Vehicle }) {
     const rows = fillUps ?? [];
     return {
       marks: segmentMarks(rows, format),
-      sections: groupByMonth(rows).map((g) => ({ ...g, data: g.entries })),
+      sections: groupByMonth(historyItems(rows, services ?? [])).map((g) => ({
+        ...g,
+        data: g.entries,
+      })),
     };
-  }, [fillUps, format]);
+  }, [fillUps, services, format]);
 
-  if (!fillUps) return null; // one frame while SQLite answers
-  if (fillUps.length === 0) {
+  if (!fillUps || !services) return null; // one frame while SQLite answers
+  if (fillUps.length === 0 && services.length === 0) {
     return (
       <EmptyState
         icon="format-list-bulleted"
@@ -86,17 +95,41 @@ function VehicleHistory({ vehicle }: { vehicle: Vehicle }) {
         </View>
       )}
       renderItem={({ item }) => {
-        const total = Money.ofMinor(item.totalMinor, item.currency).format(locale);
-        const description = `${distanceText(item.odometerM, ctx)} · ${quantityText(item.quantityBase, vehicle.fuelType, ctx)}${item.station ? ` · ${item.station}` : ''}`;
+        if (item.kind === 'service') {
+          const s = item.service;
+          const name = s.typeKey === 'custom' ? (s.title ?? '') : t(`servicePresets.${s.typeKey}`);
+          const date = formatServiceDate(s.servicedDate, locale);
+          const parts = [
+            s.odometerM !== null ? distanceText(s.odometerM, ctx) : null,
+            s.note,
+          ].filter(Boolean);
+          return (
+            <List.Item
+              title={item.amount ? `${date} · ${item.amount.format(locale)}` : date}
+              description={parts.length ? `${name} · ${parts.join(' · ')}` : name}
+              descriptionNumberOfLines={2}
+              onPress={() => router.push({ pathname: '/service/[id]', params: { id: s.id } })}
+              left={(props) => <List.Icon {...props} icon="wrench" />}
+            />
+          );
+        }
+        const f = item.fillUp;
+        const description = `${distanceText(f.odometerM, ctx)} · ${quantityText(f.quantityBase, vehicle.fuelType, ctx)}${f.station ? ` · ${f.station}` : ''}`;
         return (
           <List.Item
-            title={`${formatDate(new Date(item.filledAt), locale)} · ${total}`}
+            title={`${formatDate(new Date(f.filledAt), locale)} · ${item.amount.format(locale)}`}
             description={description}
             descriptionNumberOfLines={2}
-            onPress={() => router.push({ pathname: '/fill-up/[id]', params: { id: item.id } })}
+            onPress={() => router.push({ pathname: '/fill-up/[id]', params: { id: f.id } })}
+            left={(props) => (
+              <List.Icon
+                {...props}
+                icon={vehicle.fuelType === 'electric' ? 'ev-station' : 'gas-station'}
+              />
+            )}
             right={() => (
               <Chip compact style={styles.badge} textStyle={styles.badgeText}>
-                {badge(item)}
+                {badge(f)}
               </Chip>
             )}
           />
@@ -104,6 +137,12 @@ function VehicleHistory({ vehicle }: { vehicle: Vehicle }) {
       }}
     />
   );
+}
+
+/** A YYYY-MM-DD day, formatted at local noon so no time zone moves it. */
+function formatServiceDate(day: string, locale: string): string {
+  const [y, m, d] = day.split('-').map(Number);
+  return formatDate(new Date(y!, m! - 1, d!, 12), locale);
 }
 
 const styles = StyleSheet.create({

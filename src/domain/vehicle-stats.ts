@@ -4,7 +4,9 @@ import {
   type EfficiencyFormat,
   type Segment,
 } from './efficiency';
+import type { FillUp } from './fill-up';
 import { Money, sumByCurrency } from './money';
+import type { ServiceEntry } from './service-entry';
 import type { UnitPreferences } from './unit-preferences';
 import type { DistanceUnit } from './units';
 import type { FuelType } from './vehicle';
@@ -161,23 +163,68 @@ export function segmentMarks(
   return marks;
 }
 
-/** Fill-ups newest first, grouped by calendar month (YYYY-MM) with the month's spend. */
-export function groupByMonth<
-  T extends Pick<EfficiencyFillUp, 'localDate' | 'totalMinor' | 'currency'> & { filledAt: string },
->(fillUps: readonly T[]): { month: string; spend: Money[]; entries: T[] }[] {
-  const sorted = [...fillUps].sort((a, b) => b.filledAt.localeCompare(a.filledAt));
-  const groups: { month: string; spend: Money[]; entries: T[] }[] = [];
-  for (const f of sorted) {
-    const month = f.localDate.slice(0, 7);
+/** One History line: a fill-up or a service (F-07). */
+export type HistoryItem =
+  | {
+      kind: 'fillUp';
+      id: string;
+      localDate: string;
+      sortKey: string;
+      amount: Money;
+      fillUp: FillUp;
+    }
+  | {
+      kind: 'service';
+      id: string;
+      localDate: string;
+      sortKey: string;
+      amount: Money | null;
+      service: ServiceEntry;
+    };
+
+export function historyItems(
+  fillUps: readonly FillUp[],
+  services: readonly ServiceEntry[],
+): HistoryItem[] {
+  return [
+    ...fillUps.map((f): HistoryItem => ({
+      kind: 'fillUp',
+      id: f.id,
+      localDate: f.localDate,
+      // Same-day entries: fill-ups by their time, services by when they were logged.
+      sortKey: `${f.localDate}|${f.filledAt}`,
+      amount: Money.ofMinor(f.totalMinor, f.currency),
+      fillUp: f,
+    })),
+    ...services.map((s): HistoryItem => ({
+      kind: 'service',
+      id: s.id,
+      localDate: s.servicedDate,
+      sortKey: `${s.servicedDate}|${s.createdAt}`,
+      amount:
+        s.costMinor !== null && s.currency !== null ? Money.ofMinor(s.costMinor, s.currency) : null,
+      service: s,
+    })),
+  ];
+}
+
+/** History newest first, grouped by calendar month (YYYY-MM) with everything spent in it. */
+export function groupByMonth(
+  items: readonly HistoryItem[],
+): { month: string; spend: Money[]; entries: HistoryItem[] }[] {
+  const sorted = [...items].sort((a, b) => b.sortKey.localeCompare(a.sortKey));
+  const groups: { month: string; spend: Money[]; entries: HistoryItem[] }[] = [];
+  for (const item of sorted) {
+    const month = item.localDate.slice(0, 7);
     let group = groups.at(-1);
     if (group?.month !== month) {
       group = { month, spend: [], entries: [] };
       groups.push(group);
     }
-    group.entries.push(f);
+    group.entries.push(item);
   }
   for (const g of groups) {
-    g.spend = sumByCurrency(g.entries.map((f) => Money.ofMinor(f.totalMinor, f.currency)));
+    g.spend = sumByCurrency(g.entries.flatMap((e) => (e.amount ? [e.amount] : [])));
   }
   return groups;
 }
