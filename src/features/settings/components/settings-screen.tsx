@@ -1,6 +1,7 @@
 import { ScrollView } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
+import { BackupSettings } from '../../backup/components/backup-settings';
 import { AboutSettings } from './about-settings';
 import { AppearanceSettings } from './appearance-settings';
 import { DeveloperSettings } from './developer-settings';
@@ -18,6 +19,7 @@ export function SettingsScreen() {
       <RegionSettings />
       <UnitsSettings />
       <NotificationSettings />
+      <BackupSettings />
       <AboutSettings />
       <DeveloperSettings />
     </ScrollView>

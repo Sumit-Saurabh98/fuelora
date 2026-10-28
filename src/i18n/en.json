@@ -463,5 +463,30 @@
     "fillIn": "Fill in the fields to see the result. Nothing is saved.",
     "trackHint": "Track your real mileage and costs over time.",
     "track": "Track this vehicle"
+  },
+  "backup": {
+    "title": "Backup",
+    "shareTitle": "Save your Fuelora backup",
+    "exportNow": "Back up now",
+    "exportDescription": "Saves one file with all your vehicles, entries and reminders. Keep it in Drive, WhatsApp or email. Anyone with the file can read it.",
+    "exportCsv": "Export as spreadsheet (CSV)",
+    "exportCsvDescription": "Fill-ups and services of {{name}}, for Excel or Sheets. Can't be restored.",
+    "exportFailed": "Couldn't create the file. Please try again."
+  },
+  "csv": {
+    "type": "Type",
+    "date": "Date",
+    "odometer": "Odometer ({{unit}})",
+    "quantity": "Quantity ({{unit}})",
+    "amount": "Amount",
+    "currency": "Currency",
+    "full": "Full tank",
+    "missed": "Missed before",
+    "detail": "Station / service",
+    "note": "Note",
+    "fillUp": "Fill-up",
+    "service": "Service",
+    "yes": "yes",
+    "no": "no"
   }
 }

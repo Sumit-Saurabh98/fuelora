@@ -81,7 +81,7 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
   - [x] 15.2 Calculators screen (More → Calculators): trip cost / mileage / split cost, petrol-diesel / CNG / electric, live results, nothing saved, "Track this vehicle" opens add vehicle
 - [ ] Backup export (JSON + CSV), restore with safety backup, monthly nudge — Step 16
   - [x] 16.1 Backup format v1 (LLD §7): Zod-validated rows + cross-references, newer versions refused, migration steps scaffold, restore summary, v1 fixture
-  - [ ] 16.2 Export: JSON backup via share sheet + CSV per vehicle; last export time on the device (MMKV)
+  - [x] 16.2 Export (Settings → Backup): JSON backup via share sheet + CSV of the current vehicle; last export time on the device (MMKV)
   - [ ] 16.3 Restore: pick file → summary → safety backup → replace all in one transaction → notifications
   - [ ] 16.4 Settings → Backup: export, restore, "Last backup: N days ago" (FR-26)
   - [ ] 16.5 `.fuelora` file type / Open in Fuelora (FR-23) + Android "Keep app data" (FR-25) + Auto Backup check

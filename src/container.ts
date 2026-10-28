@@ -1,4 +1,6 @@
 // Composition root: the only place that picks concrete implementations (AGENTS.md code style).
+import Constants from 'expo-constants';
+
 import { getDatabase } from '@/db/client';
 import type { Clock } from '@/domain/clock';
 import { currentOdometerM } from '@/domain/vehicle-stats';
@@ -10,6 +12,10 @@ import { DrizzleSettingsRepository } from '@/repositories/drizzle-settings.repos
 import { DrizzleVehicleRepository } from '@/repositories/drizzle-vehicle.repository';
 import { FillUpService } from '@/services/fill-up.service';
 import { OnboardingService } from '@/services/onboarding.service';
+import { ExpoShareFiles } from '@/platform/expo-share-files';
+import { MmkvDeviceState } from '@/platform/mmkv-device-state';
+import { DrizzleBackupRepository } from '@/repositories/drizzle-backup.repository';
+import { BackupService } from '@/services/backup.service';
 import { ExpoNotificationGateway } from '@/notifications/expo-notification-gateway';
 import { NotificationScheduler } from '@/notifications/notification-scheduler';
 import { ReminderNotificationService } from '@/services/reminder-notification.service';
@@ -44,6 +50,7 @@ export type Container = {
   reminderService: ReminderService;
   reminderNotifications: ReminderNotificationService;
   notificationGateway: ExpoNotificationGateway;
+  backupService: BackupService;
   onboardingService: OnboardingService;
 };
 
@@ -117,6 +124,13 @@ export function getContainer(): Container {
       settingsService,
     ),
     notificationGateway,
+    backupService: new BackupService(
+      new DrizzleBackupRepository(db),
+      new ExpoShareFiles(),
+      new MmkvDeviceState(),
+      systemClock,
+      Constants.expoConfig?.version ?? '0.0.0',
+    ),
     onboardingService: new OnboardingService(settingsService, vehicleService),
   };
   return container;
