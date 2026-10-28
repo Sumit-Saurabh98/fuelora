@@ -201,4 +201,96 @@ describe('FillUpService', () => {
       expect(edited.fuelType).toBe('electric');
     });
   });
+
+  describe('warnings (FR-8, LLD §4.2)', () => {
+    it('none for a believable scooter tank (45 km/L)', async () => {
+      const { service, activa } = await setup();
+      await service.add(fill(activa.id));
+      expect(
+        await service.warnings(
+          fill(activa.id, {
+            filledAt: new Date('2026-10-26T09:00:00.000Z'),
+            odometerM: 12_525_000, // 225 km on 5 L
+          }),
+          null,
+        ),
+      ).toEqual([]);
+    });
+
+    it('too high when the odometer looks mistyped (scooter, 2,000 km on 5 L)', async () => {
+      const { service, activa } = await setup();
+      await service.add(fill(activa.id));
+      expect(
+        await service.warnings(
+          fill(activa.id, {
+            filledAt: new Date('2026-10-26T09:00:00.000Z'),
+            odometerM: 14_300_000,
+          }),
+          null,
+        ),
+      ).toEqual([{ kind: 'efficiency', level: 'too_high' }]);
+    });
+
+    it('too low (scooter, 20 km on 5 L)', async () => {
+      const { service, activa } = await setup();
+      await service.add(fill(activa.id));
+      expect(
+        await service.warnings(
+          fill(activa.id, {
+            filledAt: new Date('2026-10-26T09:00:00.000Z'),
+            odometerM: 12_320_000,
+          }),
+          null,
+        ),
+      ).toEqual([{ kind: 'efficiency', level: 'too_low' }]);
+    });
+
+    it('nothing to judge for the first entry or a partial', async () => {
+      const { service, activa } = await setup();
+      expect(await service.warnings(fill(activa.id), null)).toEqual([]);
+      await service.add(fill(activa.id));
+      expect(
+        await service.warnings(
+          fill(activa.id, {
+            filledAt: new Date('2026-10-26T09:00:00.000Z'),
+            odometerM: 14_300_000,
+            isFull: false,
+          }),
+          null,
+        ),
+      ).toEqual([]);
+    });
+
+    it('more than 110% of the tank', async () => {
+      const { service, vehicles, activa } = await setup();
+      await vehicles.update(activa.id, {
+        name: 'My Activa',
+        type: 'scooter',
+        fuelType: 'petrol',
+        initialOdometerM: 12_000_000,
+        tankCapacityBase: 5300,
+      });
+      expect(await service.warnings(fill(activa.id, { quantityBase: 5900 }), null)).toEqual([
+        { kind: 'tank' },
+      ]);
+      expect(await service.warnings(fill(activa.id, { quantityBase: 5800 }), null)).toEqual([]);
+    });
+
+    it('an edit is judged without its own old values', async () => {
+      const { service, activa } = await setup();
+      await service.add(fill(activa.id));
+      const second = await service.add(
+        fill(activa.id, { filledAt: new Date('2026-10-26T09:00:00.000Z'), odometerM: 14_300_000 }),
+      );
+      expect(
+        await service.warnings(
+          fill(activa.id, {
+            filledAt: new Date('2026-10-26T09:00:00.000Z'),
+            odometerM: 12_525_000,
+          }),
+          second.id,
+        ),
+      ).toEqual([]);
+    });
+  });
 });

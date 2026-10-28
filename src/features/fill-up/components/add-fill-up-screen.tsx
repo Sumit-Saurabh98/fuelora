@@ -3,15 +3,31 @@ import { useState } from 'react';
 import { Controller, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { Button, HelperText, Switch, Text, TextInput, useTheme } from 'react-native-paper';
+import {
+  Button,
+  Dialog,
+  HelperText,
+  Portal,
+  Switch,
+  Text,
+  TextInput,
+  useTheme,
+} from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { getContainer } from '@/container';
 import { isAppError } from '@/domain/errors';
-import { FILL_UP_LIMITS, type FillUp, type FillUpField, type FillUpIssue } from '@/domain/fill-up';
-import { metresTo } from '@/domain/units';
+import {
+  FILL_UP_LIMITS,
+  type FillUp,
+  type FillUpField,
+  type FillUpIssue,
+  type NewFillUpInput,
+} from '@/domain/fill-up';
+import { baseTo, metresTo } from '@/domain/units';
 import type { Vehicle } from '@/domain/vehicle';
 import { DateTimeField } from '@/ui/date-time-field';
+import type { FillUpWarning } from '@/services/fill-up.service';
 import { EmptyState } from '@/ui/empty-state';
 import { SegmentedControl } from '@/ui/segmented-control';
 import { currencySymbol, formatNumber } from '@/ui/format';
@@ -64,8 +80,13 @@ function FillUpForm({ vehicle, last }: { vehicle: Vehicle; last: FillUp | null }
   const { t } = useTranslation();
   const theme = useTheme();
   const { form, convert, ctx } = useFillUpForm(vehicle, last);
-  const { add, odometerProblem } = useAddFillUp();
+  const { add, odometerProblem, warnings: checkWarnings } = useAddFillUp();
   const [saving, setSaving] = useState(false);
+  // Set when the entry looks unusual; the user can still save it (FR-8).
+  const [pending, setPending] = useState<{
+    input: NewFillUpInput;
+    warnings: FillUpWarning[];
+  } | null>(null);
   const [saveFailed, setSaveFailed] = useState(false);
   const { control, formState, setValue, getValues } = form;
   const values = useWatch({ control }) as FillUpFormValues;
@@ -116,21 +137,58 @@ function FillUpForm({ vehicle, last }: { vehicle: Vehicle; last: FillUp | null }
         });
         return;
       }
-      await add(result.input);
-      router.back();
-    } catch (error: unknown) {
-      if (isAppError(error) && error.code === 'INVALID_FILL_UP') {
-        const issues = (error.details?.issues ?? {}) as Partial<Record<FillUpField, FillUpIssue>>;
-        for (const [field, issue] of Object.entries(issues) as [FillUpField, FillUpIssue][]) {
-          form.setError(FORM_FIELD[field], { type: 'validate', message: `fillUp.errors.${issue}` });
-        }
-      } else {
-        setSaveFailed(true);
+      const warnings = await checkWarnings(result.input);
+      if (warnings.length > 0) {
+        setPending({ input: result.input, warnings });
+        return;
       }
+      await store(result.input);
+    } catch (error: unknown) {
+      handleSaveError(error);
     } finally {
       setSaving(false);
     }
   });
+
+  const store = async (input: NewFillUpInput) => {
+    await add(input);
+    router.back();
+  };
+
+  const saveAnyway = async () => {
+    if (!pending) return;
+    const { input } = pending;
+    setPending(null);
+    setSaving(true);
+    try {
+      await store(input);
+    } catch (error: unknown) {
+      handleSaveError(error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSaveError = (error: unknown) => {
+    if (isAppError(error) && error.code === 'INVALID_FILL_UP') {
+      const issues = (error.details?.issues ?? {}) as Partial<Record<FillUpField, FillUpIssue>>;
+      for (const [field, issue] of Object.entries(issues) as [FillUpField, FillUpIssue][]) {
+        form.setError(FORM_FIELD[field], { type: 'validate', message: `fillUp.errors.${issue}` });
+      }
+    } else {
+      setSaveFailed(true);
+    }
+  };
+
+  const warningText = (warning: FillUpWarning) => {
+    if (warning.kind === 'tank') {
+      const tank = vehicle.tankCapacityBase ?? 0;
+      return t('fillUp.warnTank', {
+        tank: `${formatNumber(baseTo(tank, unit), ctx.locale, 1)} ${t(`units.${unit}`)}`,
+      });
+    }
+    return warning.level === 'too_high' ? t('fillUp.warnHigh') : t('fillUp.warnLow');
+  };
 
   const amountField = (field: AmountField, label: string, affix: string) => {
     const isDerived = field === derived;
@@ -311,6 +369,22 @@ function FillUpForm({ vehicle, last }: { vehicle: Vehicle; last: FillUp | null }
           {t('vehicleForm.errors.saveFailed')}
         </HelperText>
       </ScrollView>
+      <Portal>
+        <Dialog visible={pending !== null} onDismiss={() => setPending(null)}>
+          <Dialog.Title>{t('fillUp.warnTitle')}</Dialog.Title>
+          <Dialog.Content style={styles.warnings}>
+            {pending?.warnings.map((w) => (
+              <Text key={w.kind} variant="bodyMedium">
+                {warningText(w)}
+              </Text>
+            ))}
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setPending(null)}>{t('fillUp.checkAgain')}</Button>
+            <Button onPress={() => void saveAnyway()}>{t('fillUp.saveAnyway')}</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
       <View style={styles.footer}>
         <Button
           mode="contained"
@@ -331,6 +405,7 @@ const styles = StyleSheet.create({
   content: { padding: 24, gap: 8 },
   toggle: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8 },
   toggleText: { flex: 1, gap: 2 },
+  warnings: { gap: 8 },
   footer: { paddingHorizontal: 24, paddingBottom: 16, paddingTop: 8 },
   button: { minHeight: 52 },
 });

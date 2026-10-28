@@ -251,6 +251,12 @@
     "amountHint": "Just what you paid. We work out the fuel from the price.",
     "amountHintEv": "Just what you paid. We work out the energy from the price.",
     "amountPaid": "Amount paid",
-    "amountResult": "≈ {{quantity}} at this price"
+    "amountResult": "≈ {{quantity}} at this price",
+    "warnTitle": "Does this look right?",
+    "warnHigh": "That's unusually high mileage for this vehicle. Check the odometer and the fuel amount.",
+    "warnLow": "That's unusually low mileage for this vehicle. Check the odometer and the fuel amount.",
+    "warnTank": "That's more fuel than the tank holds ({{tank}}). Check the amount.",
+    "checkAgain": "Check again",
+    "saveAnyway": "Save anyway"
   }
 }

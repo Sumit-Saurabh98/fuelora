@@ -1,4 +1,5 @@
 import type { Clock } from '@/domain/clock';
+import { EfficiencyEngine, type Plausibility } from '@/domain/efficiency';
 import { AppError } from '@/domain/errors';
 import {
   checkOdometerOrder,
@@ -15,6 +16,12 @@ import type { FillUpRepository } from '@/repositories/fill-up.repository';
 
 import type { VehicleFillUpHistory, VehicleService } from './vehicle.service';
 
+/** Things worth a second look before saving; they never block the save (FR-8). */
+export type FillUpWarning =
+  { kind: 'efficiency'; level: Exclude<Plausibility, 'ok'> } | { kind: 'tank' };
+
+const CANDIDATE_ID = '__candidate__';
+
 /** Editable fields of a saved fill-up; it never moves to another vehicle. */
 export type FillUpChanges = Omit<NewFillUpInput, 'vehicleId'>;
 
@@ -25,6 +32,7 @@ export class FillUpService implements VehicleFillUpHistory {
     private readonly vehicles: VehicleService,
     private readonly clock: Clock,
     private readonly ids: IdGenerator,
+    private readonly engine: EfficiencyEngine = new EfficiencyEngine(),
   ) {}
 
   /** Validates (fields + FR-7 order) and stores a fill-up on an active vehicle. */
@@ -110,6 +118,45 @@ export class FillUpService implements VehicleFillUpHistory {
     if (!vehicle) return null;
     const others = (await this.fillUps.listByVehicle(vehicleId)).filter((f) => f.id !== editingId);
     return checkOdometerOrder(candidate, others, vehicle.initialOdometerM);
+  }
+
+  /**
+   * FR-8 / LLD §4.2: would this entry give an unbelievable mileage for the segment it closes or
+   * opens, or more fuel than the tank holds? Computed by the engine on the vehicle's entries as
+   * they would be after saving.
+   */
+  async warnings(input: NewFillUpInput, editingId: string | null): Promise<FillUpWarning[]> {
+    const vehicle = await this.vehicles.get(input.vehicleId);
+    if (!vehicle) return [];
+    const others = (await this.fillUps.listByVehicle(input.vehicleId)).filter(
+      (f) => f.id !== editingId,
+    );
+    const candidate = {
+      id: CANDIDATE_ID,
+      odometerM: input.odometerM,
+      quantityBase: input.quantityBase,
+      totalMinor: input.totalMinor,
+      currency: input.currency,
+      isFull: input.isFull,
+      missedPrevious: input.missedPrevious,
+      localDate: localDateOf(input.filledAt),
+    };
+    const warnings: FillUpWarning[] = [];
+    // A back-dated full fill also changes the segment after it.
+    const touched = this.engine
+      .segments([...others, candidate])
+      .filter((s) => s.endId === CANDIDATE_ID || s.startId === CANDIDATE_ID);
+    for (const segment of touched) {
+      const level = this.engine.plausibility(segment, vehicle);
+      if (level !== 'ok') {
+        warnings.push({ kind: 'efficiency', level });
+        break;
+      }
+    }
+    if (this.engine.exceedsTank(input.quantityBase, vehicle.tankCapacityBase)) {
+      warnings.push({ kind: 'tank' });
+    }
+    return warnings;
   }
 
   private validate(input: NewFillUpInput, now: Date): ValidFillUpInput {

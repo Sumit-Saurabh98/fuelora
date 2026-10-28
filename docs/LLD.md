@@ -180,6 +180,7 @@ quantityFromTotal(total: Money, unitPrice, unit): number | null; // amount-only 
 - Cost per distance is per currency and never adds currencies (KB §3); a segment that mixes currencies counts for efficiency but is left out of cost per distance.
 - `value` returns null when distance or quantity is 0, so the UI shows "—" instead of a number.
 - `plausibility(segment, { type, fuelType }) → 'ok' | 'too_high' | 'too_low'` and `exceedsTank(quantityBase, tankCapacityBase)` implement §4.2.
+- Before saving, `FillUpService.warnings(input, editingId)` runs the engine on the vehicle's entries as they would be after the save and checks the segments that end or start at the new entry, plus `exceedsTank`. The entry form shows them in one dialog (Check again / Save anyway); nothing is blocked.
 
 ### 4.4 Required fixture cases (`src/domain/__tests__/efficiency.test.ts`)
 

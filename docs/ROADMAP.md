@@ -30,12 +30,12 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
   - [x] 5.3 Edit vehicle screen (tap a vehicle in the list); untouched odometer/tank keep their exact stored values
   - [x] 5.4 Archive/restore + delete with typed-name confirmation (on the edit screen)
   - [x] 5.5 Vehicle switcher on top of Home (switch, add, manage); "all archived" state on Home
-- [ ] Fill-up entry: any-two-of-three, amount-only, full/partial, missed flag, validation, plausibility warnings — Step 6
+- [x] Fill-up entry: any-two-of-three, amount-only, full/partial, missed flag, validation, plausibility warnings — Step 6 (6.3–6.5 device check pending, new dev build needed)
   - [x] 6.1 Domain: FillUp type, any-two-of-three resolution (FR-9), field validation (no future dates, free charge allowed), odometer order by date + not below vehicle start (FR-7), localDate
   - [x] 6.2 Data layer: FillUpRepository + FillUpService (add/update/delete/latest, FR-7, archived vehicles read-only); vehicle edit rules once fill-ups exist (KB #24)
   - [x] 6.3 Fill-up entry screen (Home "Add fill-up" / "Add charge"): native date/time pickers, any two of three with live third value, full/missed toggles, station/note, pre-filled price + station, odometer order messages — needs a new dev build (native picker)
   - [x] 6.4 Amount-only mode: "Amount only" / "Fuel + amount" switch, two-wheelers default to amount only when a last price exists (KB #25)
-  - [ ] 6.5 Plausibility + tank warnings (warn, never block)
+  - [x] 6.5 Plausibility + tank warnings: "Does this look right?" with Check again / Save anyway (FR-8)
 - [ ] Result card + dashboard (last/avg efficiency, month spend, cost per distance)
 - [ ] History list with edit/delete
 - **Demo:** log ₹200 partial fills on a bike and a full-tank car fill in gallons; correct numbers

@@ -234,4 +234,40 @@ describe('AddFillUpScreen', () => {
     await waitFor(() => expect(saved()).toHaveLength(1));
     expect(saved()[0]).toMatchObject({ currency: 'USD', quantityBase: 4542, totalMinor: 415 });
   });
+
+  it('warns about an unbelievable mileage but still lets the user save (FR-8)', async () => {
+    await setup();
+    await mockFillUps.add({
+      vehicleId: vehicle.id,
+      filledAt: new Date('2026-10-20T09:00:00.000Z'),
+      odometerM: 12_100_000,
+      quantityBase: 5000,
+      totalMinor: 52_250,
+      currency: 'INR',
+      isFull: true,
+      missedPrevious: false,
+      entryMode: 'qty_total',
+    });
+    await type('Odometer', '14,100'); // 2,000 km on 5 L
+    await type('Fuel', '5');
+    await type('Total paid', '522.50');
+
+    await fireEvent.press(screen.getByText('Save'));
+
+    expect(
+      await screen.findByText(
+        "That's unusually high mileage for this vehicle. Check the odometer and the fuel amount.",
+      ),
+    ).toBeTruthy();
+    expect(saved()).toHaveLength(1);
+
+    await fireEvent.press(screen.getByText('Check again'));
+    expect(saved()).toHaveLength(1);
+
+    await fireEvent.press(screen.getByText('Save'));
+    await fireEvent.press(await screen.findByText('Save anyway'));
+
+    await waitFor(() => expect(saved()).toHaveLength(2));
+    expect(router.back).toHaveBeenCalled();
+  });
 });
