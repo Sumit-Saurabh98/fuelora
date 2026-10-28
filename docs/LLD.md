@@ -101,6 +101,8 @@ Fill-up writes (`FillUpService`): field rules in `validateFillUp` (no instant > 
 
 Services (`ServiceLogService`, migration `0002_services`): `serviced_date` is a calendar day and can't be after today; odometer and cost are optional, `currency` is stored only with a cost; a preset stores no `title` (its name follows the app language), `custom` needs one. A service odometer can't be below the vehicle's starting odometer but is not ordered against fill-ups (services are often logged later from a receipt). Readings from services count toward the current odometer (§5.1). History lists fill-ups and services together by month; the month header is everything spent (fuel + services), while the dashboard's monthly spend stays fuel only (§4.1 rule 8).
 
+Reminders (`ReminderService`, migration `0003_reminders`): `kind` / `type_key` must match (service presets, document keys, `custom` with a title); only a `licence` may have no vehicle and is then date-only. Mark done defaults to today and the current odometer (an `OdometerSource` port wired in `container.ts`). Logging a service with a preset key completes that vehicle's active service reminders for the same key from the service's date and odometer; custom services never match.
+
 Onboarding (KB #21): `onboarding_done` lives in the `settings` table, and the app counts onboarding as done when that flag is set **or** at least one vehicle exists — so an interrupted save or a restored backup without the flag never shows onboarding again. `current_vehicle_id` falls back to the first active vehicle when the saved one is missing or archived.
 
 ## 3. Units (`src/domain/units.ts`)

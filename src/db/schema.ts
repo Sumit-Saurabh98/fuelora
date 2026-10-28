@@ -1,7 +1,9 @@
-import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import { sql } from 'drizzle-orm';
+import { check, index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 import { ENTRY_MODES } from '@/domain/fill-up';
 import type { ServiceTypeKey } from '@/domain/presets';
+import { REMINDER_KINDS, REMINDER_STATUSES, type ReminderTypeKey } from '@/domain/reminder';
 import { FUEL_TYPES, VEHICLE_TYPES } from '@/domain/vehicle';
 
 // Source of truth for the schema (LLD §2). After editing: `pnpm db:generate`, review the SQL,
@@ -80,4 +82,31 @@ export const services = sqliteTable(
     updatedAt: text('updated_at').notNull(),
   },
   (t) => [index('services_vehicle_date').on(t.vehicleId, t.servicedDate)],
+);
+
+export const reminders = sqliteTable(
+  'reminders',
+  {
+    id: text('id').primaryKey(),
+    // Null = person-level (driving licence).
+    vehicleId: text('vehicle_id').references(() => vehicles.id, { onDelete: 'cascade' }),
+    kind: text('kind', { enum: REMINDER_KINDS }).notNull(),
+    typeKey: text('type_key').$type<ReminderTypeKey>().notNull(),
+    title: text('title'),
+    dueDate: text('due_date'), // YYYY-MM-DD; either or both of due_date / due_odometer_m
+    dueOdometerM: integer('due_odometer_m'),
+    repeatMonths: integer('repeat_months'),
+    repeatDistanceM: integer('repeat_distance_m'),
+    leadDays: integer('lead_days').notNull().default(7),
+    leadDistanceM: integer('lead_distance_m').notNull().default(300000),
+    status: text('status', { enum: REMINDER_STATUSES }).notNull().default('active'),
+    lastDoneDate: text('last_done_date'),
+    lastDoneOdometerM: integer('last_done_odometer_m'),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (t) => [
+    index('reminders_vehicle_status').on(t.vehicleId, t.status),
+    check('reminders_due', sql`${t.dueDate} is not null or ${t.dueOdometerM} is not null`),
+  ],
 );

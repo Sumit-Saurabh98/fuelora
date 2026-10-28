@@ -54,7 +54,7 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
   - [x] 9.4 Services in History next to fill-ups (month header = everything spent); tap to edit or delete; service readings move the current odometer
 - [ ] Reminders (date / distance / both, repeat, lead) + document presets + region names — Step 10
   - [x] 10.1 Domain: reminder rules (due date and/or odometer, repeat, lead 7 days / 300 km), document keys with region names, status (upcoming / due soon / due / overdue), roll-forward on done; calendar-day maths
-  - [ ] 10.2 Data layer: `reminders` table (migration 0003 + test), repository, ReminderService; logging a matching service completes the reminder
+  - [x] 10.2 Data layer: `reminders` table (migration 0003 + upgrade test, due CHECK), repository, ReminderService (create / update / delete / mark done); logging a matching service completes and rolls the reminder forward
   - [ ] 10.3 Reminders UI
 - [ ] Distance forecaster + predicted dates
 - [ ] `ReminderPlanner` + `NotificationScheduler` (60 budget, 09:00, overdue once), permission on first reminder

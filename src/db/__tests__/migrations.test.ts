@@ -48,7 +48,12 @@ function insertFillUp(db: DatabaseSync, id: string, vehicleId: string, odometerM
 describe('migrations', () => {
   it('bundles every journal entry in migrations.js', () => {
     const bundle = readFileSync(path.join(__dirname, '..', 'migrations', 'migrations.js'), 'utf8');
-    expect(migrationTags()).toEqual(['0000_init', '0001_vehicles_fill_ups', '0002_services']);
+    expect(migrationTags()).toEqual([
+      '0000_init',
+      '0001_vehicles_fill_ups',
+      '0002_services',
+      '0003_reminders',
+    ]);
     for (const tag of migrationTags()) {
       expect(bundle).toContain(`./${tag}.sql`);
     }
@@ -233,6 +238,58 @@ describe('migrations', () => {
       const indexes = db.prepare('PRAGMA index_list(services)').all() as { name: string }[];
       const ours = indexes.map((i) => i.name).filter((n) => !n.startsWith('sqlite_autoindex'));
       expect(ours).toEqual(['services_vehicle_date']);
+    });
+  });
+
+  describe('0003_reminders', () => {
+    it('a v3 database (vehicles, fill-ups, services) upgrades with every row intact', () => {
+      const db = freshDb();
+      applyMigrations(db, { to: 3 });
+      insertVehicle(db, 'v1');
+      insertFillUp(db, 'f1', 'v1', 1_000_000);
+      db.prepare(
+        `INSERT INTO services (id, vehicle_id, serviced_date, type_key, created_at, updated_at)
+         VALUES ('s1', 'v1', '2026-10-20', 'engine_oil', ?, ?)`,
+      ).run(NOW, NOW);
+
+      applyMigrations(db, { from: 3 });
+
+      expect(db.prepare('SELECT id FROM vehicles').all()).toEqual([{ id: 'v1' }]);
+      expect(db.prepare('SELECT id FROM fill_ups').all()).toEqual([{ id: 'f1' }]);
+      expect(db.prepare('SELECT id, type_key FROM services').all()).toEqual([
+        { id: 's1', type_key: 'engine_oil' },
+      ]);
+    });
+
+    it('defaults, person-level rows, the due CHECK and cascade', () => {
+      const db = freshDb();
+      applyMigrations(db);
+      insertVehicle(db, 'v1');
+      const insert = (
+        id: string,
+        vehicleId: string | null,
+        dueDate: string | null,
+        dueOdo: number | null,
+      ) =>
+        db
+          .prepare(
+            `INSERT INTO reminders (id, vehicle_id, kind, type_key, due_date, due_odometer_m,
+               created_at, updated_at) VALUES (?, ?, 'service', 'engine_oil', ?, ?, ?, ?)`,
+          )
+          .run(id, vehicleId, dueDate, dueOdo, NOW, NOW);
+
+      insert('r1', 'v1', null, 15_000_000);
+      insert('licence', null, '2030-05-01', null);
+      expect(
+        db
+          .prepare("SELECT lead_days, lead_distance_m, status FROM reminders WHERE id = 'r1'")
+          .get(),
+      ).toEqual({ lead_days: 7, lead_distance_m: 300_000, status: 'active' });
+      // LLD §2: due date and/or due odometer.
+      expect(() => insert('bad', 'v1', null, null)).toThrow(/CHECK/);
+
+      db.prepare("DELETE FROM vehicles WHERE id = 'v1'").run();
+      expect(db.prepare('SELECT id FROM reminders').all()).toEqual([{ id: 'licence' }]);
     });
   });
 });

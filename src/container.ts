@@ -1,13 +1,16 @@
 // Composition root: the only place that picks concrete implementations (AGENTS.md code style).
 import { getDatabase } from '@/db/client';
 import type { Clock } from '@/domain/clock';
+import { currentOdometerM } from '@/domain/vehicle-stats';
 import { UuidV7Generator, type IdGenerator, type RandomSource } from '@/domain/id-generator';
 import { DrizzleFillUpRepository } from '@/repositories/drizzle-fill-up.repository';
+import { DrizzleReminderRepository } from '@/repositories/drizzle-reminder.repository';
 import { DrizzleServiceLogRepository } from '@/repositories/drizzle-service-log.repository';
 import { DrizzleSettingsRepository } from '@/repositories/drizzle-settings.repository';
 import { DrizzleVehicleRepository } from '@/repositories/drizzle-vehicle.repository';
 import { FillUpService } from '@/services/fill-up.service';
 import { OnboardingService } from '@/services/onboarding.service';
+import { ReminderService } from '@/services/reminder.service';
 import { ServiceLogService } from '@/services/service-log.service';
 import { SettingsService } from '@/services/settings.service';
 import { VehicleService } from '@/services/vehicle.service';
@@ -35,6 +38,7 @@ export type Container = {
   vehicleService: VehicleService;
   fillUpService: FillUpService;
   serviceLogService: ServiceLogService;
+  reminderService: ReminderService;
   onboardingService: OnboardingService;
 };
 
@@ -64,18 +68,39 @@ export function getContainer(): Container {
     systemClock,
     idGenerator,
   );
+  // Current odometer for reminders (LLD §5.1); lazy for the same reason as the history port.
+  const reminderService: ReminderService = new ReminderService(
+    new DrizzleReminderRepository(db),
+    vehicleService,
+    {
+      currentOdometerM: async (vehicleId): Promise<number | null> => {
+        const vehicle = await vehicleService.get(vehicleId);
+        if (!vehicle) return null;
+        const [fills, logged] = await Promise.all([
+          fillUpService.listByVehicle(vehicleId),
+          serviceLogService.listByVehicle(vehicleId),
+        ]);
+        return currentOdometerM([...fills, ...logged], vehicle.initialOdometerM);
+      },
+    },
+    systemClock,
+    idGenerator,
+  );
+  const serviceLogService: ServiceLogService = new ServiceLogService(
+    new DrizzleServiceLogRepository(db),
+    vehicleService,
+    systemClock,
+    idGenerator,
+    reminderService,
+  );
   container = {
     clock: systemClock,
     idGenerator,
     settingsService,
     vehicleService,
     fillUpService,
-    serviceLogService: new ServiceLogService(
-      new DrizzleServiceLogRepository(db),
-      vehicleService,
-      systemClock,
-      idGenerator,
-    ),
+    serviceLogService,
+    reminderService,
     onboardingService: new OnboardingService(settingsService, vehicleService),
   };
   return container;

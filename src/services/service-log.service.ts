@@ -11,12 +11,13 @@ import {
 } from '@/domain/service-entry';
 import type { ServiceLogRepository } from '@/repositories/service-log.repository';
 
+import type { ReminderService } from './reminder.service';
 import type { VehicleService } from './vehicle.service';
 
 /** Editable fields of a saved service; it never moves to another vehicle. */
 export type ServiceChanges = Omit<NewServiceInput, 'vehicleId'>;
 
-/** Service records per vehicle (F-09). Completing reminders joins in Step 10. */
+/** Service records per vehicle (F-09); a new one completes the matching reminder. */
 export class ServiceLogService {
   constructor(
     private readonly services: ServiceLogRepository,
@@ -24,6 +25,8 @@ export class ServiceLogService {
     private readonly vehicles: VehicleService,
     private readonly clock: Clock,
     private readonly ids: IdGenerator,
+    // Logging a service completes the matching reminder (F-09); optional for tests.
+    private readonly reminders?: Pick<ReminderService, 'onServiceLogged'>,
   ) {}
 
   async add(input: NewServiceInput): Promise<ServiceEntry> {
@@ -42,7 +45,7 @@ export class ServiceLogService {
       updatedAt: timestamp,
     };
     await this.services.insert(entry);
-    // ReminderService.replan(vehicleId) goes here once reminders exist (Step 10).
+    await this.reminders?.onServiceLogged(entry);
     return entry;
   }
 
