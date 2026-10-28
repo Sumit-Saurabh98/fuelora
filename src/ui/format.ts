@@ -70,3 +70,9 @@ export function formatMonth(month: string, locale: string): string {
     new Date(year!, m! - 1, 1),
   );
 }
+
+/** A YYYY-MM-DD calendar day, formatted at local noon so no time zone moves it. */
+export function formatDay(day: string, locale: string): string {
+  const [y, m, d] = day.split('-').map(Number);
+  return formatDate(new Date(y!, m! - 1, d!, 12), locale);
+}

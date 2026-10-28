@@ -13,7 +13,7 @@ import {
   segmentMarks,
 } from '@/domain/vehicle-stats';
 import { EmptyState } from '@/ui/empty-state';
-import { formatDate, formatMonth } from '@/ui/format';
+import { formatDate, formatDay, formatMonth } from '@/ui/format';
 
 import { distanceText, efficiencyText, quantityText } from '../../fill-up/figures-text';
 import { useVehicleFillUps } from '../../fill-up/hooks/use-vehicle-fill-ups';
@@ -98,7 +98,7 @@ function VehicleHistory({ vehicle }: { vehicle: Vehicle }) {
         if (item.kind === 'service') {
           const s = item.service;
           const name = s.typeKey === 'custom' ? (s.title ?? '') : t(`servicePresets.${s.typeKey}`);
-          const date = formatServiceDate(s.servicedDate, locale);
+          const date = formatDay(s.servicedDate, locale);
           const parts = [
             s.odometerM !== null ? distanceText(s.odometerM, ctx) : null,
             s.note,
@@ -137,12 +137,6 @@ function VehicleHistory({ vehicle }: { vehicle: Vehicle }) {
       }}
     />
   );
-}
-
-/** A YYYY-MM-DD day, formatted at local noon so no time zone moves it. */
-function formatServiceDate(day: string, locale: string): string {
-  const [y, m, d] = day.split('-').map(Number);
-  return formatDate(new Date(y!, m! - 1, d!, 12), locale);
 }
 
 const styles = StyleSheet.create({

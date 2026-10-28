@@ -12,8 +12,8 @@ type Props = {
   label: string;
   value: Date;
   onChange: (value: Date) => void;
-  /** Latest selectable date (usually now). */
-  maximumDate: Date;
+  /** Latest selectable date (now for things that happened); none for due dates. */
+  maximumDate?: Date;
   locale: string;
   doneLabel: string;
   dateLabel: string;

@@ -351,6 +351,58 @@
   },
   "reminders": {
     "emptyTitle": "No reminders yet",
-    "emptyBody": "Services, insurance, emission test and licence renewals will show here."
+    "emptyBody": "Services, insurance, emission test and licence renewals will show here.",
+    "add": "Add reminder",
+    "markDone": "Done",
+    "doneToday": "Done today",
+    "doneRepeats": "Marks it done today at your current odometer and sets the next one.",
+    "doneOnce": "Marks it done today. It won't remind you again.",
+    "overdueSince": "Overdue since {{date}}",
+    "dueToday": "Due today",
+    "dueTomorrow": "Due tomorrow",
+    "dueOn": "Due {{date}} · in {{days}} days",
+    "toGo": "{{distance}} to go",
+    "pastBy": "{{distance}} past due",
+    "state": {
+      "overdue": "Overdue",
+      "due": "Due",
+      "due_soon": "Soon",
+      "upcoming": "Upcoming"
+    }
+  },
+  "reminderForm": {
+    "title": "Add reminder",
+    "editTitle": "Edit reminder",
+    "kind": "Reminder type",
+    "kinds": {
+      "service": "Service",
+      "document": "Document",
+      "custom": "Other"
+    },
+    "titleLabel": "What to remember",
+    "suggestion": "Suggested interval. Check your owner's manual and change it if needed.",
+    "personLevel": "Your licence belongs to you, not a vehicle, so it's due by date only.",
+    "due": "When is it due?",
+    "byDate": "By date",
+    "dueDate": "Due date",
+    "dueOdometer": "Due at odometer",
+    "dueHelp": "Set a date, an odometer reading, or both.",
+    "repeat": "Repeat after it's done",
+    "repeatMonths": "Every (months)",
+    "repeatDistance": "Every (distance)",
+    "lead": "Remind me early",
+    "leadDays": "Days before",
+    "leadDistance": "Distance before",
+    "delete": "Delete reminder",
+    "deleteTitle": "Delete this reminder?",
+    "deleteBody": "It stops reminding you. This can't be undone.",
+    "errors": {
+      "required": "Required",
+      "invalid": "Choose an option",
+      "out_of_range": "Check this value",
+      "too_long": "Too long",
+      "not_a_number": "Enter a number",
+      "due": "Set a date, an odometer reading, or both"
+    }
   }
 }
