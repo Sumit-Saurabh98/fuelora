@@ -16,6 +16,7 @@ import { renderScreen } from '@/testing/render-screen';
 
 import { usePreferences } from '../../settings/preferences.store';
 import { useCurrentOdometer } from '../../vehicles/hooks/use-current-odometer';
+import { useOdometerForecast } from '../../vehicles/hooks/use-odometer-forecast';
 import { useVehicle } from '../../vehicles/hooks/use-vehicle';
 import { useVehicles } from '../../vehicles/hooks/use-vehicles';
 import { AddReminderScreen } from '../components/reminder-screens';
@@ -54,6 +55,7 @@ jest.mock('@/container', () => ({
 jest.mock('../../vehicles/hooks/use-vehicle', () => ({ useVehicle: jest.fn() }));
 jest.mock('../../vehicles/hooks/use-vehicles', () => ({ useVehicles: jest.fn() }));
 jest.mock('../../vehicles/hooks/use-current-odometer', () => ({ useCurrentOdometer: jest.fn() }));
+jest.mock('../../vehicles/hooks/use-odometer-forecast', () => ({ useOdometerForecast: jest.fn() }));
 jest.mock('../hooks/use-active-reminders', () => ({ useActiveReminders: jest.fn() }));
 
 let vehicle: Vehicle;
@@ -102,6 +104,9 @@ describe('Reminders', () => {
       .mocked(useVehicles)
       .mockReturnValue({ active: [vehicle], archived: [], currentId: vehicle.id });
     jest.mocked(useCurrentOdometer).mockReturnValue(12_400_000);
+    jest
+      .mocked(useOdometerForecast)
+      .mockReturnValue({ currentOdometerM: 12_400_000, avgDailyM: null });
     jest.mocked(router.back).mockClear();
   });
 
@@ -130,6 +135,18 @@ describe('Reminders', () => {
       expect(screen.getByText('2,600 km to go')).toBeTruthy();
       expect(screen.getByText('Overdue')).toBeTruthy();
       expect(screen.getByText('Soon')).toBeTruthy();
+    });
+
+    it('a distance reminder says around when at the recent pace (FR-13)', async () => {
+      // 2,600 km left at 40 km/day → 65 days
+      jest
+        .mocked(useOdometerForecast)
+        .mockReturnValue({ currentOdometerM: 12_400_000, avgDailyM: 40_000 });
+      jest
+        .mocked(useActiveReminders)
+        .mockReturnValue([reminder({ id: 'oil', dueOdometerM: 15_000_000 })]);
+      await renderScreen(<RemindersScreen />);
+      expect(screen.getByText('Around 1 Jan 2027 · 2,600 km to go')).toBeTruthy();
     });
 
     it('Done asks, then marks it done today', async () => {

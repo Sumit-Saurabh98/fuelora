@@ -210,10 +210,10 @@ quantityFromTotal(total: Money, unitPrice, unit): number | null; // amount-only 
 
 ### 5.2 Distance forecast
 
-- Use readings (fill-ups + odometer readings) from the last 90 days.
+- Use readings (fill-ups, services with an odometer, and manual odometer readings once they exist) from the last 90 days.
 - Needs ≥ 2 readings spanning ≥ 7 days; otherwise no forecast.
 - `avgDailyM = (lastOdo − firstOdo) / daysBetween`.
-- Predicted date for a distance-due reminder: `today + ceil((dueOdo − currentOdo) / avgDailyM)` days; if `avgDailyM` = 0 → no forecast.
+- Predicted date for a distance-due reminder: `today + ceil((dueOdo − currentOdo) / avgDailyM)` days; if `avgDailyM` = 0 → no forecast. The UI says "Around <date>" when the effective date comes from the forecast.
 
 ### 5.3 Effective due
 

@@ -371,7 +371,8 @@
       "due": "आज",
       "due_soon": "जल्द",
       "upcoming": "आगे"
-    }
+    },
+    "around": "लगभग {{date}}"
   },
   "reminderForm": {
     "title": "रिमाइंडर जोड़ें",

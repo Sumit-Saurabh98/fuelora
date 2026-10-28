@@ -371,7 +371,8 @@
       "due": "Due",
       "due_soon": "Soon",
       "upcoming": "Upcoming"
-    }
+    },
+    "around": "Around {{date}}"
   },
   "reminderForm": {
     "title": "Add reminder",

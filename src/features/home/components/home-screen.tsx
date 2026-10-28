@@ -80,7 +80,7 @@ function VehicleHome({ vehicle, active }: { vehicle: Vehicle; active: Vehicle[] 
           </Card.Content>
         </Card>
         {stats ? <Dashboard vehicle={vehicle} stats={stats} /> : null}
-        {stats ? <NextReminders vehicle={vehicle} odometerM={stats.odometerM} /> : null}
+        {stats ? <NextReminders vehicle={vehicle} /> : null}
       </ScrollView>
       {/* Services are rarer than fill-ups, so they get the small button: fill-ups stay one tap. */}
       <FAB

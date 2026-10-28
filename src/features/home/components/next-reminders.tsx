@@ -11,23 +11,30 @@ import type { Vehicle } from '@/domain/vehicle';
 import { useActiveReminders } from '../../reminders/hooks/use-active-reminders';
 import { dueText, reminderName, sortedByUrgency } from '../../reminders/reminder-display';
 import { useUnitPreferences } from '../../settings/hooks/use-unit-preferences';
+import { useOdometerForecast } from '../../vehicles/hooks/use-odometer-forecast';
 
 const SHOWN = 3;
 
 /** The few most urgent reminders on Home (F-06); the full list is the Reminders tab. */
-export function NextReminders({ vehicle, odometerM }: { vehicle: Vehicle; odometerM: number }) {
+export function NextReminders({ vehicle }: { vehicle: Vehicle }) {
   const { t } = useTranslation();
   const theme = useTheme();
   const { units, locale, region } = useUnitPreferences();
   const reminders = useActiveReminders(vehicle.id);
+  const forecast = useOdometerForecast(vehicle);
   const today = localDateOf(getContainer().clock.now());
   const ctx = { t, units, locale, region };
   const rows = useMemo(
-    () => sortedByUrgency(reminders ?? [], { today, currentOdometerM: odometerM }),
-    [reminders, today, odometerM],
+    () =>
+      sortedByUrgency(reminders ?? [], {
+        today,
+        currentOdometerM: forecast?.currentOdometerM ?? null,
+        avgDailyM: forecast?.avgDailyM ?? null,
+      }),
+    [reminders, today, forecast],
   );
 
-  if (!reminders) return null;
+  if (!reminders || !forecast) return null;
   return (
     <Card mode="outlined">
       <Card.Title title={t('home.nextReminders')} titleVariant="titleMedium" />

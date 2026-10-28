@@ -23,6 +23,9 @@ jest.mock('../../vehicles/hooks/use-vehicles', () => ({ useVehicles: jest.fn() }
 jest.mock('../../fill-up/hooks/use-vehicle-fill-ups', () => ({ useVehicleFillUps: jest.fn() }));
 jest.mock('../../services/hooks/use-vehicle-services', () => ({ useVehicleServices: jest.fn() }));
 jest.mock('../../reminders/hooks/use-active-reminders', () => ({ useActiveReminders: jest.fn() }));
+jest.mock('../../vehicles/hooks/use-odometer-forecast', () => ({
+  useOdometerForecast: () => ({ currentOdometerM: 12_345_000, avgDailyM: null }),
+}));
 const mockFillUps = jest.mocked(useVehicleFillUps);
 const mockVehicles = jest.mocked(useVehicles);
 

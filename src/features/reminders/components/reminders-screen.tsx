@@ -10,7 +10,7 @@ import type { Reminder, ReminderState } from '@/domain/reminder';
 import { EmptyState } from '@/ui/empty-state';
 
 import { useUnitPreferences } from '../../settings/hooks/use-unit-preferences';
-import { useCurrentOdometer } from '../../vehicles/hooks/use-current-odometer';
+import { useOdometerForecast } from '../../vehicles/hooks/use-odometer-forecast';
 import { useVehicles } from '../../vehicles/hooks/use-vehicles';
 import { useActiveReminders } from '../hooks/use-active-reminders';
 import { useReminderActions } from '../hooks/use-reminder-actions';
@@ -24,18 +24,23 @@ export function RemindersScreen() {
   const { active, currentId } = useVehicles();
   const vehicle = active.find((v) => v.id === currentId) ?? null;
   const reminders = useActiveReminders(vehicle?.id ?? null);
-  const odometerM = useCurrentOdometer(vehicle);
+  const forecast = useOdometerForecast(vehicle);
   const actions = useReminderActions();
   const [confirm, setConfirm] = useState<Reminder | null>(null);
   const today = localDateOf(getContainer().clock.now());
   const ctx = { t, units, locale, region };
 
   const rows = useMemo(
-    () => sortedByUrgency(reminders ?? [], { today, currentOdometerM: odometerM ?? null }),
-    [reminders, today, odometerM],
+    () =>
+      sortedByUrgency(reminders ?? [], {
+        today,
+        currentOdometerM: forecast?.currentOdometerM ?? null,
+        avgDailyM: forecast?.avgDailyM ?? null,
+      }),
+    [reminders, today, forecast],
   );
 
-  if (reminders === undefined || odometerM === undefined) return null; // one frame while loading
+  if (reminders === undefined || forecast === undefined) return null; // one frame while loading
 
   const stateColor: Record<ReminderState, string> = {
     overdue: theme.colors.error,

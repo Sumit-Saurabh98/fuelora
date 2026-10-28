@@ -1,6 +1,7 @@
 import type { TFunction } from 'i18next';
 
 import { daysBetween } from '@/domain/dates';
+import { predictedDueDate } from '@/domain/distance-forecaster';
 import type { Region } from '@/domain/regions';
 import {
   documentNameKey,
@@ -32,6 +33,8 @@ export function dueText(view: ReminderStatusView, today: string, ctx: Ctx): stri
     const days = daysBetween(today, view.effectiveDate);
     if (days < 0) parts.push(ctx.t('reminders.overdueSince', { date }));
     else if (days === 0) parts.push(ctx.t('reminders.dueToday'));
+    // A forecast from the odometer is an estimate, so it says "around" (FR-13).
+    else if (view.predicted) parts.push(ctx.t('reminders.around', { date }));
     else if (days === 1) parts.push(ctx.t('reminders.dueTomorrow'));
     else parts.push(ctx.t('reminders.dueOn', { date, days }));
   }
@@ -50,10 +53,26 @@ const ORDER: Record<ReminderState, number> = { overdue: 0, due: 1, due_soon: 2, 
 /** Most urgent first; then the nearest date, then the nearest distance (LLD §5.3). */
 export function sortedByUrgency(
   reminders: readonly Reminder[],
-  context: { today: string; currentOdometerM: number | null },
+  context: { today: string; currentOdometerM: number | null; avgDailyM?: number | null },
 ): { reminder: Reminder; view: ReminderStatusView }[] {
+  const { today, currentOdometerM } = context;
   return reminders
-    .map((reminder) => ({ reminder, view: reminderStatus(reminder, context) }))
+    .map((reminder) => {
+      // Distance reminders get a predicted date at the recent pace (LLD §5.2).
+      const predictedDate =
+        reminder.dueOdometerM !== null && currentOdometerM !== null
+          ? predictedDueDate(
+              reminder.dueOdometerM,
+              currentOdometerM,
+              context.avgDailyM ?? null,
+              today,
+            )
+          : null;
+      return {
+        reminder,
+        view: reminderStatus(reminder, { today, currentOdometerM, predictedDate }),
+      };
+    })
     .sort(
       (a, b) =>
         ORDER[a.view.state] - ORDER[b.view.state] ||
