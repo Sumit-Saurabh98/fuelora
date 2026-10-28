@@ -188,6 +188,15 @@
     "title": "Edit vehicle",
     "save": "Save changes",
     "notFoundTitle": "Vehicle not found",
-    "notFoundBody": "It may have been deleted."
+    "notFoundBody": "It may have been deleted.",
+    "archive": "Archive vehicle",
+    "unarchive": "Restore vehicle",
+    "archiveNote": "Sold it or not using it? Archive hides it from the switcher and keeps all its data.",
+    "archivedNote": "This vehicle is archived. Restore it to log fill-ups again.",
+    "delete": "Delete vehicle",
+    "deleteTitle": "Delete this vehicle?",
+    "deleteBody": "This deletes {{name}} and all its fill-ups, services and reminders. It can't be undone. To keep the data, archive it instead.",
+    "deleteTypeName": "Type the vehicle name to confirm",
+    "deleteFailed": "Couldn't delete. Please try again."
   }
 }

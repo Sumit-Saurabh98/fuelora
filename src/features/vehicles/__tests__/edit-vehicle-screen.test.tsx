@@ -20,6 +20,8 @@ const mockSettings = new SettingsService(new InMemorySettingsRepository(), mockC
 const ids: IdGenerator = { next: () => 'v1' };
 const mockVehicles = new VehicleService(mockRepo, mockSettings, mockClock, ids);
 jest.mock('expo-router', () => ({ router: { back: jest.fn() } }));
+
+const stored = (id = 'v1') => mockRepo.rows.get(id);
 jest.mock('@/container', () => ({
   getContainer: () => ({ clock: mockClock, vehicleService: mockVehicles }),
 }));
@@ -116,5 +118,65 @@ describe('EditVehicleScreen', () => {
     mockUseVehicle.mockReturnValue(null);
     await renderScreen(<EditVehicleScreen id="gone" />);
     expect(screen.getByText('Vehicle not found')).toBeTruthy();
+  });
+
+  describe('archive and delete', () => {
+    it('archives the vehicle and goes back; its data stays', async () => {
+      await saveActiva();
+      await renderScreen(<EditVehicleScreen id="v1" />);
+
+      await fireEvent.press(screen.getByText('Archive vehicle'));
+
+      await waitFor(() => expect(router.back).toHaveBeenCalled());
+      expect(stored()?.isArchived).toBe(true);
+    });
+
+    it('an archived vehicle offers Restore and stays on the screen', async () => {
+      const vehicle = await saveActiva();
+      await mockVehicles.archive(vehicle.id);
+      mockUseVehicle.mockReturnValue({ ...vehicle, isArchived: true });
+      await renderScreen(<EditVehicleScreen id="v1" />);
+      expect(
+        screen.getByText('This vehicle is archived. Restore it to log fill-ups again.'),
+      ).toBeTruthy();
+
+      await fireEvent.press(screen.getByText('Restore vehicle'));
+
+      await waitFor(() => expect(stored()?.isArchived).toBe(false));
+      expect(router.back).not.toHaveBeenCalled();
+    });
+
+    it('delete needs the typed name; case and spaces do not matter', async () => {
+      await saveActiva();
+      await renderScreen(<EditVehicleScreen id="v1" />);
+      await fireEvent.press(screen.getByText('Delete vehicle'));
+      expect(screen.getByText(/This deletes My Activa and all its fill-ups/)).toBeTruthy();
+      const confirm = () => screen.getByRole('button', { name: 'Delete' });
+
+      await fireEvent.changeText(screen.getByLabelText('Type the vehicle name to confirm'), 'My');
+      expect(confirm()).toBeDisabled();
+      await fireEvent.press(confirm());
+      expect(stored()).toBeDefined();
+
+      await fireEvent.changeText(
+        screen.getByLabelText('Type the vehicle name to confirm'),
+        ' my activa ',
+      );
+      await fireEvent.press(confirm());
+
+      await waitFor(() => expect(router.back).toHaveBeenCalled());
+      expect(stored()).toBeUndefined();
+    });
+
+    it('cancel keeps the vehicle', async () => {
+      await saveActiva();
+      await renderScreen(<EditVehicleScreen id="v1" />);
+      await fireEvent.press(screen.getByText('Delete vehicle'));
+
+      await fireEvent.press(screen.getByText('Cancel'));
+
+      expect(stored()).toBeDefined();
+      expect(router.back).not.toHaveBeenCalled();
+    });
   });
 });
