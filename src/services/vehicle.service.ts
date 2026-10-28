@@ -2,6 +2,7 @@ import type { Clock } from '@/domain/clock';
 import { AppError } from '@/domain/errors';
 import type { IdGenerator } from '@/domain/id-generator';
 import {
+  checkEditAgainstFillUps,
   pickCurrentVehicle,
   validateNewVehicle,
   type NewVehicleInput,
@@ -11,6 +12,17 @@ import type { VehicleRepository } from '@/repositories/vehicle.repository';
 
 import type { SettingsService } from './settings.service';
 
+/**
+ * What vehicle edits need to know about logged fill-ups (KB #24). Implemented by FillUpService;
+ * a narrow port so the two services don't construct each other.
+ */
+export interface VehicleFillUpHistory {
+  /** Lowest odometer among the vehicle's fill-ups; null when it has none. */
+  firstOdometerM(vehicleId: string): Promise<number | null>;
+}
+
+const NO_HISTORY: VehicleFillUpHistory = { firstOdometerM: async () => null };
+
 export class VehicleService {
   constructor(
     private readonly vehicles: VehicleRepository,
@@ -18,6 +30,7 @@ export class VehicleService {
     private readonly settings: SettingsService,
     private readonly clock: Clock,
     private readonly ids: IdGenerator,
+    private readonly history: VehicleFillUpHistory = NO_HISTORY,
   ) {}
 
   /** Validates, stores and returns a new vehicle; the first one becomes current (FR-4). */
@@ -82,13 +95,24 @@ export class VehicleService {
     return this.vehicles.list({ includeArchived: true });
   }
 
-  /** Same rules as create; id, order, archive state and creation time are kept. */
+  /**
+   * Same rules as create, plus KB #24 once fill-ups exist; id, order, archive state and creation
+   * time are kept.
+   */
   async update(id: string, input: NewVehicleInput): Promise<Vehicle> {
     const existing = await this.require(id);
     const now = this.clock.now();
     const result = validateNewVehicle(input, now.getUTCFullYear());
     if (!result.ok) {
       throw new AppError('INVALID_VEHICLE', 'Vehicle input is invalid', { issues: result.issues });
+    }
+    const issues = checkEditAgainstFillUps(
+      existing,
+      result.value,
+      await this.history.firstOdometerM(id),
+    );
+    if (Object.keys(issues).length > 0) {
+      throw new AppError('INVALID_VEHICLE', 'Edit conflicts with logged fill-ups', { issues });
     }
     const vehicle: Vehicle = { ...existing, ...result.value, updatedAt: now.toISOString() };
     await this.vehicles.update(vehicle);

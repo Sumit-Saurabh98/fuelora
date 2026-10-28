@@ -134,6 +134,12 @@ export function VehicleForm({ form }: Props) {
           </View>
         )}
       />
+      {/* Only the save can reject a fuel (KB #24: fill-ups already logged in another unit). */}
+      {errorText('fuelType') ? (
+        <HelperText type="error" visible>
+          {errorText('fuelType')}
+        </HelperText>
+      ) : null}
 
       {textField('name', t('vehicleForm.name'), { maxLength: VEHICLE_LIMITS.nameMax })}
       {textField('odometer', t('vehicleForm.odometer'), {

@@ -32,7 +32,8 @@ The "why" behind the product. Read this before changing business logic.
 
 ### Entries
 
-- Odometer is required on every fill-up and must increase with time per vehicle (FR-7). Duplicate odometer on the same vehicle is rejected.
+- Odometer is required on every fill-up and must increase with time per vehicle (FR-7). Duplicate odometer on the same vehicle is rejected, and so is a reading below the vehicle's starting odometer (#24).
+- Fill-up dates can't be more than a few minutes in the future. A total of 0 is allowed (free charging).
 - Any two of quantity / unit price / total → third computed; stored values are total (minor units) and quantity (base units). Unit price is derived for display.
 - Full tank defaults **on**. "Missed previous" defaults **off** and is explained in one line.
 - Plausibility warnings use the ranges in LLD §4.2; never block a save on plausibility.
@@ -119,6 +120,7 @@ Document presets: `insurance`, `emission_test`, `registration`, `licence`, `cust
 | 21 | 2026-10 | Onboarding state in SQLite `settings` (`onboarding_done` OR ≥ 1 vehicle), not MMKV; vehicle step has "Skip for now"; form shows type, fuel, name, odometer with optional details collapsed | Stays correct after an interrupted save or a restore; no extra native package for one flag (MMKV comes in Phase 4 for ad counters); skip keeps calculators usable without setup (F-12); essentials keep onboarding under 60 s (F-01) |
 | 22 | 2026-10 | Onboarding screens: back arrow top-left (none on step 1), step dots centred, one full-width primary action at the bottom, optional text action (Skip) under it | Side-by-side Back/Continue/Save crowded 360dp screens; one obvious thumb-reachable action is the common modern pattern |
 | 23 | 2026-10 | Never use `Intl` `formatToParts` / `resolvedOptions`; derive separators and currency digits from `format()` output (lint-enforced, iOS-simulating test) | Hermes on iOS lacks them: the vehicle step crashed on the iPhone while all tests passed on Node |
+| 24 | 2026-10 | Once a vehicle has fill-ups: its fuel may change only within the same stored unit (petrol ↔ diesel ↔ LPG, all mL; not to/from CNG g or electric Wh), and its starting odometer may not go above the first fill-up's odometer. Fill-ups can't be below the starting odometer, and archived vehicles take no new fill-ups | Stored quantities carry no unit of their own; a fuel change across units would silently reinterpret every old entry (30 L → 30 kWh). A start above logged entries breaks odometer order and the current-odometer rule (LLD §5.1). A CNG conversion or a new EV is added as a new vehicle |
 
 ## 7. Analytics events (allow-list)
 

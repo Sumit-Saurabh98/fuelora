@@ -2,8 +2,10 @@
 import { getDatabase } from '@/db/client';
 import type { Clock } from '@/domain/clock';
 import { UuidV7Generator, type IdGenerator, type RandomSource } from '@/domain/id-generator';
+import { DrizzleFillUpRepository } from '@/repositories/drizzle-fill-up.repository';
 import { DrizzleSettingsRepository } from '@/repositories/drizzle-settings.repository';
 import { DrizzleVehicleRepository } from '@/repositories/drizzle-vehicle.repository';
+import { FillUpService } from '@/services/fill-up.service';
 import { OnboardingService } from '@/services/onboarding.service';
 import { SettingsService } from '@/services/settings.service';
 import { VehicleService } from '@/services/vehicle.service';
@@ -29,6 +31,7 @@ export type Container = {
   idGenerator: IdGenerator;
   settingsService: SettingsService;
   vehicleService: VehicleService;
+  fillUpService: FillUpService;
   onboardingService: OnboardingService;
 };
 
@@ -40,9 +43,21 @@ export function getContainer(): Container {
   const { db } = getDatabase();
   const idGenerator = new UuidV7Generator(systemClock, randomSource);
   const settingsService = new SettingsService(new DrizzleSettingsRepository(db), systemClock);
-  const vehicleService = new VehicleService(
+  // The two services know each other: fill-ups need their vehicle, vehicle edits check logged
+  // fill-ups (KB #24). The history port is resolved lazily so neither constructs the other.
+  const vehicleService: VehicleService = new VehicleService(
     new DrizzleVehicleRepository(db),
     settingsService,
+    systemClock,
+    idGenerator,
+    {
+      firstOdometerM: (vehicleId): Promise<number | null> =>
+        fillUpService.firstOdometerM(vehicleId),
+    },
+  );
+  const fillUpService: FillUpService = new FillUpService(
+    new DrizzleFillUpRepository(db),
+    vehicleService,
     systemClock,
     idGenerator,
   );
@@ -51,6 +66,7 @@ export function getContainer(): Container {
     idGenerator,
     settingsService,
     vehicleService,
+    fillUpService,
     onboardingService: new OnboardingService(settingsService, vehicleService),
   };
   return container;

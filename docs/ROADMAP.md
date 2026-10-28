@@ -32,7 +32,7 @@ Solo developer, vibe-coding mostly on weekends, ~12 weeks to launch on Android +
   - [x] 5.5 Vehicle switcher on top of Home (switch, add, manage); "all archived" state on Home
 - [ ] Fill-up entry: any-two-of-three, amount-only, full/partial, missed flag, validation, plausibility warnings — Step 6
   - [x] 6.1 Domain: FillUp type, any-two-of-three resolution (FR-9), field validation (no future dates, free charge allowed), odometer order by date + not below vehicle start (FR-7), localDate
-  - [ ] 6.2 Data layer: FillUpRepository + FillUpService (add/update/delete, currency from settings); vehicle edit rules once fill-ups exist (KB #24)
+  - [x] 6.2 Data layer: FillUpRepository + FillUpService (add/update/delete/latest, FR-7, archived vehicles read-only); vehicle edit rules once fill-ups exist (KB #24)
   - [ ] 6.3 Fill-up entry screen: any two of three with live third value, full/missed toggles, station/note, pre-filled price + station
   - [ ] 6.4 Amount-only mode
   - [ ] 6.5 Plausibility + tank warnings (warn, never block)

@@ -1,3 +1,5 @@
+import { baseUnitFor } from './units';
+
 // Allowed values from REQUIREMENTS F-02 / LLD §2. Stored as text, so never rename a value;
 // adding one is safe.
 export const VEHICLE_TYPES = ['bike', 'scooter', 'car', 'other'] as const;
@@ -38,7 +40,14 @@ export type NewVehicleInput = {
 };
 
 export type VehicleField = keyof NewVehicleInput;
-export type VehicleIssue = 'required' | 'too_long' | 'out_of_range' | 'invalid';
+export type VehicleIssue =
+  | 'required'
+  | 'too_long'
+  | 'out_of_range'
+  | 'invalid'
+  // KB #24: edits that would change the meaning of already logged fill-ups.
+  | 'fuel_locked'
+  | 'above_first_fill_up';
 
 export const VEHICLE_LIMITS = {
   nameMax: 40,
@@ -144,4 +153,26 @@ export function pickCurrentVehicle(
 ): Vehicle | null {
   const active = vehicles.filter((v) => !v.isArchived);
   return active.find((v) => v.id === currentId) ?? active[0] ?? null;
+}
+
+/**
+ * KB #24: once a vehicle has fill-ups, its fuel may only change within the same stored unit
+ * (petrol ↔ diesel ↔ LPG are all mL), and its starting odometer may not go above the first
+ * fill-up. Otherwise old quantities would be read in the wrong unit, or entries would sit before
+ * the vehicle's start. `firstFillUpOdometerM` is null when there are no fill-ups.
+ */
+export function checkEditAgainstFillUps(
+  existing: Pick<Vehicle, 'fuelType'>,
+  edited: Pick<ValidVehicleInput, 'fuelType' | 'initialOdometerM'>,
+  firstFillUpOdometerM: number | null,
+): Partial<Record<VehicleField, VehicleIssue>> {
+  if (firstFillUpOdometerM === null) return {};
+  const issues: Partial<Record<VehicleField, VehicleIssue>> = {};
+  if (baseUnitFor(edited.fuelType) !== baseUnitFor(existing.fuelType)) {
+    issues.fuelType = 'fuel_locked';
+  }
+  if (edited.initialOdometerM > firstFillUpOdometerM) {
+    issues.initialOdometerM = 'above_first_fill_up';
+  }
+  return issues;
 }

@@ -176,7 +176,9 @@
       "out_of_range": "Check this value",
       "invalid": "Choose an option",
       "not_a_number": "Enter a number",
-      "saveFailed": "Couldn't save. Please try again."
+      "saveFailed": "Couldn't save. Please try again.",
+      "fuel_locked": "This vehicle already has fill-ups in another unit. Add a new vehicle for this fuel.",
+      "above_first_fill_up": "Must be at or below your first fill-up's odometer"
     }
   },
   "addVehicle": {

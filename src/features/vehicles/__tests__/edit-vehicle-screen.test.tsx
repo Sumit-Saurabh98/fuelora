@@ -3,6 +3,7 @@ import * as Localization from 'expo-localization';
 import { router } from 'expo-router';
 
 import { FixedClock } from '@/domain/clock';
+import { AppError } from '@/domain/errors';
 import type { IdGenerator } from '@/domain/id-generator';
 import { InMemorySettingsRepository } from '@/repositories/in-memory-settings.repository';
 import { InMemoryVehicleRepository } from '@/repositories/in-memory-vehicle.repository';
@@ -111,6 +112,26 @@ describe('EditVehicleScreen', () => {
 
     expect(await screen.findByText('Required')).toBeTruthy();
     expect(await mockVehicles.get('v1')).toEqual(before);
+    expect(router.back).not.toHaveBeenCalled();
+  });
+
+  it('shows the KB #24 errors from the service on the right fields', async () => {
+    await saveActiva();
+    jest.spyOn(mockVehicles, 'update').mockRejectedValueOnce(
+      new AppError('INVALID_VEHICLE', 'x', {
+        issues: { fuelType: 'fuel_locked', initialOdometerM: 'above_first_fill_up' },
+      }),
+    );
+    await renderScreen(<EditVehicleScreen id="v1" />);
+
+    await fireEvent.press(screen.getByText('Save changes'));
+
+    expect(
+      await screen.findByText(
+        'This vehicle already has fill-ups in another unit. Add a new vehicle for this fuel.',
+      ),
+    ).toBeTruthy();
+    expect(screen.getByText("Must be at or below your first fill-up's odometer")).toBeTruthy();
     expect(router.back).not.toHaveBeenCalled();
   });
 

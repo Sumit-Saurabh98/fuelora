@@ -1,4 +1,5 @@
 import {
+  checkEditAgainstFillUps,
   pickCurrentVehicle,
   validateNewVehicle,
   type NewVehicleInput,
@@ -122,5 +123,37 @@ describe('pickCurrentVehicle (FR-4)', () => {
   it('is null without active vehicles', () => {
     expect(pickCurrentVehicle([], 'a')).toBeNull();
     expect(pickCurrentVehicle([v('a', true)], 'a')).toBeNull();
+  });
+});
+
+describe('checkEditAgainstFillUps (KB #24)', () => {
+  const petrol = { fuelType: 'petrol' as const };
+
+  it('allows anything while the vehicle has no fill-ups', () => {
+    expect(
+      checkEditAgainstFillUps(petrol, { fuelType: 'electric', initialOdometerM: 99_000_000 }, null),
+    ).toEqual({});
+  });
+
+  it('allows fuel changes that keep the stored unit (petrol ↔ diesel ↔ LPG)', () => {
+    for (const fuelType of ['diesel', 'lpg', 'petrol'] as const) {
+      expect(checkEditAgainstFillUps(petrol, { fuelType, initialOdometerM: 0 }, 1000)).toEqual({});
+    }
+  });
+
+  it('blocks a change to CNG or electric once fill-ups exist', () => {
+    for (const fuelType of ['cng', 'electric'] as const) {
+      expect(checkEditAgainstFillUps(petrol, { fuelType, initialOdometerM: 0 }, 1000)).toEqual({
+        fuelType: 'fuel_locked',
+      });
+    }
+  });
+
+  it('starting odometer may be at or below the first fill-up, not above', () => {
+    const at = (initialOdometerM: number) =>
+      checkEditAgainstFillUps(petrol, { fuelType: 'petrol', initialOdometerM }, 12_300_000);
+    expect(at(12_300_000)).toEqual({});
+    expect(at(12_000_000)).toEqual({});
+    expect(at(12_500_000)).toEqual({ initialOdometerM: 'above_first_fill_up' });
   });
 });

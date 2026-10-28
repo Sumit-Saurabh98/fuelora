@@ -95,6 +95,10 @@ create table settings (                           -- travels with backups
 
 Device-only state (MMKV, not backed up): `ads.*` counters, `last_export_at`, `scheduled_notification_ids`, `nudge.*`.
 
+Vehicle edits (KB #24): with at least one fill-up, `fuel_type` may only change to a fuel with the same base unit (`baseUnitFor`: mL / g / Wh) and `initial_odometer_m` must stay ≤ the lowest fill-up `odometer_m`. Enforced in `VehicleService.update` via the `VehicleFillUpHistory` port (implemented by `FillUpService`) as `INVALID_VEHICLE` issues `fuel_locked` / `above_first_fill_up`.
+
+Fill-up writes (`FillUpService`): field rules in `validateFillUp` (no instant > now + 5 min, total ≥ 0, quantity 1 base unit…1,000,000), order rules in `checkOdometerOrder` (FR-7 by `filled_at`, unique per vehicle, ≥ the vehicle's start). Odometer errors carry no readings (AGENTS.md rule 2); the form asks `odometerProblem()` for the reading to beat.
+
 Onboarding (KB #21): `onboarding_done` lives in the `settings` table, and the app counts onboarding as done when that flag is set **or** at least one vehicle exists — so an interrupted save or a restored backup without the flag never shows onboarding again. `current_vehicle_id` falls back to the first active vehicle when the saved one is missing or archived.
 
 ## 3. Units (`src/domain/units.ts`)
